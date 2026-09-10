@@ -11,8 +11,10 @@ Sports field booking platform for players, helping to find a field, choose a tim
 - Bui Phuong Thao - @Buithaoaineu
 
 **Product Owner (fixed for the whole period):** @dqchien
+
 **Scrum Master (rotating every sprint):** @dqchien (Sprint 1)
-**Board:** [<link>](https://github.com/orgs/SE-FDA-NEU-AI66B/projects/24)
+
+**Board:** https://github.com/orgs/SE-FDA-NEU-AI66B/projects/24
 
 ## Test run
 
