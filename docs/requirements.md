@@ -81,3 +81,63 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 | BR4 | Cancelling more than 4 hours before play time gets a full refund; cancelling within 4 hours forfeits 50% of the deposit.                                             | Booking for 20:00, cancelled at 15:00 (5 hours before) → full refund. Cancelled at 17:00 (3 hours before) → only 50% refunded.                                                                                                  |
 | BR5 | The system automatically sends a reminder notification 4 hours before play time.                                                                                     | Booking starts at 20:00 → reminder notification is sent at 16:00 the same day.                                                                                                                                                  |
 | BR6 | Each account may hold at most 2 active (upcoming) bookings at a time.                                                                                                | A user already has 2 upcoming bookings (e.g., Sep 16 and Sep 18). Trying to add a 3rd booking → rejected with the message "You already have 2 active bookings — please complete or cancel one before booking another."          |
+
+## 6. Screens and Navigation Flow
+
+### 6.1 Screen Table
+
+| Route | Purpose | Access | Priority |
+|---|---|---|---|
+| `/` | Browse badminton courts and sign in | G | P0 |
+| `/availability` | View available courts by date and time | U | P0 |
+| `/book` | Select a court and confirm a booking | U | P0 |
+| `/my-bookings` | View and cancel bookings | U | P0 |
+| `/admin/courts` | Add, edit, or disable badminton courts | A | P2 |
+
+**Access:** G = Guest, U = User, A = Admin
+
+### 6.2 Flow Diagram
+                  ┌───────────────┐
+                  │       /       │
+                  │  Home / Login │
+                  └───────┬───────┘
+                          │
+                       Sign in
+                          ↓
+                  ┌───────────────┐
+                  │ /availability │◄────────────────┐
+                  │  Find a court │                 │
+                  └───────┬───────┘                 │
+                          │                         │
+                     Select court                   │
+                          ↓                         │
+                  ┌───────────────┐                 │
+                  │     /book     │                 │
+                  │ Select date   │                 │
+                  │ Select time   │                 │
+                  │    Confirm    │                 │
+                  └───────┬───────┘                 │
+                          │                         │
+                      Confirmed                     │
+                          ↓                         │
+                  ┌───────────────┐                 │
+                  │ /my-bookings  │                 │
+                  │ View / Cancel │                 │
+                  └───────┬───────┘                 │
+                          │                         │
+                      Book again                    │
+                          └─────────────────────────┘
+
+
+                  ┌───────────────┐
+                  │ /admin/courts │
+                  │ Add / Edit /  │
+                  │ Disable courts│
+                  └───────┬───────┘
+                          │
+                     Update courts
+                          ↓
+                  ┌───────────────┐
+                  │ /availability │
+                  └───────────────┘
+
