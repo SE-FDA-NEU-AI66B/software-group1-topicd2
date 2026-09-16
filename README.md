@@ -2,7 +2,9 @@
 
 Sports field booking platform for players, helping to find a field, choose a time slot and book quickly, while avoiding double bookings and sending reminders before the game schedule.
 
-**Group:** D2
+**Group:** 1
+
+**Topic:** D2
 
 **Member:**
 
@@ -12,7 +14,7 @@ Sports field booking platform for players, helping to find a field, choose a tim
 
 **Product Owner (fixed for the whole period):** @dqchien
 
-**Scrum Master (rotating every sprint):** @dqchien (Sprint 1)
+**Scrum Master (rotating every sprint):** @quynhquynh-blip (Sprint 1)
 
 **Board:** https://github.com/orgs/SE-FDA-NEU-AI66B/projects/24
 
