@@ -86,27 +86,32 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 
 ### 6.1 Screen Table
 
+## 6. Screens and Navigation Flow
+
+### 6.1 Screen Table
+
 | Route | Purpose | Access | Priority |
 |---|---|---|---|
-| `/` | Browse badminton courts and sign in | G | P0 |
-| `/availability` | View available courts by date and time | U | P0 |
-| `/book` | Select a court and confirm a booking | U | P0 |
-| `/my-bookings` | View and cancel bookings | U | P0 |
+| `/` | Browse badminton courts and view court information | G, U | P0 |
+| `/availability` | View available courts by date and time | G, U | P0 |
+| `/book` | Select a court, date, and time, then proceed to booking/payment | G, U | P0 |
+| `/my-bookings` | View and cancel personal bookings | U | P0 |
 | `/admin/courts` | Add, edit, or disable badminton courts | A | P2 |
 
 **Access:** G = Guest, U = User, A = Admin
 
 ### 6.2 Flow Diagram
+
                   ┌───────────────┐
                   │       /       │
-                  │  Home / Login │
+                  │  Browse courts│
                   └───────┬───────┘
                           │
-                       Sign in
+                    View / Search
                           ↓
                   ┌───────────────┐
                   │ /availability │◄────────────────┐
-                  │  Find a court │                 │
+                  │ Find a court  │                 │
                   └───────┬───────┘                 │
                           │                         │
                      Select court                   │
@@ -118,7 +123,14 @@ SmashGo is a system that enables badminton players of all levels to book courts 
                   │    Confirm    │                 │
                   └───────┬───────┘                 │
                           │                         │
-                      Confirmed                     │
+                   Proceed to payment               │
+                          ↓                         │
+                    ┌───────────┐                   │
+                    │  Sign in  │                   │
+                    │ if Guest  │                   │
+                    └─────┬─────┘                   │
+                          │                         │
+                       Payment                      │
                           ↓                         │
                   ┌───────────────┐                 │
                   │ /my-bookings  │                 │
@@ -140,4 +152,3 @@ SmashGo is a system that enables badminton players of all levels to book courts 
                   ┌───────────────┐
                   │ /availability │
                   └───────────────┘
-
