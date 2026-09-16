@@ -92,63 +92,67 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 
 | Route | Purpose | Access | Priority |
 |---|---|---|---|
-| `/` | Browse badminton courts and view court information | G, U | P0 |
-| `/availability` | View available courts by date and time | G, U | P0 |
-| `/book` | Select a court, date, and time, then proceed to booking/payment | G, U | P0 |
-| `/my-bookings` | View and cancel personal bookings | U | P0 |
-| `/admin/courts` | Add, edit, or disable badminton courts | A | P2 |
+| `/` | Browse badminton courts and venue information | G, U | P0 |
+| `/availability` | Check court availability by date and time | G, U | P0 |
+| `/book` | Select a court, date, and time, then submit a reservation | G, U | P0 |
+| `/login` | Sign in or sign up before payment | G | P0 |
+| `/payment` | Review reservation details and complete payment or deposit | U | P0 |
+| `/my-bookings` | View upcoming and past bookings or cancel a reservation | U | P0 |
+| `/admin/courts` | Add, update, or disable badminton courts | A | P2 |
 
-**Access:** G = Guest, U = User, A = Admin
+**Access:** G = Guest (not signed in), U = User (signed in), A = Admin
 
 ### 6.2 Flow Diagram
 
                   ┌───────────────┐
                   │       /       │
-                  │  Browse courts│
+                  │ Browse Courts │
                   └───────┬───────┘
                           │
-                    View / Search
                           ↓
                   ┌───────────────┐
-                  │ /availability │◄────────────────┐
-                  │ Find a court  │                 │
-                  └───────┬───────┘                 │
-                          │                         │
-                     Select court                   │
-                          ↓                         │
-                  ┌───────────────┐                 │
-                  │     /book     │                 │
-                  │ Select date   │                 │
-                  │ Select time   │                 │
-                  │    Confirm    │                 │
-                  └───────┬───────┘                 │
-                          │                         │
-                   Proceed to payment               │
-                          ↓                         │
-                    ┌───────────┐                   │
-                    │  Sign in  │                   │
-                    │ if Guest  │                   │
-                    └─────┬─────┘                   │
-                          │                         │
-                       Payment                      │
-                          ↓                         │
-                  ┌───────────────┐                 │
-                  │ /my-bookings  │                 │
-                  │ View / Cancel │                 │
-                  └───────┬───────┘                 │
-                          │                         │
-                      Book again                    │
-                          └─────────────────────────┘
+                  │ /availability │ ◄──────────────────┐
+                  │ Check Slots   │                    │
+                  └───────┬───────┘                    │
+                          │                            │
+                          ↓                            │
+                  ┌───────────────┐                    │
+                  │     /book     │                    │
+                  │ Select slot   │                    │
+                  │   & Confirm   │                    │
+                  └───────┬───────┘                    │
+                          │                            │
+                 Is user logged in?                    │
+                 ├── No ──► ┌───────────┐              │
+                 │          │  /login   │              │
+                 │          └─────┬─────┘              │
+                 │                │ Authenticated      │
+                 └── Yes ◄────────┘                    │
+                          │                            │
+                          ↓                            │
+                  ┌───────────────┐                    │
+                  │   /payment    │                    │
+                  │ Pay & Secure  │                    │
+                  └───────┬───────┘                    │
+                          │ Success                    │
+                          ↓                            │
+                  ┌───────────────┐                    │
+                  │ /my-bookings  │                    │
+                  │ View / Cancel │                    │
+                  └───────┬───────┘                    │
+                          │                            │
+                      Book again                       │
+                          └────────────────────────────┘
 
 
-                  ┌───────────────┐
-                  │ /admin/courts │
-                  │ Add / Edit /  │
-                  │ Disable courts│
-                  └───────┬───────┘
-                          │
-                     Update courts
-                          ↓
+                  ┌─────────────────┐
+                  │  /admin/courts  │
+                  │ Add / Edit /    │
+                  │ Disable Courts  │
+                  └────────┬────────┘
+                           │
+                    Update court data
+                           ↓
                   ┌───────────────┐
                   │ /availability │
                   └───────────────┘
