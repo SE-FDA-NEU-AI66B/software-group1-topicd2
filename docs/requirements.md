@@ -48,6 +48,29 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 - **In my words:** "Booking a court used to be complicated and risky before I found the ALOBO app. However, since using the app, I’ve found the process to be smooth and trouble-free."
 - **Interview note:** Based on personal experience.
 
+
+## 3. Scenarios
+**Scenario 1 — Lê Sỹ Huy: Quickly booking a familiar court**
+1. Lê Sỹ Huy decides to play badminton with his friends at 8:00 PM and needs to arrange the court before the evening.
+2. He searches for courts that are available at the desired time and checks the basic information, including price, location, and court condition.
+3. Since he usually plays at familiar venues, he chooses a court he has played at before.
+4. He selects the 8:00 PM–10:00 PM time slot and verifies that it is available.
+5. He provides the required information and confirms the reservation.
+6. The system records the booking and provides the confirmed reservation details.
+7.Huy schedules a reminder for around four hours before the session so he can remember the booking despite his busy schedule.
+8. Before leaving for the session, he checks the reminder and reservation details, then goes to the court with his friends.
+
+**Scenario 2 — Chử Vũ Thảo Hiền: Finding a suitable court and avoiding booking conflicts**
+1. Chử Vũ Thảo Hiền needs to arrange a badminton court for her group for an upcoming session from 3:00 PM to 5:00 PM.
+2. Because she previously experienced scheduling conflicts when booking through Zalo, she first looks for courts with clearly confirmed availability.
+3. She examines several available options and checks their actual photos, prices, court conditions, and locations before making a decision.
+4. She finds a suitable court at Đức Thảo Badminton Court and checks whether the desired 3:00 PM–5:00 PM period is available.
+5. After confirming the available time, she enters the required information and submits the reservation.
+6. The system confirms the reservation and provides the booking details, including the selected court and time.
+7. Hiền checks the confirmation to make sure her group's reservation has been successfully recorded and does not overlap with another booking.
+8. On the scheduled day, she and her friends arrive at the reserved court and play at the confirmed time.
+
+
 ## 5. Business Rules
 
 | ID  | Rule                                                                                                                                                                 | Worked example                                                                                                                                                                                                         |
