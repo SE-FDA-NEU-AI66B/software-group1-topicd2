@@ -6,7 +6,7 @@ evidence that the process was real.
 
 ---
 
-## Sprint 1 - <week 5> to <week 6>
+## Sprint 1 - <week 5> to <week 7>
 
 <!-- Sprint 1: weeks 5-6 | Sprint 2: 7-8 | Sprint 3: 9-10 | Sprint 4: 11-12 | Sprint 5: 13-14 -->
 
