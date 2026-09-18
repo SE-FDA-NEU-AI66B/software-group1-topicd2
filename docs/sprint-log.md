@@ -6,14 +6,13 @@ evidence that the process was real.
 
 ---
 
-## Sprint N - <start date> to <end date>
+## Sprint 1 - <week 5> to <week 6>
 
 <!-- Sprint 1: weeks 5-6 | Sprint 2: 7-8 | Sprint 3: 9-10 | Sprint 4: 11-12 | Sprint 5: 13-14 -->
 
 ### Sprint goal
 
-<One sentence. If you cannot state the goal in one sentence, the sprint
-has no goal and you are just doing tasks.>
+Build the core booking foundation for SmashGo, including defining user stories, acceptance criteria, and the basic booking flow.
 
 ### Hai chore issue bắt buộc
 
