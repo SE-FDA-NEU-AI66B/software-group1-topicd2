@@ -71,6 +71,141 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 8. On the scheduled day, she and her friends arrive at the reserved court and play at the confirmed time.
 
 
+## 4. User Stories
+
+| ID | Story | Priority | Points |
+|---|---|---|---:|
+| US-01 | As a user, I want to view available badminton courts so that I can find a suitable court for my session. | P0 | 3 |
+| US-02 | As a user, I want to view detailed court information, including price, photos, location, and court condition, so that I can choose a suitable court. | P0 | 3 |
+| US-03 | As a user, I want to view available time slots for a court so that I can select a suitable playing time. | P0 | 3 |
+| US-04 | As a user, I want to book one available time slot so that I can secure a badminton court for my group. | P0 | 5 |
+| US-05 | As a user, I want the system to prevent double booking so that my reservation does not overlap with another user's booking. | P0 | 5 |
+| US-06 | As a user, I want to cancel my booking so that I can release a court when I no longer need it. | P1 | 3 |
+| US-07 | As a user, I want to receive a booking reminder so that I do not forget my scheduled badminton session. | P1 | 3 |
+| US-08 | As a user, I want to view my booking history so that I can check my previous and upcoming reservations. | P1 | 3 |
+| US-09 | As a user, I want to check in for my booking so that the system can record that I have arrived and used the court. | P1 | 3 |
+| US-10 | As an administrator, I want to manage badminton courts and view usage frequency by time slot so that I can keep court information up to date and understand booking patterns. | P2 | 5 |
+
+### US-01 — View Available Badminton Courts
+
+**Acceptance Criteria**
+
+1. **Given** badminton courts are available at 8:00 PM,  
+   **When** the user searches for courts at 8:00 PM,  
+   **Then** the system displays the available courts for that time.
+
+2. **Given** a court has no available slots at 8:00 PM–10:00 PM,  
+   **When** the user searches for courts during this period,  
+   **Then** the system does not display that court as available.
+
+### US-02 — View Detailed Court Information
+
+**Acceptance Criteria**
+
+1. **Given** a badminton court has information including price, photos, location, and court condition,  
+   **When** the user opens the court details,  
+   **Then** the system displays all four types of information.
+
+2. **Given** the selected court costs 100,000 VND per hour,  
+   **When** the user views the court details,  
+   **Then** the system displays the price as 100,000 VND per hour.
+
+### US-03 — View Available Time Slots
+
+**Acceptance Criteria**
+
+1. **Given** a court is available from 3:00 PM to 5:00 PM,  
+   **When** the user views the court schedule,  
+   **Then** the system displays the 3:00 PM–5:00 PM time slot as available.
+
+2. **Given** the 8:00 PM–10:00 PM time slot has already been booked,  
+   **When** the user views the court schedule,  
+   **Then** the system displays the 8:00 PM–10:00 PM slot as unavailable.
+
+### US-04 — Book One Available Time Slot
+
+**Acceptance Criteria**
+
+1. **Given** the 8:00 PM–10:00 PM time slot is available,  
+   **When** the user confirms the booking for that slot,  
+   **Then** the system creates exactly one booking with the status "Confirmed".
+
+2. **Given** the user has selected one available 2-hour time slot,  
+   **When** the user submits the required booking information,  
+   **Then** the system reserves only the selected court and time slot for that user.
+
+### US-05 — Prevent Double Booking
+
+**Acceptance Criteria**
+
+1. **Given** Court A is already booked from 3:00 PM to 5:00 PM on the selected date,  
+   **When** another user attempts to book Court A for the same 3:00 PM–5:00 PM period,  
+   **Then** the system rejects the second booking and keeps only one confirmed booking for that slot.
+
+2. **Given** two users submit booking requests for the same court and the same 2-hour time slot at the same time,  
+   **When** the system processes both requests,  
+   **Then** exactly one request is confirmed and the other request is rejected.
+
+### US-06 — Cancel a Booking
+
+**Acceptance Criteria**
+
+1. **Given** the user has a confirmed booking from 3:00 PM to 5:00 PM,  
+   **When** the user cancels the booking,  
+   **Then** the booking status changes to "Cancelled".
+
+2. **Given** a booking for the 3:00 PM–5:00 PM slot has been cancelled,  
+   **When** another user views the court schedule,  
+   **Then** the 3:00 PM–5:00 PM slot is displayed as available for a new booking.
+
+### US-07 — Receive a Booking Reminder
+
+**Acceptance Criteria**
+
+1. **Given** the user's badminton session starts at 8:00 PM,  
+   **When** the user sets a reminder for 4 hours before the session,  
+   **Then** the system schedules the reminder for 4:00 PM on the same day.
+
+2. **Given** the user has cancelled a booking before the scheduled reminder time,  
+   **When** the reminder time is reached,  
+   **Then** the system does not send a reminder for the cancelled booking.
+
+### US-08 — View Booking History
+
+**Acceptance Criteria**
+
+1. **Given** the user has made 5 bookings,  
+   **When** the user opens the booking history,  
+   **Then** the system displays all 5 bookings associated with the user's account.
+
+2. **Given** the user's bookings have statuses such as "Confirmed", "Cancelled", and "Completed",  
+   **When** the user views the booking history,  
+   **Then** the system displays the correct status for each booking.
+
+### US-09 — Check In for a Booking
+
+**Acceptance Criteria**
+
+1. **Given** the user's booking starts at 8:00 PM,  
+   **When** the user checks in at 7:50 PM,  
+   **Then** the system records the booking as "Checked-in".
+
+2. **Given** the user does not have a confirmed booking for the selected court and time,  
+   **When** the user attempts to check in,  
+   **Then** the system rejects the check-in and does not create a check-in record.
+
+### US-10 — Manage Courts and View Usage Frequency
+
+**Acceptance Criteria**
+
+1. **Given** an administrator creates a badminton court named "Court A01",  
+   **When** the administrator saves the court information,  
+   **Then** the system creates "Court A01" as an active bookable court.
+
+2. **Given** the system has at least 7 days of booking records,  
+   **When** the administrator views usage statistics,  
+   **Then** the system displays the number of bookings grouped by time slots, such as 8:00 PM–10:00 PM.
+
 ## 5. Business Rules
 
 | ID  | Rule                                                                                                                                                                 | Worked example                                                                                                                                                                                                                  |
