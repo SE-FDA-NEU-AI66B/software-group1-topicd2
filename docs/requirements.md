@@ -18,11 +18,12 @@
 
 **Project board:** https://github.com/orgs/SE-FDA-NEU-AI66B/projects/24
 
-**Pull Request:**
-
-**Merge commit:**
-
 **Submitted by:** Chử Vũ Thảo Hiền
+
+---
+
+<img src="../images/Sprint Planning.png" alt="Sprint Planning" width="500">
+<img src="../images/Final Sprint 1.png" alt="Final Sprint 1" width="500">
 
 ---
 
@@ -48,19 +49,21 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 - **In my words:** "Booking a court used to be complicated and risky before I found the ALOBO app. However, since using the app, I’ve found the process to be smooth and trouble-free."
 - **Interview note:** Based on personal experience.
 
-
 ## 3. Scenarios
+
 **Scenario 1 — Lê Sỹ Huy: Quickly booking a familiar court**
+
 1. Lê Sỹ Huy decides to play badminton with his friends at 8:00 PM and needs to arrange the court before the evening.
 2. He searches for courts that are available at the desired time and checks the basic information, including price, location, and court condition.
 3. Since he usually plays at familiar venues, he chooses a court he has played at before.
 4. He selects the 8:00 PM–10:00 PM time slot and verifies that it is available.
 5. He provides the required information and confirms the reservation.
 6. The system records the booking and provides the confirmed reservation details.
-7.Huy schedules a reminder for around four hours before the session so he can remember the booking despite his busy schedule.
-8. Before leaving for the session, he checks the reminder and reservation details, then goes to the court with his friends.
+   7.Huy schedules a reminder for around four hours before the session so he can remember the booking despite his busy schedule.
+7. Before leaving for the session, he checks the reminder and reservation details, then goes to the court with his friends.
 
 **Scenario 2 — Chử Vũ Thảo Hiền: Finding a suitable court and avoiding booking conflicts**
+
 1. Chử Vũ Thảo Hiền needs to arrange a badminton court for her group for an upcoming session from 3:00 PM to 5:00 PM.
 2. Because she previously experienced scheduling conflicts when booking through Zalo, she first looks for courts with clearly confirmed availability.
 3. She examines several available options and checks their actual photos, prices, court conditions, and locations before making a decision.
@@ -70,21 +73,20 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 7. Hiền checks the confirmation to make sure her group's reservation has been successfully recorded and does not overlap with another booking.
 8. On the scheduled day, she and her friends arrive at the reserved court and play at the confirmed time.
 
-
 ## 4. User Stories
 
-| ID | Story | Priority | Points |
-|---|---|---|---:|
-| US-01 | As a user, I want to view available badminton courts so that I can find a suitable court for my session. | P0 | 3 |
-| US-02 | As a user, I want to view detailed court information, including price, photos, location, and court condition, so that I can choose a suitable court. | P0 | 3 |
-| US-03 | As a user, I want to view available time slots for a court so that I can select a suitable playing time. | P0 | 3 |
-| US-04 | As a user, I want to book one available time slot so that I can secure a badminton court for my group. | P0 | 5 |
-| US-05 | As a user, I want the system to prevent double booking so that my reservation does not overlap with another user's booking. | P0 | 5 |
-| US-06 | As a user, I want to cancel my booking so that I can release a court when I no longer need it. | P1 | 3 |
-| US-07 | As a user, I want to receive a booking reminder so that I do not forget my scheduled badminton session. | P1 | 3 |
-| US-08 | As a user, I want to view my booking history so that I can check my previous and upcoming reservations. | P1 | 3 |
-| US-09 | As a user, I want to check in for my booking so that the system can record that I have arrived and used the court. | P1 | 3 |
-| US-10 | As an administrator, I want to manage badminton courts and view usage frequency by time slot so that I can keep court information up to date and understand booking patterns. | P2 | 5 |
+| ID    | Story                                                                                                                                                                         | Priority | Points |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -----: |
+| US-01 | As a user, I want to view available badminton courts so that I can find a suitable court for my session.                                                                      | P0       |      3 |
+| US-02 | As a user, I want to view detailed court information, including price, photos, location, and court condition, so that I can choose a suitable court.                          | P0       |      3 |
+| US-03 | As a user, I want to view available time slots for a court so that I can select a suitable playing time.                                                                      | P0       |      3 |
+| US-04 | As a user, I want to book one available time slot so that I can secure a badminton court for my group.                                                                        | P0       |      5 |
+| US-05 | As a user, I want the system to prevent double booking so that my reservation does not overlap with another user's booking.                                                   | P0       |      5 |
+| US-06 | As a user, I want to cancel my booking so that I can release a court when I no longer need it.                                                                                | P1       |      3 |
+| US-07 | As a user, I want to receive a booking reminder so that I do not forget my scheduled badminton session.                                                                       | P1       |      3 |
+| US-08 | As a user, I want to view my booking history so that I can check my previous and upcoming reservations.                                                                       | P1       |      3 |
+| US-09 | As a user, I want to check in for my booking so that the system can record that I have arrived and used the court.                                                            | P1       |      3 |
+| US-10 | As an administrator, I want to manage badminton courts and view usage frequency by time slot so that I can keep court information up to date and understand booking patterns. | P2       |      5 |
 
 ### US-01 — View Available Badminton Courts
 
@@ -221,17 +223,13 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 
 ### 6.1 Screen Table
 
-## 6. Screens and Navigation Flow
-
-### 6.1 Screen Table
-
-| Route | Purpose | Access | Priority |
-|---|---|---|---|
-| `/` | Browse badminton courts and view court information | G, U | P0 |
-| `/availability` | View available courts by date and time | G, U | P0 |
-| `/book` | Select a court, date, and time, then proceed to booking/payment | G, U | P0 |
-| `/my-bookings` | View and cancel personal bookings | U | P0 |
-| `/admin/courts` | Add, edit, or disable badminton courts | A | P2 |
+| Route           | Purpose                                                         | Access | Priority |
+| --------------- | --------------------------------------------------------------- | ------ | -------- |
+| `/`             | Browse badminton courts and view court information              | G, U   | P0       |
+| `/availability` | View available courts by date and time                          | G, U   | P0       |
+| `/book`         | Select a court, date, and time, then proceed to booking/payment | G, U   | P0       |
+| `/my-bookings`  | View and cancel personal bookings                               | U      | P0       |
+| `/admin/courts` | Add, edit, or disable badminton courts                          | A      | P2       |
 
 **Access:** G = Guest, U = User, A = Admin
 
