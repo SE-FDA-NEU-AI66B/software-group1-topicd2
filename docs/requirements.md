@@ -18,18 +18,18 @@
 
 **Project board:** https://github.com/orgs/SE-FDA-NEU-AI66B/projects/24
 
-**Submitted by:** Chử Vũ Thảo Hiền
+**Submitted by:** Phan Thị Anh Quỳnh
 
 ---
 
-<img src="../images/Sprint Planning.png" alt="Sprint Planning" width="500">
-<img src="../images/Final Sprint 1.png" alt="Final Sprint 1" width="500">
+<img src="../images/board_planning.png" alt="Sprint Planning" width="500">
+<img src="../images/board_completed.png" alt="Final Sprint 1" width="500">
 
 ---
 
 ## 1. Product vision
 
-SmashGo is a system that enables badminton players of all levels to book courts for their desired time slots and secure a reservation in just minutes. This eliminates the need for manual methods - such as calling or visiting the facility to speak with the manager - which fail to provide real-time availability updates and often lead to scheduling conflicts between groups.
+For badminton players of all skill levels seeking a fast and reliable way to reserve facilities, SmashGo is an online court booking system that enables users to check real-time availability and secure their desired time slots within minutes, unlike traditional manual methods like phone calls or in-person visits that lack live updates and frequently cause scheduling conflicts between groups.
 
 ## 2. Personas
 
@@ -37,17 +37,17 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 
 - Plays badminton with friends about four times a week; usually the one who books the court for the group. Typically plays in the 8:00 PM – 10:00 PM slot at familiar venues like Maxping Vĩnh Tuy and Phúc Long Badminton Court.
 - **Goal:** To book courts faster, guarantee availability, and avoid missing a session due to a busy schedule.
-- **Blocked by:** Needs immediate access to comprehensive information—price, availability, court conditions, and location—to make quick decisions; also requires the ability to remind schedule the booking in advance (around 4 hours prior to play).
-- **In his words:** "I find the way the app I'm currently using (ALOBO) works to be satisfactory."
-- **Interview note:** Interviewed at 2:00 PM – 2:10 PM on September 16, 2026.
+- **Blocked by:** Needs immediate access to comprehensive information—price, availability, court conditions, and location—to make quick decisions; also requires the ability to schedule a booking reminder in advance (around 4 hours prior to play).
+- **In his words:** "I find the way modern booking apps work to be satisfactory, but checking live court status without calling is essential."
+- **Interview note:** Interview conducted by Chử Vũ Thảo Hiền at 2:00 PM – 2:10 PM on September 16, 2026.
 
 **Chử Vũ Thảo Hiền – 20-year-old third-year university student and recreational badminton player.**
 
-- Plays badminton with friends about three times a week; previously responsible for booking courts for the club. Usually plays from 3:00 PM to 5:00 PM at Đức Thảo Badminton Court (18 Tam Trinh). Before discovering the ALOBO app, I used to book courts by messaging the owner via Zalo, which often led to scheduling conflicts with other groups.
+- Plays badminton with friends about three times a week; previously responsible for booking courts for the club. Usually plays from 3:00 PM to 5:00 PM at Đức Thảo Badminton Court (18 Tam Trinh). She previously booked courts by messaging the owner via Zalo, which often led to scheduling conflicts with other groups.
 - **Goal:** To book a court quickly, secure a confirmed reservation, and ensure there are no overlaps with other groups.
 - **Blocked by:** Needs access to comprehensive information—actual photos of the court, pricing, availability, court condition, and location.
-- **In my words:** "Booking a court used to be complicated and risky before I found the ALOBO app. However, since using the app, I’ve found the process to be smooth and trouble-free."
-- **Interview note:** Based on personal experience.
+- **In her words:** "Booking a court used to be complicated and risky when coordinating via chat. Using an automated app makes the process smooth, clear, and trouble-free."
+- **Interview note:** Interview conducted by Chử Vũ Thảo Hiền at 3:30 PM – 3:45 PM on September 16, 2026.
 
 ## 3. Scenarios
 
@@ -59,8 +59,8 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 4. He selects the 8:00 PM–10:00 PM time slot and verifies that it is available.
 5. He provides the required information and confirms the reservation.
 6. The system records the booking and provides the confirmed reservation details.
-   7.Huy schedules a reminder for around four hours before the session so he can remember the booking despite his busy schedule.
-7. Before leaving for the session, he checks the reminder and reservation details, then goes to the court with his friends.
+7. Huy schedules a reminder for around four hours before the session so he can remember the booking despite his busy schedule.
+8. Before leaving for the session, he checks the reminder and reservation details, then goes to the court with his friends.
 
 **Scenario 2 — Chử Vũ Thảo Hiền: Finding a suitable court and avoiding booking conflicts**
 
@@ -78,7 +78,7 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 | ID    | Story                                                                                                                                                                         | Priority | Points |
 | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -----: |
 | US-01 | As a user, I want to view available badminton courts so that I can find a suitable court for my session.                                                                      | P0       |      3 |
-| US-02 | As a user, I want to view detailed court information, including price, photos, location, and court condition, so that I can choose a suitable court.                          | P0       |      3 |
+| US-02 | As a user, I want to view detailed court information, including price, photos, location, and court condition, so that I can choose a suitable court.                           | P0       |      3 |
 | US-03 | As a user, I want to view available time slots for a court so that I can select a suitable playing time.                                                                      | P0       |      3 |
 | US-04 | As a user, I want to book one available time slot so that I can secure a badminton court for my group.                                                                        | P0       |      5 |
 | US-05 | As a user, I want the system to prevent double booking so that my reservation does not overlap with another user's booking.                                                   | P0       |      5 |
@@ -210,13 +210,13 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 
 ## 5. Business Rules
 
-| ID  | Rule                                                                                                                                                                 | Worked example                                                                                                                                                                                                                  |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| BR1 | A court cannot be double-booked for a time slot that is already reserved.                                                                                            | Court 3 (Maxping Vinh Tuy) is already booked for 20:00–22:00. Another user tries to book the same court for 20:00–21:30 → rejected; the system shows "Court 3 is already booked for the 20:00–22:00 slot."                      |
-| BR2 | Every booking must last at least 1 hour. If multiple groups play on the same court back-to-back, their bookings must be contiguous — no gap is allowed between them. | Booking 20:00–21:00 → valid (meets the 1-hour minimum). On Court 1: Group A books 16:00–18:00, Group B books 18:30–... → invalid, because there is a 30-minute gap between the two bookings.                                    |
+| ID  | Rule                                                                                                                                                                 | Worked example                                                                                                                                                                                  |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BR1 | A court cannot be double-booked for a time slot that is already reserved.                                                                                            | Court 3 (Maxping Vinh Tuy) is already booked for 20:00–22:00. Another user tries to book the same court for 20:00–21:30 → rejected; the system shows "Court 3 is already booked for the 20:00–22:00 slot."      |
+| BR2 | Every booking must last at least 1 hour. If multiple groups play on the same court back-to-back, their bookings must be contiguous — no gap is allowed between them. | Booking 20:00–21:00 → valid (meets the 1-hour minimum). On Court 1: Group A books 16:00–18:00, Group B books 18:30–... → invalid, because there is a 30-minute gap between the two bookings.                                     |
 | BR3 | The slot is held for 10 minutes pending payment; the reservation will be automatically cancelled if this time limit is exceeded.                                     | If a user selects Court 3 for the 20:00–21:00 slot at 18:00, the system holds the reservation until 18:10. If payment is not transferred by 18:10, the slot is automatically released and becomes available for others to book. |
-| BR4 | Cancelling more than 4 hours before play time gets a full refund; cancelling within 4 hours forfeits 50% of the deposit.                                             | Booking for 20:00, cancelled at 15:00 (5 hours before) → full refund. Cancelled at 17:00 (3 hours before) → only 50% refunded.                                                                                                  |
-| BR5 | The system automatically sends a reminder notification 4 hours before play time.                                                                                     | Booking starts at 20:00 → reminder notification is sent at 16:00 the same day.                                                                                                                                                  |
+| BR4 | Cancelling more than 4 hours before play time gets a full refund; cancelling within 4 hours forfeits 50% of the deposit.                                             | Booking for 20:00, cancelled at 15:00 (5 hours before) → full refund. Cancelled at 17:00 (3 hours before) → only 50% refunded.                                                                 |
+| BR5 | The system automatically sends a reminder notification 4 hours before play time.                                                                                     | Booking starts at 20:00 → reminder notification is sent at 16:00 the same day.                                                                                                                  |
 | BR6 | Each account may hold at most 2 active (upcoming) bookings at a time.                                                                                                | A user already has 2 upcoming bookings (e.g., Sep 16 and Sep 18). Trying to add a 3rd booking → rejected with the message "You already have 2 active bookings — please complete or cancel one before booking another."          |
 
 ## 6. Screens and Navigation Flow
@@ -235,9 +235,10 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 
 ### 6.2 Flow Diagram
 
+```text
                   ┌───────────────┐
                   │       /       │
-                  │  Browse courts│
+                  │ Browse courts │
                   └───────┬───────┘
                           │
                     View / Search
@@ -251,12 +252,12 @@ SmashGo is a system that enables badminton players of all levels to book courts 
                           ↓                         │
                   ┌───────────────┐                 │
                   │     /book     │                 │
-                  │ Select date   │                 │
-                  │ Select time   │                 │
+                  │  Select date  │                 │
+                  │  Select time  │                 │
                   │    Confirm    │                 │
                   └───────┬───────┘                 │
                           │                         │
-                   Proceed to payment               │
+                  Proceed to payment                │
                           ↓                         │
                     ┌───────────┐                   │
                     │  Sign in  │                   │
@@ -272,7 +273,6 @@ SmashGo is a system that enables badminton players of all levels to book courts 
                           │                         │
                       Book again                    │
                           └─────────────────────────┘
-
 
                   ┌───────────────┐
                   │ /admin/courts │
