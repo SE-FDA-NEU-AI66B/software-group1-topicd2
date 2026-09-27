@@ -49,6 +49,14 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 - **In my words:** "Booking a court used to be complicated and risky before I found the ALOBO app. However, since using the app, I’ve found the process to be smooth and trouble-free."
 - **Interview note:** Based on personal experience.
 
+**Nguyễn Minh Đức – 35-year-old badminton court owner and manager.**
+
+- Manages a badminton facility with several courts and handles reservations, customer inquiries, and daily court operations. Currently relies on phone calls, Zalo messages, and manually maintained schedules to organize bookings.
+- **Goal:** To manage court availability efficiently, keep booking information up to date, and prevent scheduling conflicts while increasing the number of successful reservations.
+- **Blocked by:** Needs a centralized system to update court information, confirm or cancel reservations, monitor booking status, and view usage frequency by time slot; manual management makes it difficult to track changes and avoid double bookings.
+- **In his words:** "Managing reservations manually takes a lot of time, and overlapping bookings can happen when several customers contact us at the same time."
+- **Interview note:** Assumed interview with a badminton court owner and manager on September 17, 2026.
+
 ## 3. Scenarios
 
 **Scenario 1 — Lê Sỹ Huy: Quickly booking a familiar court**
