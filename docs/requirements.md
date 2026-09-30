@@ -232,24 +232,49 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 
 ### 6.1 Screen Table
 
-| Route              | Purpose                                                                         | Access | Priority |
-| ------------------ | ------------------------------------------------------------------------------- | ------ | -------- |
-| `/`                | Browse badminton courts and view court information                              | G, U   | P0       |
-| `/availability`    | View available courts by date and time                                          | G, U   | P0       |
-| `/book`            | Select a court, date, and time, then link a bank account and proceed to payment | G, U   | P0       |
-| `/my-bookings`     | View and cancel personal bookings                                               | U      | P0       |
-| `/manager/courts`  | Manager adds, edits, or disables **their own** courts                           | M      | P1       |
-| `/admin/courts`    | Add, edit, or disable badminton courts (all courts in the system)               | A      | P2       |
+| Route             | Purpose                                               | Access | Priority |
+| ----------------- | ----------------------------------------------------- | ------ | -------- |
+| `/`               | Browse badminton courts and view court information    | G, U   | P0       |
+| `/availability`   | View available courts by date and time                | G, U   | P0       |
+| `/login`          | Sign in with email and password (shared by all roles) | G      | P0       |
+| `/register`       | Create a new User account                             | G      | P0       |
+| `/book`           | Select court, date, time, then link bank and pay      | G, U   | P0       |
+| `/my-bookings`    | View and cancel personal bookings                     | U      | P0       |
+| `/manager/courts` | Add, edit, or disable **own** courts                  | M      | P1       |
+| `/admin/courts`   | Add, edit, or disable any court in the system         | A      | P2       |
 
 **Access:** G = Guest, U = User, M = Manager (court owner), A = Admin
+
+**Login decision (`/login`):**
+
+- One **shared login form** for all 3 roles (User / Manager / Admin). No separate form per role.
+- The role is **detected automatically** from the `role` field of the account. The user never picks a role.
+- After a successful login, redirect by role:
+  - User → back to the page they came from (e.g. `/book`), otherwise `/my-bookings`
+  - Manager → `/manager/courts`
+  - Admin → `/admin/courts`
+- Signed-in users who open `/login` or `/register` are redirected to their default page.
+- Guests who open a protected route (`/my-bookings`, `/manager/courts`, `/admin/courts`) are redirected to `/login`.
+- A signed-in user who opens a route outside their role gets `403 Forbidden`.
+
+**Registration decision (`/register`):**
+
+- Self-registration only creates accounts with role **User**.
+- Manager and Admin accounts are not created through the UI. They are provisioned by Admin or seeded in the database.
+- After registering, the user is signed in and redirected like a normal login.
 
 **Access rules for `/manager/courts`:**
 
 - Manager only sees, adds, edits, and disables courts **they own**.
-- Manager cannot see or modify courts belonging to another Manager. The list is filtered by `ownerId = currentUser.id` on the backend, not only hidden in the UI.
-- Direct access to another Manager's court (e.g. by court ID in the URL or API) is rejected with `403 Forbidden`.
+- Manager cannot see or modify courts of another Manager. The list is filtered by `ownerId = currentUser.id` on the backend, not only hidden in the UI.
+- Direct access to another Manager's court (by court ID in the URL or API) is rejected with `403 Forbidden`.
 - Every court created by a Manager is automatically assigned to that Manager as owner.
 - Only Admin (`/admin/courts`) can view and manage courts across all Managers.
+
+**Disable court rule (Manager and Admin):**
+
+- A court that has **upcoming bookings cannot be disabled**. The system shows a message and the court stays active.
+- The court can be disabled once all its upcoming bookings are completed or cancelled.
 
 ### 6.2 Flow Diagram
 
@@ -279,14 +304,16 @@ SmashGo is a system that enables badminton players of all levels to book courts 
                           │                         │
                   Proceed to payment                │
                           ↓                         │
-                    ┌───────────┐                   │
-                    │  Sign in  │                   │
-                    │ if Guest  │                   │
-                    └─────┬─────┘                   │
+                  ┌───────────────┐                 │
+                  │    /login     │                 │
+                  │   Sign in     │                 │
+                  │ New? Register │                 │
+                  │  (/register)  │                 │
+                  └───────┬───────┘                 │
                           │                         │
                    Link bank account                │
                           ↓                         │
-                    Verify bank (OTP)               │
+                   Verify bank (OTP)                │
                           ↓                         │
                        Payment                      │
                           ↓                         │
@@ -299,32 +326,37 @@ SmashGo is a system that enables badminton players of all levels to book courts 
                           └─────────────────────────┘
 ```
 
+> `/login` is skipped if the user is already signed in.
+> After `/login` or `/register`, the user returns to `/book` with the selected court, date, and time preserved.
+
 #### Manager flow
 
 ```text
-                    ┌───────────┐
-                    │  Sign in  │
-                    │ (Manager) │
-                    └─────┬─────┘
+                  ┌───────────────┐
+                  │    /login     │
+                  │   Sign in     │
+                  └───────┬───────┘
                           │
+                   role = Manager
                           ↓
                 ┌───────────────────┐
                 │  /manager/courts  │
                 │  List MY courts   │
-                │  (own courts only)│
+                │ (own courts only) │
                 └─────────┬─────────┘
                           │
-            ┌─────────────┼─────────────┐
-            ↓             ↓             ↓
-        Add court     Edit court   Disable court
-     (owner = me)    (own only)    (own only)
-            │             │             │
-            └─────────────┼─────────────┘
+              ┌───────────┼───────────┐
+              ↓           ↓           ↓
+          Add court    Edit court   Disable court
+         (owner = me)  (own only)   (own only)
+              │           │           │
+              └───────────┼───────────┘
                           │
                      Save changes
                           ↓
                 ┌───────────────────┐
-                │  /manager/courts  │  ← updated list
+                │  /manager/courts  │
+                │   Updated list    │
                 └─────────┬─────────┘
                           │
                   View updated court
@@ -334,11 +366,19 @@ SmashGo is a system that enables badminton players of all levels to book courts 
                   └───────────────┘
 ```
 
-> Attempting to open/edit a court owned by another Manager → `403 Forbidden`, redirect back to `/manager/courts`.
+> Opening or editing a court owned by another Manager → `403 Forbidden`, redirect back to `/manager/courts`.
+> Disable is blocked if the court has upcoming bookings.
 
 #### Admin flow
 
 ```text
+                  ┌───────────────┐
+                  │    /login     │
+                  │   Sign in     │
+                  └───────┬───────┘
+                          │
+                    role = Admin
+                          ↓
                   ┌───────────────┐
                   │ /admin/courts │
                   │ Add / Edit /  │
@@ -352,3 +392,5 @@ SmashGo is a system that enables badminton players of all levels to book courts 
                   │ /availability │
                   └───────────────┘
 ```
+
+> Disable is blocked if the court has upcoming bookings.
