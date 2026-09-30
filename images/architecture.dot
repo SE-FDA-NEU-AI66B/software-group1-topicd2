@@ -1,0 +1,20 @@
+digraph SmashGo {
+  rankdir=TB;
+  nodesep=0.9; ranksep=1.0;
+  graph [fontname="Helvetica", labelloc=t, fontsize=18, label="SmashGo: container diagram", pad=0.4];
+  node  [fontname="Helvetica", fontsize=12, shape=box, style="rounded,filled", margin="0.25,0.15"];
+  edge  [fontname="Helvetica", fontsize=10, color="#444444"];
+
+  browser [label="Browser\n(Guest / User / Manager / Admin)", fillcolor="#DCEBFA"];
+  web     [label="SmashGo Web App\n(routes, login, role check, page rendering,\nin-app notification display)", fillcolor="#FDF0C9"];
+  service [label="Booking Service\n(anti double-booking, court approval,\ncommission, court recommendation,\nreminder job, usage statistics)", fillcolor="#FDF0C9"];
+  db      [label="Database\n(users, courts, bookings, court requests,\nreports, notifications)", shape=cylinder, fillcolor="#D9F0D9"];
+  bank    [label="Bank / Payment gateway\n(external system)", fillcolor="#EEEEEE"];
+
+  browser -> web     [label="HTTP request\n(forms, search filters, booking)"];
+  web     -> browser [label="Rendered pages (HTML)\n+ in-app notifications", constraint=false];
+  web     -> service [label="Function call\n(validated request + user role)"];
+  service -> db      [label="SQL query\n(SELECT free slots, INSERT booking,\nINSERT notification)"];
+  service -> bank    [label="HTTPS API call\n(payment request, bank link)"];
+  bank    -> service [label="HTTPS callback\n(payment result)", constraint=false];
+}
