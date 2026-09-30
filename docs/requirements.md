@@ -81,6 +81,14 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 7. Hiền checks the confirmation to make sure her group's reservation has been successfully recorded and does not overlap with another booking.
 8. On the scheduled day, she and her friends arrive at the reserved court and play at the confirmed time.
 
+**Scenario 3 — Nguyễn Minh Đức: Managing courts and reservations in one place**
+
+1. Nguyễn Minh Đức starts his day by signing in to the system to check his courts and the reservations for the day, instead of going through phone calls and Zalo messages.
+2. He sees the current booking status of each of his courts and notices that one court needs to be closed for maintenance, so he updates the court information and marks it as unavailable for customers.
+3. When several customers try to book the same time slot at almost the same time, the system accepts only one reservation and shows the slot as taken for the others, so Đức does not have to sort out overlapping bookings by hand.
+4. He reviews the new reservations, confirms the valid ones, and cancels a booking when a customer asks to change their plan, which makes that time slot available again.
+5. He checks that the court information and availability shown to customers are up to date, so players always see accurate schedules without having to contact him.
+6. At the end of the week, he reviews how often each time slot was booked, sees which hours are busy and which are empty, and uses this to plan how to get more successful reservations.
 ## 4. User Stories
 
 | ID    | Story                                                                                                                                                                         | Priority | Points |
