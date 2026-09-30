@@ -49,6 +49,14 @@ For badminton players of all skill levels seeking a fast and reliable way to res
 - **In her words:** "Booking a court used to be complicated and risky when coordinating via chat. Using an automated app makes the process smooth, clear, and trouble-free."
 - **Interview note:** Interview conducted by Chử Vũ Thảo Hiền at 3:30 PM – 3:45 PM on September 16, 2026.
 
+**Nguyễn Minh Đức – 35-year-old badminton court owner and manager.**
+
+- Manages a badminton facility with several courts and handles reservations, customer inquiries, and daily court operations. Currently relies on phone calls, Zalo messages, and manually maintained schedules to organize bookings.
+- **Goal:** To manage court availability efficiently, keep booking information up to date, and prevent scheduling conflicts while increasing the number of successful reservations.
+- **Blocked by:** Needs a centralized system to update court information, confirm or cancel reservations, monitor booking status, and view usage frequency by time slot; manual management makes it difficult to track changes and avoid double bookings.
+- **In his words:** "Managing reservations manually takes a lot of time, and overlapping bookings can happen when several customers contact us at the same time."
+- **Interview note:** Assumed interview with a badminton court owner and manager on September 17, 2026.
+
 ## 3. Scenarios
 
 **Scenario 1 — Lê Sỹ Huy: Quickly booking a familiar court**
@@ -210,26 +218,27 @@ For badminton players of all skill levels seeking a fast and reliable way to res
 
 ## 5. Business Rules
 
-| ID  | Rule                                                                                                                                                                 | Worked example                                                                                                                                                                                  |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| BR1 | A court cannot be double-booked for a time slot that is already reserved.                                                                                            | Court 3 (Maxping Vinh Tuy) is already booked for 20:00–22:00. Another user tries to book the same court for 20:00–21:30 → rejected; the system shows "Court 3 is already booked for the 20:00–22:00 slot."      |
-| BR2 | Every booking must last at least 1 hour. If multiple groups play on the same court back-to-back, their bookings must be contiguous — no gap is allowed between them. | Booking 20:00–21:00 → valid (meets the 1-hour minimum). On Court 1: Group A books 16:00–18:00, Group B books 18:30–... → invalid, because there is a 30-minute gap between the two bookings.                                     |
-| BR3 | The slot is held for 10 minutes pending payment; the reservation will be automatically cancelled if this time limit is exceeded.                                     | If a user selects Court 3 for the 20:00–21:00 slot at 18:00, the system holds the reservation until 18:10. If payment is not transferred by 18:10, the slot is automatically released and becomes available for others to book. |
-| BR4 | Cancelling more than 4 hours before play time gets a full refund; cancelling within 4 hours forfeits 50% of the deposit.                                             | Booking for 20:00, cancelled at 15:00 (5 hours before) → full refund. Cancelled at 17:00 (3 hours before) → only 50% refunded.                                                                 |
-| BR5 | The system automatically sends a reminder notification 4 hours before play time.                                                                                     | Booking starts at 20:00 → reminder notification is sent at 16:00 the same day.                                                                                                                  |
-| BR6 | Each account may hold at most 2 active (upcoming) bookings at a time.                                                                                                | A user already has 2 upcoming bookings (e.g., Sep 16 and Sep 18). Trying to add a 3rd booking → rejected with the message "You already have 2 active bookings — please complete or cancel one before booking another."          |
+| ID  | Rule                                                                                                                                                                            | Worked example                                                                                                                                                                                                                         |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BR1 | A court cannot be double-booked for a time slot that is already reserved.                                                                                                       | Court 3 (Maxping Vinh Tuy) is already booked for 20:00–22:00. Another user tries to book the same court for 20:00–21:30 → rejected; the system shows "Court 3 is already booked for the 20:00–22:00 slot."                             |
+| BR2 | Every booking must last at least 1 hour. If multiple groups play on the same court back-to-back, their bookings must be contiguous — no gap is allowed between them.            | Booking 20:00–21:00 → valid (meets the 1-hour minimum). On Court 1: Group A books 16:00–18:00, Group B books 18:30–... → invalid, because there is a 30-minute gap between the two bookings.                                           |
+| BR3 | The slot is held for 10 minutes pending payment; the reservation will be automatically cancelled if this time limit is exceeded.                                                | If a user selects Court 3 for the 20:00–21:00 slot at 18:00, the system holds the reservation until 18:10. If payment is not transferred by 18:10, the slot is automatically released and becomes available for others to book.        |
+| BR4 | Cancelling more than 4 hours before play time gets a full refund; cancelling within 4 hours forfeits 50% of the deposit.                                                        | Booking for 20:00, cancelled at 15:00 (5 hours before) → full refund. Cancelled at 17:00 (3 hours before) → only 50% refunded.                                                                                                         |
+| BR5 | The system automatically sends a reminder notification 4 hours before play time.                                                                                                | Booking starts at 20:00 → reminder notification is sent at 16:00 the same day.                                                                                                                                                         |
+| BR6 | Each account may hold at most 2 active (upcoming) bookings at a time.                                                                                                           | A user already has 2 upcoming bookings (e.g., Sep 16 and Sep 18). Trying to add a 3rd booking → rejected with the message "You already have 2 active bookings — please complete or cancel one before booking another."                 |
+| BR7 | Before making a payment, a user must link and verify a bank account. The system validates the account information and only proceeds with payment after successful verification. | The user selects a bank, enters the account number and account holder name, and completes OTP verification. If the information is invalid or verification fails, the system rejects the link and does not process the booking payment. |
 
 ## 6. Screens and Navigation Flow
 
 ### 6.1 Screen Table
 
-| Route           | Purpose                                                         | Access | Priority |
-| --------------- | --------------------------------------------------------------- | ------ | -------- |
-| `/`             | Browse badminton courts and view court information              | G, U   | P0       |
-| `/availability` | View available courts by date and time                          | G, U   | P0       |
-| `/book`         | Select a court, date, and time, then proceed to booking/payment | G, U   | P0       |
-| `/my-bookings`  | View and cancel personal bookings                               | U      | P0       |
-| `/admin/courts` | Add, edit, or disable badminton courts                          | A      | P2       |
+| Route           | Purpose                                                                         | Access | Priority |
+| --------------- | ------------------------------------------------------------------------------- | ------ | -------- |
+| `/`             | Browse badminton courts and view court information                              | G, U   | P0       |
+| `/availability` | View available courts by date and time                                          | G, U   | P0       |
+| `/book`         | Select a court, date, and time, then link a bank account and proceed to payment | G, U   | P0       |
+| `/my-bookings`  | View and cancel personal bookings                                               | U      | P0       |
+| `/admin/courts` | Add, edit, or disable badminton courts                                          | A      | P2       |
 
 **Access:** G = Guest, U = User, A = Admin
 
@@ -264,6 +273,10 @@ For badminton players of all skill levels seeking a fast and reliable way to res
                     │ if Guest  │                   │
                     └─────┬─────┘                   │
                           │                         │
+                   Link bank account                │
+                          ↓                         │
+                    Verify bank (OTP)               │
+                          ↓                         │
                        Payment                      │
                           ↓                         │
                   ┌───────────────┐                 │
