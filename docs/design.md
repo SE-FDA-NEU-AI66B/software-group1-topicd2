@@ -315,16 +315,39 @@ The Admin reviews these photos together with the request. They are kept as part 
 
 ## 3. API design
 
-| Method | Path         | Input          | Success        | Error codes                 |
-| ------ | ------------ | -------------- | -------------- | --------------------------- |
-| GET    | `/api/<...>` | <query params> | 200 · <output> | 400 <reason>                |
-| POST   | `/api/<...>` | <body fields>  | 201 · <output> | 401 <reason> · 409 <reason> |
+The API uses JSON. A successful login sets an authenticated, HTTP-only session
+cookie; protected endpoints derive the user ID and role from that session and
+never trust a client-supplied owner ID. Error responses use
+`{ "code": "...", "message": "..." }`.
+
+| Method | Path | Input | Success output | Error codes | M1 enforcement / ERD mapping |
+| ------ | ---- | ----- | -------------- | ----------- | ---------------------------- |
+| POST | `/api/auth/register` | `{ fullName, email, password, phone? }` | `201 { userId, role: "USER" }` | `400 INVALID_INPUT`; `409 EMAIL_EXISTS` | Registration always assigns `USER`; stores `Users(FullName, Email, PasswordHash, Phone, Role)`. Password is hashed and never returned. |
+| POST | `/api/auth/login` | `{ email, password }` | `200 { userId, role }` and session cookie | `400 INVALID_INPUT`; `401 INVALID_CREDENTIALS` | Resolves role from `Users(Email, PasswordHash, Role)`; the client cannot choose a role. |
+| GET | `/api/courts` | Query: `date?`, `startTime?`, `endTime?`, `location?` (date and both times must be supplied together) | `200 [{ courtId, courtName, location, description, pricePerHour, openTime, closeTime, images }]` | `400 INVALID_TIME_RANGE` | US-01: return only `Court.Status = ACTIVE`; when a time range is supplied, exclude overlapping active `Booking` rows and `Court_Block` ranges. Reads `Court(CourtID, CourtName, Location, Description, PricePerHour, OpenTime, CloseTime, Status)`, `Court_Image(CourtID, Url, SortOrder)`, `Booking(CourtID, BookingDate, StartTime, EndTime, Status)`, and `Court_Block(CourtID, BlockDate, StartTime, EndTime)`. |
+| GET | `/api/courts/{courtId}` | Path: `courtId` | `200 { courtId, courtName, location, description, pricePerHour, openTime, closeTime, images }` | `400 INVALID_ID`; `404 COURT_NOT_FOUND` | US-02: expose only active public courts. Reads the same `Court` columns as above and `Court_Image(CourtID, Url, SortOrder)`. `Description` is the current ERD field for court condition; there is no separate condition column. |
+| GET | `/api/courts/{courtId}/availability` | Query: `date` (required); optional `durationMinutes` (minimum 60) | `200 { courtId, date, slots: [{ startTime, endTime, available }] }` | `400 INVALID_DATE_OR_DURATION`; `404 COURT_NOT_FOUND` | US-03: generate slots within `Court.OpenTime`–`CloseTime`; mark blocked ranges and overlapping `PENDING`, `CONFIRMED`, or `CHECKED_IN` bookings unavailable. Reads `Court`, `Booking(CourtID, BookingDate, StartTime, EndTime, Status)`, and `Court_Block(CourtID, BlockDate, StartTime, EndTime)`. |
+| POST | `/api/bookings` | `{ courtId, bookingDate, startTime, endTime }` | `201 { bookingId, status: "PENDING", holdExpiresAt, totalAmount, depositAmount }` | `400 INVALID_INPUT`; `401 UNAUTHENTICATED`; `404 COURT_NOT_FOUND`; `409 SLOT_UNAVAILABLE` or `ACTIVE_BOOKING_LIMIT`; `422 BOOKING_RULE_VIOLATION` | US-04/US-05: in one transaction, recheck availability and reject interval overlap (BR1), enforce BR2 duration/contiguity, create a 10-minute payment hold (BR3), and enforce at most two active upcoming bookings per user (BR6). Inserts `Booking(UserID, CourtID, BookingDate, StartTime, EndTime, TotalAmount, DepositAmount, Status, HoldExpiresAt, CreatedAt)`. The slot remains occupied while the hold is active. |
+| POST | `/api/bookings/{bookingId}/payment` | `{ bankAccountId, paymentMethod }` | `200 { bookingId, status: "CONFIRMED", paymentStatus: "SUCCESS", paidAt }` | `401 UNAUTHENTICATED`; `403 NOT_BOOKING_OWNER`; `404 BOOKING_NOT_FOUND`; `409 HOLD_EXPIRED_OR_ALREADY_PAID`; `422 BANK_ACCOUNT_NOT_VERIFIED`; `502 PAYMENT_FAILED` | Completes US-04: require a verified account (BR7); on successful gateway payment, update `Booking.Status` and insert/update `Payment(BookingID, BankAccountID, Amount, PaymentMethod, TransactionCode, Status, PaidAt)`. Schedule the BR5 reminder in `Notification(UserID, BookingID, ScheduledAt, Type)` using `Booking.ReminderOffsetMinutes`. |
+| POST | `/api/bank-accounts` | `{ bankName, accountNumber, accountHolderName }` | `201 { bankAccountId, bankName, accountNumberLast4, verificationStatus: "PENDING" }` | `400 INVALID_INPUT`; `401 UNAUTHENTICATED`; `409 BANK_ACCOUNT_EXISTS` | BR7: link an account to the authenticated user and start OTP verification. Inserts `BankAccount(UserID, BankName, AccountNumber, AccountHolderName, IsVerified)` and `BankAccountVerification(BankAccountID, OTPHash, ExpiresAt, AttemptCount, Status)`. Never return the full account number or OTP hash. |
+| POST | `/api/bank-accounts/{bankAccountId}/verify` | `{ otp }` | `200 { bankAccountId, isVerified: true, verifiedAt }` | `400 INVALID_OTP`; `401 UNAUTHENTICATED`; `403 NOT_ACCOUNT_OWNER`; `404 BANK_ACCOUNT_NOT_FOUND`; `409 VERIFICATION_EXPIRED_OR_LOCKED` | BR7: validate expiry and attempt limit, then update `BankAccount.IsVerified/VerifiedAt` and `BankAccountVerification.AttemptCount/VerifiedAt/Status`. |
+| DELETE | `/api/bookings/{bookingId}` | Path: `bookingId`; optional body `{ cancelReason }` | `200 { bookingId, status: "CANCELLED", refundAmount, paymentStatus }` | `401 UNAUTHENTICATED`; `403 NOT_BOOKING_OWNER`; `404 BOOKING_NOT_FOUND`; `409 BOOKING_NOT_CANCELLABLE` | US-06 is P1, not P0. Enforce BR4 refund policy and release the slot; update `Booking(Status, CancelledAt, CancelledBy, CancelReason)` and `Payment(Status, RefundAmount, RefundedAt)`. A cancelled booking's scheduled reminder must not be sent (BR5). |
+| POST | `/api/manager/court-requests` | `{ requestType: "CREATE", courtName, location, description?, pricePerHour, openTime, closeTime, images? }` | `201 { requestId, status: "PENDING" }` | `400 INVALID_INPUT`; `401 UNAUTHENTICATED`; `403 MANAGER_REQUIRED`; `422 COURT_REQUEST_RULE_VIOLATION` | Manager add-court flow (P1 screen): enforce manager ownership and require Admin approval before public listing; insert `Court_Request(ManagerID, RequestType, CourtName, Location, Description, PricePerHour, OpenTime, CloseTime, Status)` and optional `Court_Request_Image(RequestID, Url, SortOrder)`. |
+| POST | `/api/admin/court-requests/{requestId}/review` | `{ decision: "APPROVED" | "REJECTED", rejectReason? }` | `200 { requestId, status, reviewedBy, reviewedAt, courtId? }` | `400 INVALID_DECISION`; `401 UNAUTHENTICATED`; `403 ADMIN_REQUIRED`; `404 REQUEST_NOT_FOUND`; `409 REQUEST_ALREADY_REVIEWED` | Admin approval flow (admin screen is P2): enforce Admin review; update `Court_Request(Status, RejectReason, ReviewedBy, ReviewedAt)`. On approved CREATE, insert `Court(ManagerID, CourtName, Location, Description, PricePerHour, OpenTime, CloseTime, Status = ACTIVE)` and copy request photos into `Court_Image(CourtID, Url, SortOrder)`. |
 
 **Coverage of P0 stories:**
 
-| P0 story | Endpoint(s)   |
-| -------- | ------------- |
-| US<xx>   | <method path> |
+The M1 backlog in `docs/requirements.md` marks US-01 through US-05 as P0.
+
+| P0 story | Endpoint(s) | Coverage |
+| -------- | ----------- | -------- |
+| US-01 — View available courts | `GET /api/courts` | Lists active courts and can filter by requested date/time availability. |
+| US-02 — View court details | `GET /api/courts/{courtId}` | Returns price, photos, location, and description/court condition. |
+| US-03 — View available time slots | `GET /api/courts/{courtId}/availability` | Returns the court's slots with unavailable periods identified. |
+| US-04 — Book one available time slot | `POST /api/bookings`; `POST /api/bookings/{bookingId}/payment`; bank-account link/verify endpoints | Creates a temporary hold, verifies the payment account, then confirms the booking after successful payment. |
+| US-05 — Prevent double booking | `POST /api/bookings`; `GET /api/courts/{courtId}/availability` | Availability is shown before booking; the booking transaction is authoritative and rejects concurrent overlapping requests with `409 SLOT_UNAVAILABLE`. |
+
+**Backlog priority note:** US-06 (cancellation) is P1 in the user-story backlog, even though the `/my-bookings` screen is marked P0 in the M1 screen table. Cancellation is specified above because the task explicitly requests it; this API design does not reclassify US-06. Manager court requests are P1 and Admin court management is P2 in the screen table, so those example endpoints are additional to P0 coverage.
 
 ---
 
