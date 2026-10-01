@@ -11,6 +11,28 @@ def test_courts_route_renders_database_records(tmp_path):
     assert initialize_database(database_path) == seeded_count
 
     with sqlite3.connect(database_path) as connection:
+        tables = {
+            row[0]
+            for row in connection.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'"
+            )
+        }
+        assert tables == {
+            "Users",
+            "Court",
+            "Court_Image",
+            "Court_Block",
+            "Booking",
+            "BankAccount",
+            "BankAccountVerification",
+            "Payment",
+            "Notification",
+            "CheckIn",
+            "Court_Report",
+            "Court_Request",
+            "Court_Request_Image",
+        }
+
         manager_id = connection.execute(
             "SELECT UserID FROM Users WHERE Email = ?",
             ("walking-skeleton-manager@smashgo.local",),
