@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c3b2e">
+  <title>Sân cầu lông | SmashGo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/courts" aria-label="SmashGo, danh sách sân">
+      <span class="brand-mark" aria-hidden="true"><span></span><span></span></span>
+      <span>smash<span class="brand-light">go</span></span>
+    </a>
+    <span class="topbar-note">HỆ THỐNG ĐẶT SÂN CẦU LÔNG</span>
+    <span class="live-indicator"><span></span> DỮ LIỆU TRỰC TIẾP</span>
+  </header>
+
+  <main class="page-shell">
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow"><span class="eyebrow-line"></span> DANH SÁCH ĐỊA ĐIỂM</p>
+        <h1 id="page-title">Tìm sân.<br><span>Ra sân thôi.</span></h1>
+        <p class="intro-copy">Khám phá các sân cầu lông tại Hà Nội, xem giá thuê và giờ hoạt động.</p>
+      </div>
+      <div class="count-block">
+        <span class="count-number">{{ "%02d"|format(courts|length) }}</span>
+        <span class="count-label">SÂN ĐANG<br>HOẠT ĐỘNG</span>
+      </div>
+    </section>
+
+    <section class="directory" aria-labelledby="directory-title">
+      <div class="directory-heading">
+        <div>
+          <p class="section-index">01 / COURTS</p>
+          <h2 id="directory-title">Sân quanh bạn</h2>
+        </div>
+        <span class="result-count">{{ courts|length }} kết quả</span>
+      </div>
+
+      {% if courts %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="court-column">SÂN CẦU LÔNG</th>
+              <th>ĐỊA CHỈ</th>
+              <th>GIỜ HOẠT ĐỘNG</th>
+              <th class="price-column">GIÁ / GIỜ</th>
+              <th>TRẠNG THÁI</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for court in courts %}
+            <tr class="court-row" data-court-id="{{ court['CourtID'] }}">
+              <td>
+                <div class="court-name-cell">
+                  <img class="court-thumb" src="{{ court['ImageUrl'] }}" alt="Ảnh sân {{ court['CourtName'] }}" loading="lazy">
+                  <div>
+                    <strong>{{ court['CourtName'] }}</strong>
+                    <span class="court-description">{{ court['Description'] }}</span>
+                  </div>
+                </div>
+              </td>
+              <td class="location-cell">{{ court['Location'] }}</td>
+              <td><span class="hours">{{ court['OpenTime'] }} <span>—</span> {{ court['CloseTime'] }}</span></td>
+              <td class="price">{{ "{:,.0f}".format(court['PricePerHour']) }}<small>đ</small></td>
+              <td><span class="status"><span></span> Đang nhận đặt</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="empty-state">Chưa có sân nào đang hoạt động.</p>
+      {% endif %}
+      <p class="data-note"><span></span> Danh sách được tải trực tiếp từ cơ sở dữ liệu SmashGo.</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>SMASHGO <span class="footer-dot">·</span> HÀ NỘI</span>
+    <span>CHƠI HAY HƠN, ĐẶT SÂN DỄ HƠN</span>
+  </footer>
+</body>
+</html>
