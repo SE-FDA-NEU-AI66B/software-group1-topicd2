@@ -35,9 +35,13 @@ def test_courts_route_renders_database_records(tmp_path):
         )
 
     app = create_app({"TESTING": True, "DATABASE_PATH": str(database_path)})
-    response = app.test_client().get("/courts")
+    client = app.test_client()
+    root_response = client.get("/")
+    response = client.get("/courts")
     page = response.get_data(as_text=True)
 
+    assert root_response.status_code == 302
+    assert root_response.location == "/courts"
     assert response.status_code == 200
     assert page.count('class="court-row"') >= 10
     assert "Sân được thêm trong test" in page
