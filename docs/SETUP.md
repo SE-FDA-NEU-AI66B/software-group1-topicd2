@@ -30,11 +30,12 @@ Run this single command from the repository root:
 python init_db.py
 ```
 
-The script reads `schema.sql`, creates the ERD-based `Users`, `Court`, and
-`Court_Image` tables if needed, then imports the 12 court rows from
-`data/courts.csv`. Running it again does not duplicate the seed courts. The
-demo Manager is only an owner record for the sample courts; the walking
-skeleton does not implement authentication.
+The script reads `schema.sql` and creates all 13 tables from the ERD if needed.
+It then creates one demo Manager, imports 12 courts from `data/courts.csv`, and
+adds their images. Other ERD tables are created but remain empty in this walking
+skeleton. Running the script again does not duplicate the seed data. The demo
+Manager is only an owner record for the sample courts; authentication is not
+implemented here.
 
 ## Run
 
