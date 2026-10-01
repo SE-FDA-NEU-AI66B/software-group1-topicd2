@@ -8,7 +8,7 @@ update this file should not be approved.
 | Route | Purpose | Access | Priority | Feature | Story issue | PR | Status |
 |-------|---------|--------|----------|---------|-------------|-----|--------|
 | `/` | Landing page | G | P0 | F1 | #3 | #14 | Done |
-| | | | | | | | |
+| `/courts` | List active courts read from SQLite | G, U | P0 | F1 | US-01 | — | In progress |
 
 **Access codes:** G = guest (not logged in) · U = authenticated user · A = admin
 
