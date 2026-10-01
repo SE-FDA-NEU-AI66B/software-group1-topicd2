@@ -331,8 +331,8 @@ The Admin reviews these photos together with the request. They are kept as part 
 ## 4. Walking skeleton
 
 - **Route:** `GET /courts` (`app.py`), rendered from a SQL query against SQLite.
-- **Table read:** `Court` joined to `Court_Image`; 12 active courts are seeded from `data/courts.csv` by `python init_db.py`.
-- **Schema:** the walking skeleton creates the ERD tables needed for this route: `Users`, `Court`, and `Court_Image` (`schema.sql`).
+- **Table read:** `Court` and its first `Court_Image` (lowest `SortOrder`); 12 active courts are seeded from `data/courts.csv` by `python init_db.py`.
+- **Schema:** `schema.sql` creates all 13 tables in the ERD. Only `Users`, `Court`, and `Court_Image` receive seed data for this walking skeleton.
 - **Configuration:** `.env.example` documents host, port, database path, and debug mode; `.env` and the SQLite database are ignored by Git.
 - **Full installation steps:** see [docs/SETUP.md](SETUP.md).
 
