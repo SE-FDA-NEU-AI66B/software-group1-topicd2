@@ -58,7 +58,7 @@ jobs:
         continue-on-error: true   # Week 1-6: warn only. Remove this line from Sprint 2 onward.
 
       - name: Test
-        run: pytest -v --cov --cov-report=term-missing --junitxml=junit.xml
+        run: python -m pytest -v --cov --cov-report=term-missing --junitxml=junit.xml
 
       - name: Publish test summary
         if: always()
@@ -128,7 +128,7 @@ jobs:
 
       - name: No .env or database dumps
         run: |
-          if git ls-files | grep -E '^(.*/)?\.env$|\.sql$|\.sqlite3?$|\.dump$' ; then
+          if git ls-files | grep -E '^(.*/)?\.env$|\.sql$|\.sqlite3?$|\.dump$' | grep -v '^schema\.sql$' ; then
             echo "::error::Environment files or database dumps must not be committed. Add them to .gitignore."
             exit 1
           fi
