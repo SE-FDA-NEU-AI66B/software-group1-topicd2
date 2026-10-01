@@ -5,7 +5,6 @@ from pathlib import Path
 
 from database import PROJECT_ROOT, get_database_path
 
-
 SEED_MANAGER_EMAIL = "walking-skeleton-manager@smashgo.local"
 SCHEMA_PATH = PROJECT_ROOT / "schema.sql"
 COURTS_PATH = PROJECT_ROOT / "data" / "courts.csv"
