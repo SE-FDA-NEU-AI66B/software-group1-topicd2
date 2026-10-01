@@ -2,7 +2,7 @@ import os
 import sqlite3
 from contextlib import closing
 
-from flask import Flask, render_template
+from flask import Flask, redirect, render_template, url_for
 
 from database import get_database_path
 
@@ -17,6 +17,10 @@ def create_app(test_config: dict | None = None) -> Flask:
     )
     if test_config:
         app.config.update(test_config)
+
+    @app.get("/")
+    def home():
+        return redirect(url_for("courts"))
 
     @app.get("/courts")
     def courts():
