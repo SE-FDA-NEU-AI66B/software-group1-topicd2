@@ -11,6 +11,7 @@ credentials.json
 *.sqlite3
 *.db
 *.sql
+!schema.sql
 *.dump
 
 # Python
