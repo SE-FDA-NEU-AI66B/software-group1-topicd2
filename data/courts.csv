@@ -1,0 +1,13 @@
+CourtName,Location,Description,PricePerHour,OpenTime,CloseTime,Status,ImageUrl
+SmashGo Cầu Giấy 1,102 Trần Thái Tông Hà Nội,Sân thảm xanh tiêu chuẩn ánh sáng LED,90000,06:00,23:00,ACTIVE,https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=640&q=80
+SmashGo Cầu Giấy 2,102 Trần Thái Tông Hà Nội,Sân rộng thoáng có khu vực nghỉ,95000,06:00,23:00,ACTIVE,https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=640&q=80
+SmashGo Đống Đa 1,25 Thái Hà Hà Nội,Sân cầu lông trong nhà mặt thảm chống trượt,100000,05:30,22:30,ACTIVE,https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=640&q=80
+SmashGo Đống Đa 2,25 Thái Hà Hà Nội,Hệ thống đèn mới và trần cao,100000,05:30,22:30,ACTIVE,https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=640&q=80
+SmashGo Hai Bà Trưng 1,18 Minh Khai Hà Nội,Sân gần bãi gửi xe và trạm xe buýt,85000,06:00,22:00,ACTIVE,https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=640&q=80
+SmashGo Hai Bà Trưng 2,18 Minh Khai Hà Nội,Mặt sân mới thay phù hợp tập luyện,90000,06:00,22:00,ACTIVE,https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=640&q=80
+SmashGo Long Biên 1,58 Nguyễn Văn Cừ Hà Nội,Cụm sân có quầy nước và phòng thay đồ,80000,05:00,23:00,ACTIVE,https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=640&q=80
+SmashGo Long Biên 2,58 Nguyễn Văn Cừ Hà Nội,Sân thoáng phù hợp chơi nhóm,80000,05:00,23:00,ACTIVE,https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=640&q=80
+SmashGo Thanh Xuân 1,12 Nguyễn Trãi Hà Nội,Thảm sân êm và khu vực chờ rộng,110000,06:00,23:00,ACTIVE,https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=640&q=80
+SmashGo Thanh Xuân 2,12 Nguyễn Trãi Hà Nội,Có cho thuê vợt và bán cầu,105000,06:00,23:00,ACTIVE,https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=640&q=80
+SmashGo Tây Hồ 1,77 Võ Chí Công Hà Nội,Sân mới với hệ thống thông gió tốt,120000,06:00,22:30,ACTIVE,https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=640&q=80
+SmashGo Tây Hồ 2,77 Võ Chí Công Hà Nội,Không gian yên tĩnh có chỗ đỗ xe,115000,06:00,22:30,ACTIVE,https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=640&q=80
