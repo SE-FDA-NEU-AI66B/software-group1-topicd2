@@ -330,19 +330,30 @@ The Admin reviews these photos together with the request. They are kept as part 
 
 ## 4. Walking skeleton
 
-- **Route:** `GET /<path>`
-- **Table read:** `<table>` (<N> rows seeded from `<data file>`)
-- **Configuration:** `.env.example` is committed; real values go in `.env` (never committed).
+- **Route:** `GET /courts` (`app.py`), rendered from a SQL query against SQLite.
+- **Table read:** `Court` joined to `Court_Image`; 12 active courts are seeded from `data/courts.csv` by `python init_db.py`.
+- **Schema:** the walking skeleton creates the ERD tables needed for this route: `Users`, `Court`, and `Court_Image` (`schema.sql`).
+- **Configuration:** `.env.example` documents host, port, database path, and debug mode; `.env` and the SQLite database are ignored by Git.
 - **Full installation steps:** see [docs/SETUP.md](SETUP.md).
 
 **Screenshot of the running page:**
 
-![Walking skeleton](images/skeleton.png)
+![Walking skeleton](../images/skeleton.png)
 
 **Query behind the page:**
 
 ```sql
-SELECT <columns> FROM <table> WHERE <condition> ORDER BY <column>;
+SELECT Court.CourtID, Court.CourtName, Court.Location,
+       Court.Description, Court.PricePerHour, Court.OpenTime,
+       Court.CloseTime,
+       (SELECT Court_Image.Url
+	FROM Court_Image
+	WHERE Court_Image.CourtID = Court.CourtID
+	ORDER BY Court_Image.SortOrder, Court_Image.ImageID
+	LIMIT 1) AS ImageUrl
+FROM Court
+WHERE Court.Status = 'ACTIVE'
+ORDER BY Court.CourtID;
 ```
 
 ---
