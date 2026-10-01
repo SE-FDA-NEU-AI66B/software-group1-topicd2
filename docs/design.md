@@ -353,19 +353,30 @@ The M1 backlog in `docs/requirements.md` marks US-01 through US-05 as P0.
 
 ## 4. Walking skeleton
 
-- **Route:** `GET /<path>`
-- **Table read:** `<table>` (<N> rows seeded from `<data file>`)
-- **Configuration:** `.env.example` is committed; real values go in `.env` (never committed).
+- **Route:** `GET /courts` (`app.py`), rendered from a SQL query against SQLite.
+- **Table read:** `Court` and its first `Court_Image` (lowest `SortOrder`); 12 active courts are seeded from `data/courts.csv` by `python init_db.py`.
+- **Schema:** `schema.sql` creates all 13 tables in the ERD. Only `Users`, `Court`, and `Court_Image` receive seed data for this walking skeleton.
+- **Configuration:** `.env.example` documents host, port, database path, and debug mode; `.env` and the SQLite database are ignored by Git.
 - **Full installation steps:** see [docs/SETUP.md](SETUP.md).
 
 **Screenshot of the running page:**
 
-![Walking skeleton](images/skeleton.png)
+![Walking skeleton](../images/skeleton.png)
 
 **Query behind the page:**
 
 ```sql
-SELECT <columns> FROM <table> WHERE <condition> ORDER BY <column>;
+SELECT Court.CourtID, Court.CourtName, Court.Location,
+       Court.Description, Court.PricePerHour, Court.OpenTime,
+       Court.CloseTime,
+       (SELECT Court_Image.Url
+	FROM Court_Image
+	WHERE Court_Image.CourtID = Court.CourtID
+	ORDER BY Court_Image.SortOrder, Court_Image.ImageID
+	LIMIT 1) AS ImageUrl
+FROM Court
+WHERE Court.Status = 'ACTIVE'
+ORDER BY Court.CourtID;
 ```
 
 ---

@@ -33,8 +33,24 @@ If one box is unticked, the story stays in the sprint and carries over.
 | 7 | No secrets, `.env`, or database dumps in the diff | CI |
 | 8 | `docs/traceability.md` updated if a screen or route changed | Reviewer |
 
-## Test run
+## Run the walking skeleton
 
-> **Implementation is under development.**
->
-> Source code, installation instructions, database setup, and application execution commands will be added when the implementation phase begins.
+Requires Python 3.12 or newer. From the repository root, create and activate a
+virtual environment, then install the dependencies:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
+
+Create the SQLite database and seed 12 courts with one command, then start the
+web app:
+
+```powershell
+python init_db.py
+python app.py
+```
+
+Open [http://127.0.0.1:5000/courts](http://127.0.0.1:5000/courts). See
+[docs/SETUP.md](docs/SETUP.md) for configuration and test instructions.
