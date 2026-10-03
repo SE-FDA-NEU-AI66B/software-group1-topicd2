@@ -91,6 +91,7 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 6. At the end of the week, he reviews how often each time slot was booked, sees which hours are busy and which are empty, and uses this to plan how to get more successful reservations.
 ## 4. User Stories
 
+### User Stories
 | ID    | Story                                                                                                                                                                         | Priority | Points |
 | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -----: |
 | US-01 | As a user, I want to view available badminton courts so that I can find a suitable court for my session.                                                                      | P0       |      3 |
@@ -102,6 +103,10 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 | US-07 | As a user, I want to receive a booking reminder so that I do not forget my scheduled badminton session.                                                                       | P1       |      3 |
 | US-08 | As a user, I want to view my booking history so that I can check my previous and upcoming reservations.                                                                       | P1       |      3 |
 | US-09 | As a user, I want to check in for my booking so that the system can record that I have arrived and used the court.                                                            | P1       |      3 |
+
+### Admin Stories
+| ID    | Story                                                                                                                                                                         | Priority | Points |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -----: |
 | US-10 | As an administrator, I want to view a dashboard showing the total number of badminton courts and commission information so that I can monitor the overall operation of the platform. | P1       |      3 |
 | US-11 | As an administrator, I want to activate or deactivate badminton courts so that I can keep court information up to date and control which courts are available for booking. | P0       |      5 |
 | US-12 | As an administrator, I want to approve or reject a request to add a badminton court from a manager so that only approved courts are added to the platform. | P0       |      5 |
