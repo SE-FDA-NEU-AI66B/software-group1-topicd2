@@ -218,17 +218,65 @@ SmashGo is a system that enables badminton players of all levels to book courts 
    **When** the user attempts to check in,  
    **Then** the system rejects the check-in and does not create a check-in record.
 
-### US-10 — Manage Courts and View Usage Frequency
+### US-10 — View Admin Dashboard
 
 **Acceptance Criteria**
 
-1. **Given** an administrator creates a badminton court named "Court A01",  
-   **When** the administrator saves the court information,  
-   **Then** the system creates "Court A01" as an active bookable court.
+1. **Given** the system contains badminton courts and booking transactions,
+   **When** the administrator opens the dashboard,
+   **Then** the system displays the total number of badminton courts and commission information.
 
-2. **Given** the system has at least 7 days of booking records,  
-   **When** the administrator views usage statistics,  
-   **Then** the system displays the number of bookings grouped by time slots, such as 8:00 PM–10:00 PM.
+2. **Given** there are no badminton courts or commission transactions,
+   **When** the administrator opens the dashboard,
+   **Then** the system displays zero for the corresponding statistics.
+
+### US-11 — Activate or Deactivate Badminton Courts
+
+**Acceptance Criteria**
+
+1. **Given** a badminton court is currently inactive,
+   **When** the administrator activates the court,
+   **Then** the system changes the court status to active and makes the court available for booking.
+
+2. **Given** a badminton court is currently active,
+   **When** the administrator deactivates the court,
+   **Then** the system changes the court status to inactive and prevents new bookings for that court.
+
+### US-12 — Approve or Reject Court Request
+
+**Acceptance Criteria**
+
+1. **Given** a manager has submitted a request to add a badminton court,
+   **When** the administrator approves the request,
+   **Then** the system changes the request status to approved and adds the court to the platform.
+
+2. **Given** a manager has submitted a request to add a badminton court,
+   **When** the administrator rejects the request,
+   **Then** the system changes the request status to rejected and does not add the court to the platform.
+
+### US-13 — View Court Usage Frequency
+
+**Acceptance Criteria**
+
+1. **Given** the system contains booking records for badminton courts,
+   **When** the administrator views court usage frequency,
+   **Then** the system displays the number or frequency of bookings for each relevant time slot.
+
+2. **Given** a time slot has no booking records,
+   **When** the administrator views court usage frequency,
+   **Then** the system displays that there is no recorded usage for that time slot.
+
+### US-14 — Filter and View Court Recommendations
+
+**Acceptance Criteria**
+
+1. **Given** there are badminton courts with different locations and prices,
+   When the administrator applies a location or price filter,
+   Then the system displays only the courts matching the selected criteria.
+
+2. **Given** no badminton court matches the selected filters,
+   When the administrator applies the filters,
+   Then the system displays that no matching courts are available.
 
 ## 5. Business Rules
 
