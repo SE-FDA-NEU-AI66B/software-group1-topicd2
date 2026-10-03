@@ -121,6 +121,10 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 | US-17 | As a manager, I want to view the status of my court submission so that I know whether my new court is pending, approved, or rejected by an administrator. | P1       |      3 |
 | US-18 | As a manager, I want to receive and view reports about my badminton courts from guests or users so that I can identify and address problems with my courts. | P2       |      3 |
 
+### User Stories - Report
+| ID    | Story                                                                                                                                                                         | Priority | Points |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -----: |
+| US-19 | As a guest or user, I want to report an issue with a badminton court so that the manager of that court is notified and can act on it. | P1       |      5 |
 
 
 ### US-01 — View Available Badminton Courts
@@ -297,7 +301,7 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 
 1. **Given** the manager provides all required badminton court information,
    **When** the manager submits the new court,
-   **Then** the system creates a court submission with Pending status and sends it to the administrator for approval.
+   **Then** the system creates a court submission with Pending status and sends it to the administrator for approval. 
 
 2. **Given** a new court submission has Pending status,
    **When** the administrator has not approved it,
@@ -340,6 +344,17 @@ SmashGo is a system that enables badminton players of all levels to book courts 
    **When** the manager views the court information,
    **Then** the system displays the reports related to their own courts.
 
+### US-19 — Report a Court Issue
+
+**Acceptance Criteria**
+
+1. **Given** a guest or user is viewing a badminton court,
+   **When** they submit a report with a reason and description,
+   **Then** the system creates a report for the selected court and sends it to the manager of that court.
+
+2. **Given** a new report has been submitted,
+   **When** the manager views the reports for their courts,
+   **Then** the system displays the report with New status.
 
 ## 5. Business Rules
 
