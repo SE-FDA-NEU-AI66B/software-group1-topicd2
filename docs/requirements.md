@@ -102,7 +102,13 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 | US-07 | As a user, I want to receive a booking reminder so that I do not forget my scheduled badminton session.                                                                       | P1       |      3 |
 | US-08 | As a user, I want to view my booking history so that I can check my previous and upcoming reservations.                                                                       | P1       |      3 |
 | US-09 | As a user, I want to check in for my booking so that the system can record that I have arrived and used the court.                                                            | P1       |      3 |
-| US-10 | As an administrator, I want to manage badminton courts and view usage frequency by time slot so that I can keep court information up to date and understand booking patterns. | P2       |      5 |
+| US-10 | As an administrator, I want to view a dashboard showing the total number of badminton courts and commission information so that I can monitor the overall operation of the platform. | P1       |      3 |
+| US-11 | As an administrator, I want to activate or deactivate badminton courts so that I can keep court information up to date and control which courts are available for booking. | P0       |      5 |
+| US-12 | As an administrator, I want to approve or reject a request to add a badminton court from a manager so that only approved courts are added to the platform. | P0       |      5 |
+| US-13 | As an administrator, I want to view badminton court usage frequency by time slot so that I can understand booking patterns and monitor court usage. | P1       |      3 |
+| US-14 | As an administrator, I want to filter badminton courts by location, price, and other criteria so that I can find suitable courts for management and recommendation. | P1       |      3 |
+
+
 
 ### US-01 — View Available Badminton Courts
 
