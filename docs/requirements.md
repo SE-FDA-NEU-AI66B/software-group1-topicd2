@@ -113,6 +113,18 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 | US-13 | As an administrator, I want to view badminton court usage frequency by time slot so that I can understand booking patterns and monitor court usage. | P1       |      3 |
 | US-14 | As an administrator, I want to filter badminton courts by location, price, and other criteria so that I can find suitable courts for management and recommendation. | P1       |      3 |
 
+### Manager Stories
+| ID    | Story                                                                                                                                                                         | Priority | Points |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -----: |
+| US-15 | As a manager, I want to add a new badminton court so that I can provide my court for users to book after it is approved by an administrator. | P1       |      5 |
+| US-16 | As a manager, I want to edit or delete my own badminton courts so that I can keep my court information up to date. | P1       |      3 |
+| US-17 | As a manager, I want to view the status of my court submission so that I know whether my new court is pending, approved, or rejected by an administrator. | P1       |      3 |
+| US-18 | As a manager, I want to receive and view reports about my badminton courts from guests or users so that I can identify and address problems with my courts. | P2       |      3 |
+
+### User Stories - Report
+| ID    | Story                                                                                                                                                                         | Priority | Points |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -----: |
+| US-19 | As a guest or user, I want to report an issue with a badminton court so that the manager of that court is notified and can act on it. | P1       |      5 |
 
 
 ### US-01 — View Available Badminton Courts
@@ -276,12 +288,73 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 **Acceptance Criteria**
 
 1. **Given** there are badminton courts with different locations and prices,
-   When the administrator applies a location or price filter,
-   Then the system displays only the courts matching the selected criteria.
+   **When** the administrator applies a location or price filter,
+   **Then** the system displays only the courts matching the selected criteria.
 
 2. **Given** no badminton court matches the selected filters,
-   When the administrator applies the filters,
-   Then the system displays that no matching courts are available.
+   **When** the administrator applies the filters,
+   **Then** the system displays that no matching courts are available.
+
+### US-15 — Add New Badminton Court
+
+**Acceptance Criteria**
+
+1. **Given** the manager provides all required badminton court information,
+   **When** the manager submits the new court,
+   **Then** the system creates a court submission with Pending status and sends it to the administrator for approval. 
+
+2. **Given** a new court submission has Pending status,
+   **When** the administrator has not approved it,
+   **Then** the court is not displayed publicly and cannot be booked by users.
+
+### US-16 — Edit or Delete Own Badminton Courts
+
+**Acceptance Criteria**
+
+1. **Given** a manager owns a badminton court,
+   **When** the manager edits the court information,
+   **Then** the system updates the court information successfully.
+
+2. **Given** a manager owns a badminton court,
+   **When** the manager deletes the court,
+   **Then** the system removes or disables the court according to the system rules.
+
+### US-17— View Court Submission Status
+
+**Acceptance Criteria**
+
+1. **Given** the manager has submitted a new badminton court,
+   **When** the manager views the court list,
+   **Then** the system displays the submission status as Pending, Approved, or Rejected.
+
+2. **Given** a court submission has Pending status,
+   **When** the administrator has not made a decision,
+   **Then** the court remains unavailable for public booking.
+
+
+### US-18 — View Court Reports
+
+**Acceptance Criteria**
+
+1. **Given** a guest or user submits a report about a badminton court owned by the manager,
+   **When** the report is submitted,
+   **Then** the system associates the report with the corresponding court and manager.
+
+2. **Given** the manager has received reports about their badminton courts,
+   **When** the manager views the court information,
+   **Then** the system displays the reports related to their own courts.
+
+### US-19 — Report a Court Issue
+
+**Acceptance Criteria**
+
+1. **Given** a guest or user is viewing a badminton court,
+   **When** they submit a report with a reason and description,
+   **Then** the system creates a report for the selected court and sends it to the manager of that court.
+
+2. **Given** a new report has been submitted,
+   **When** the manager views the reports for their courts,
+   **Then** the system displays the report with New status.
 
 ## 5. Business Rules
 
