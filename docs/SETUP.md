@@ -61,6 +61,9 @@ This setting applies only to the current PowerShell window. If you use Windows
 Command Prompt (CMD), activate the environment with
 `.venv\Scripts\activate.bat` instead.
 
+Password hashing uses `werkzeug.security`, which is included with Flask; no
+additional package is required.
+
 **macOS/Linux:**
 
 ```sh
@@ -88,8 +91,9 @@ Copy-Item .env.example .env
 cp .env.example .env
 ```
 
-The example values work for a local run; no API keys, passwords, or other
-secrets are needed. If you need to change them, `.env` contains:
+The example values work for a local run and do not require external API
+credentials. The example session key is for local development only. If you need
+to change the settings, `.env` contains:
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
@@ -97,6 +101,7 @@ secrets are needed. If you need to change them, `.env` contains:
 | `PORT` | `5000` | Local web server port. |
 | `DATABASE_PATH` | `instance/smashgo.sqlite3` | SQLite database file; a relative path is based on the project root. |
 | `FLASK_DEBUG` | `false` | Keep debug mode disabled for a normal run. |
+| `SECRET_KEY` | `dev-only-change-me` | Signs login sessions. The example value is only for local development; use a private random value for any deployed environment. |
 
 Keep `.env` local; do not commit it. Git ignores this file and the generated
 SQLite database.
@@ -104,7 +109,7 @@ SQLite database.
 ## 4. Create and seed the database
 
 From the repository root, run this one command. It creates the SQLite database,
-creates all 13 tables, and seeds the demo manager and 12 courts with their
+creates all 13 tables, and seeds three test accounts plus 12 courts with their
 images:
 
 **Windows (PowerShell):**
@@ -127,6 +132,17 @@ Database ready: 12 courts in ...\instance\smashgo.sqlite3
 
 The path separator in the database path differs by operating system. Running
 the command again is safe and does not duplicate the seeded records.
+
+### Tài khoản test
+
+Các tài khoản dưới đây chỉ dùng để kiểm tra cục bộ. Mật khẩu là mật khẩu giả
+cho môi trường phát triển; cơ sở dữ liệu chỉ lưu mật khẩu dưới dạng hash.
+
+| Vai trò | Email | Mật khẩu giả |
+| --- | --- | --- |
+| User | `user@smashgo.local` | `UserTest123!` |
+| Manager | `walking-skeleton-manager@smashgo.local` | `ManagerTest123!` |
+| Admin | `admin@smashgo.local` | `AdminTest123!` |
 
 ## 5. Start the app and verify the result
 

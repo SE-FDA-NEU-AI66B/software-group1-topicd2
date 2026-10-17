@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Không thể truy cập | SmashGo{% endblock %}
+
+{% block content %}
+<main class="state-shell">
+  <section class="state-card" aria-labelledby="forbidden-title">
+    <h1 id="forbidden-title">Bạn không thể xem trang này</h1>
+    <p>Trang này dành cho loại tài khoản khác. Hãy đăng nhập bằng tài khoản phù hợp hoặc quay về trang của bạn.</p>
+    <a class="primary-link" href="{{ default_url }}">Về trang của tôi</a>
+  </section>
+</main>
+{% endblock %}

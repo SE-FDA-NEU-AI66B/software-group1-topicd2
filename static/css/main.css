@@ -1,0 +1,61 @@
+.state-shell {
+  width: min(100% - 40px, 480px);
+  margin: 52px auto;
+}
+
+.state-card {
+  padding: 30px;
+  border: 1px solid var(--line);
+  background: var(--white);
+  text-align: center;
+}
+
+.state-card h1 {
+  margin: 0 0 10px;
+  font-family: "Manrope", sans-serif;
+  font-size: 28px;
+}
+
+.state-card > p,
+.state-loading,
+.state-empty,
+.state-error { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+.state-card > p { margin-bottom: 18px; }
+.state-card .primary-link { margin-top: 8px; }
+
+.primary-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 18px;
+  border-radius: 3px;
+  background: var(--green);
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.primary-link:hover { background: #185742; }
+.state-loading { display: flex; align-items: center; justify-content: center; gap: 10px; }
+
+.state-loading-indicator {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--line);
+  border-top-color: #398264;
+  border-radius: 50%;
+  animation: state-spin .8s linear infinite;
+}
+
+.state-error { color: #8d3e27; }
+.state-error a { display: inline-block; margin-top: 8px; color: #276849; font-weight: 700; }
+
+@keyframes state-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 700px) {
+  .state-shell { margin: 32px auto; }
+  .state-card { padding: 22px; }
+}
