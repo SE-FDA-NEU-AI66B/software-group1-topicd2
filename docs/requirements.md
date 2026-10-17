@@ -67,8 +67,8 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 4. He selects the 8:00 PM–10:00 PM time slot and verifies that it is available.
 5. He provides the required information and confirms the reservation.
 6. The system records the booking and provides the confirmed reservation details.
-   7.Huy schedules a reminder for around four hours before the session so he can remember the booking despite his busy schedule.
-7. Before leaving for the session, he checks the reminder and reservation details, then goes to the court with his friends.
+7. Huy schedules a reminder for around four hours before the session so he can remember the booking despite his busy schedule.
+8. Before leaving for the session, he checks the reminder and reservation details, then goes to the court with his friends.
 
 **Scenario 2 — Chử Vũ Thảo Hiền: Finding a suitable court and avoiding booking conflicts**
 
@@ -89,43 +89,47 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 4. He reviews the new reservations, confirms the valid ones, and cancels a booking when a customer asks to change their plan, which makes that time slot available again.
 5. He checks that the court information and availability shown to customers are up to date, so players always see accurate schedules without having to contact him.
 6. At the end of the week, he reviews how often each time slot was booked, sees which hours are busy and which are empty, and uses this to plan how to get more successful reservations.
+
 ## 4. User Stories
 
 ### User Stories
-| ID    | Story                                                                                                                                                                         | Priority | Points |
-| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -----: |
-| US-01 | As a user, I want to view available badminton courts so that I can find a suitable court for my session.                                                                      | P0       |      3 |
-| US-02 | As a user, I want to view detailed court information, including price, photos, location, and court condition, so that I can choose a suitable court.                          | P0       |      3 |
-| US-03 | As a user, I want to view available time slots for a court so that I can select a suitable playing time.                                                                      | P0       |      3 |
-| US-04 | As a user, I want to book one available time slot so that I can secure a badminton court for my group.                                                                        | P0       |      5 |
-| US-05 | As a user, I want the system to prevent double booking so that my reservation does not overlap with another user's booking.                                                   | P0       |      5 |
-| US-06 | As a user, I want to cancel my booking so that I can release a court when I no longer need it.                                                                                | P1       |      3 |
-| US-07 | As a user, I want to receive a booking reminder so that I do not forget my scheduled badminton session.                                                                       | P1       |      3 |
-| US-08 | As a user, I want to view my booking history so that I can check my previous and upcoming reservations.                                                                       | P1       |      3 |
-| US-09 | As a user, I want to check in for my booking so that the system can record that I have arrived and used the court.                                                            | P1       |      3 |
+
+| ID    | Story                                                                                                                                                | Priority | Points |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -----: |
+| US-01 | As a user, I want to view available badminton courts so that I can find a suitable court for my session.                                             | P0       |      3 |
+| US-02 | As a user, I want to view detailed court information, including price, photos, location, and court condition, so that I can choose a suitable court. | P0       |      3 |
+| US-03 | As a user, I want to view available time slots for a court so that I can select a suitable playing time.                                             | P0       |      3 |
+| US-04 | As a user, I want to book one available time slot so that I can secure a badminton court for my group.                                               | P0       |      5 |
+| US-05 | As a user, I want the system to prevent double booking so that my reservation does not overlap with another user's booking.                          | P0       |      5 |
+| US-06 | As a user, I want to cancel my booking so that I can release a court when I no longer need it.                                                       | P1       |      3 |
+| US-07 | As a user, I want to receive a booking reminder so that I do not forget my scheduled badminton session.                                              | P1       |      3 |
+| US-08 | As a user, I want to view my booking history so that I can check my previous and upcoming reservations.                                              | P1       |      3 |
+| US-09 | As a user, I want to check in for my booking so that the system can record that I have arrived and used the court.                                   | P1       |      3 |
 
 ### Admin Stories
-| ID    | Story                                                                                                                                                                         | Priority | Points |
-| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -----: |
+
+| ID    | Story                                                                                                                                                                                | Priority | Points |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | -----: |
 | US-10 | As an administrator, I want to view a dashboard showing the total number of badminton courts and commission information so that I can monitor the overall operation of the platform. | P1       |      3 |
-| US-11 | As an administrator, I want to activate or deactivate badminton courts so that I can keep court information up to date and control which courts are available for booking. | P0       |      5 |
-| US-12 | As an administrator, I want to approve or reject a request to add a badminton court from a manager so that only approved courts are added to the platform. | P0       |      5 |
-| US-13 | As an administrator, I want to view badminton court usage frequency by time slot so that I can understand booking patterns and monitor court usage. | P1       |      3 |
-| US-14 | As an administrator, I want to filter badminton courts by location, price, and other criteria so that I can find suitable courts for management and recommendation. | P1       |      3 |
+| US-11 | As an administrator, I want to activate or deactivate badminton courts so that I can keep court information up to date and control which courts are available for booking.           | P0       |      5 |
+| US-12 | As an administrator, I want to approve or reject a request to add a badminton court from a manager so that only approved courts are added to the platform.                           | P0       |      5 |
+| US-13 | As an administrator, I want to view badminton court usage frequency by time slot so that I can understand booking patterns and monitor court usage.                                  | P1       |      3 |
+| US-14 | As an administrator, I want to filter badminton courts by location, price, and other criteria so that I can find suitable courts for management and recommendation.                  | P1       |      3 |
 
 ### Manager Stories
-| ID    | Story                                                                                                                                                                         | Priority | Points |
-| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -----: |
-| US-15 | As a manager, I want to add a new badminton court so that I can provide my court for users to book after it is approved by an administrator. | P1       |      5 |
-| US-16 | As a manager, I want to edit or delete my own badminton courts so that I can keep my court information up to date. | P1       |      3 |
-| US-17 | As a manager, I want to view the status of my court submission so that I know whether my new court is pending, approved, or rejected by an administrator. | P1       |      3 |
+
+| ID    | Story                                                                                                                                                       | Priority | Points |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -----: |
+| US-15 | As a manager, I want to add a new badminton court so that I can provide my court for users to book after it is approved by an administrator.                | P1       |      5 |
+| US-16 | As a manager, I want to edit or delete my own badminton courts so that I can keep my court information up to date.                                          | P1       |      3 |
+| US-17 | As a manager, I want to view the status of my court submission so that I know whether my new court is pending, approved, or rejected by an administrator.   | P1       |      3 |
 | US-18 | As a manager, I want to receive and view reports about my badminton courts from guests or users so that I can identify and address problems with my courts. | P2       |      3 |
 
 ### User Stories - Report
-| ID    | Story                                                                                                                                                                         | Priority | Points |
-| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -----: |
-| US-19 | As a guest or user, I want to report an issue with a badminton court so that the manager of that court is notified and can act on it. | P1       |      5 |
 
+| ID    | Story                                                                                                                                 | Priority | Points |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------- | -------- | -----: |
+| US-19 | As a guest or user, I want to report an issue with a badminton court so that the manager of that court is notified and can act on it. | P1       |      5 |
 
 ### US-01 — View Available Badminton Courts
 
@@ -168,10 +172,22 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 **Acceptance Criteria**
 
 1. **Given** the 8:00 PM–10:00 PM time slot is available,  
-   **When** the user confirms the booking for that slot,  
-   **Then** the system creates exactly one booking with the status "Confirmed".
+   **When** the user submits the booking for that slot,  
+   **Then** the system creates exactly one booking with the status "Pending" and holds the slot for 10 minutes while waiting for payment (BR3).
 
-2. **Given** the user has selected one available 2-hour time slot,  
+2. **Given** the user has a "Pending" booking and a linked bank account that has been verified by OTP,  
+   **When** the user pays and the payment succeeds within the 10-minute hold,  
+   **Then** the system changes the booking status to "Confirmed" (BR7).
+
+3. **Given** the user has a "Pending" booking but has no verified bank account, or the payment fails,  
+   **When** the system processes the payment attempt,  
+   **Then** the system does not confirm the booking and keeps it "Pending" only until the 10-minute hold ends.
+
+4. **Given** a booking is "Pending" and the 10-minute hold has passed without a successful payment,  
+   **When** the hold expires,  
+   **Then** the system automatically cancels the booking and releases the slot for other users (BR3).
+
+5. **Given** the user has selected one available 2-hour time slot,  
    **When** the user submits the required booking information,  
    **Then** the system reserves only the selected court and time slot for that user.
 
@@ -301,7 +317,7 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 
 1. **Given** the manager provides all required badminton court information,
    **When** the manager submits the new court,
-   **Then** the system creates a court submission with Pending status and sends it to the administrator for approval. 
+   **Then** the system creates a court submission with Pending status and sends it to the administrator for approval.
 
 2. **Given** a new court submission has Pending status,
    **When** the administrator has not approved it,
@@ -331,7 +347,6 @@ SmashGo is a system that enables badminton players of all levels to book courts 
    **When** the administrator has not made a decision,
    **Then** the court remains unavailable for public booking.
 
-
 ### US-18 — View Court Reports
 
 **Acceptance Criteria**
@@ -354,7 +369,7 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 
 2. **Given** a new report has been submitted,
    **When** the manager views the reports for their courts,
-   **Then** the system displays the report with New status.
+   **Then** the system displays the report with Open status.
 
 ## 5. Business Rules
 
@@ -372,18 +387,20 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 
 ### 6.1 Screen Table
 
-| Route             | Purpose                                               | Access | Priority |
-| ----------------- | ----------------------------------------------------- | ------ | -------- |
-| `/`               | Browse badminton courts and view court information    | G, U   | P0       |
-| `/availability`   | View available courts by date and time                | G, U   | P0       |
-| `/login`          | Sign in with email and password (shared by all roles) | G      | P0       |
-| `/register`       | Create a new User account                             | G      | P0       |
-| `/book`           | Select court, date, time, then link bank and pay      | G, U   | P0       |
-| `/my-bookings`    | View and cancel personal bookings                     | U      | P0       |
-| `/manager/courts` | Add, edit, or disable **own** courts                  | M      | P1       |
-| `/admin/courts`   | Add, edit, or disable any court in the system         | A      | P2       |
+| Route             | Purpose                                                                                                                                                                                 | Access | Priority                        |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------------------------------- |
+| `/`               | Browse badminton courts and view court information                                                                                                                                      | G, U   | P0                              |
+| `/availability`   | View available courts by date and time                                                                                                                                                  | G, U   | P0                              |
+| `/login`          | Sign in with email and password (shared by all roles)                                                                                                                                   | G      | P0                              |
+| `/register`       | Create a new User account                                                                                                                                                               | G      | P0                              |
+| `/book`           | Select court, date, time, then link bank and pay                                                                                                                                        | G, U   | P0                              |
+| `/my-bookings`    | View recently booked slots (P0); cancel (US-06) and full booking history (US-08) are P1                                                                                                 | U      | P0 (view); P1 (cancel, history) |
+| `/manager/courts` | Submit a request to add a court (waits for Admin approval, US-15); edit or delete (disable) **own** courts directly, no approval needed (US-16); view the status of submissions (US-17) | M      | P1                              |
+| `/admin/courts`   | Review requests to add a court (approve or reject, US-12) and enable or disable courts (US-11). The Admin does not add or edit courts. The review list is part of this screen           | A      | P0                              |
 
 **Access:** G = Guest, U = User, M = Manager (court owner), A = Admin
+
+**Priority note for `/my-bookings`:** the screen is P0 because the User must see the booking just made (status, court, date, time, hold deadline). Cancelling a booking (US-06, P1) and browsing the full booking history (US-08, P1) are added on the same screen in a later step.
 
 **Login decision (`/login`):**
 
@@ -405,11 +422,11 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 
 **Access rules for `/manager/courts`:**
 
-- Manager only sees, adds, edits, and disables courts **they own**.
+- Manager only sees, edits, and disables courts **they own**. Edits and disables take effect directly. Adding a new court is not direct: the Manager submits a request, and the court appears publicly only after an Admin approves it.
 - Manager cannot see or modify courts of another Manager. The list is filtered by `ownerId = currentUser.id` on the backend, not only hidden in the UI.
 - Direct access to another Manager's court (by court ID in the URL or API) is rejected with `403 Forbidden`.
-- Every court created by a Manager is automatically assigned to that Manager as owner.
-- Only Admin (`/admin/courts`) can view and manage courts across all Managers.
+- Every court created from an approved request is automatically assigned to the requesting Manager as owner.
+- Only Admin (`/admin/courts`) can review court requests and enable or disable courts across all Managers.
 
 **Disable court rule (Manager and Admin):**
 
@@ -482,30 +499,46 @@ SmashGo is a system that enables badminton players of all levels to book courts 
                 ┌───────────────────┐
                 │  /manager/courts  │
                 │  List MY courts   │
-                │ (own courts only) │
+                │ + request status  │
                 └─────────┬─────────┘
                           │
-              ┌───────────┼───────────┐
-              ↓           ↓           ↓
-          Add court    Edit court   Disable court
-         (owner = me)  (own only)   (own only)
-              │           │           │
-              └───────────┼───────────┘
-                          │
-                     Save changes
-                          ↓
-                ┌───────────────────┐
-                │  /manager/courts  │
-                │   Updated list    │
-                └─────────┬─────────┘
-                          │
-                  View updated court
-                          ↓
-                  ┌───────────────┐
-                  │ /availability │
-                  └───────────────┘
+        ┌─────────────────┼─────────────────┐
+        ↓                 ↓                 ↓
+  Add new court      Edit court        Disable court
+ (send a request)    (own only)         (own only)
+        │                 │                 │
+        │                 └────────┬────────┘
+        ↓                          ↓
+ Request = Pending         Saved directly
+        │                  (no approval)
+        ↓                          │
+ ┌───────────────┐                 │
+ │ /admin/courts │                 │
+ │ Admin reviews │                 │
+ └───────┬───────┘                 │
+   ┌─────┴──────┐                  │
+ Approve      Reject               │
+   │            │                  │
+   ↓            ↓                  │
+ Court is    Manager sees          │
+ created &   "Rejected"            │
+ public      + reason              │
+   │            │                  │
+   └────────────┴────────┬─────────┘
+                         ↓
+               ┌───────────────────┐
+               │  /manager/courts  │
+               │   Updated list    │
+               └─────────┬─────────┘
+                         │
+                 View approved court
+                         ↓
+                 ┌───────────────┐
+                 │ /availability │
+                 └───────────────┘
 ```
 
+> A new court is not public and cannot be booked while its request is Pending or Rejected.
 > Opening or editing a court owned by another Manager → `403 Forbidden`, redirect back to `/manager/courts`.
 > Disable is blocked if the court has upcoming bookings.
 
@@ -521,16 +554,31 @@ SmashGo is a system that enables badminton players of all levels to book courts 
                           ↓
                   ┌───────────────┐
                   │ /admin/courts │
-                  │ Add / Edit /  │
-                  │ Disable courts│
+                  │ Review court  │
+                  │ requests /    │
+                  │ Enable-Disable│
                   │ (all courts)  │
                   └───────┬───────┘
                           │
-                     Update courts
-                          ↓
-                  ┌───────────────┐
-                  │ /availability │
-                  └───────────────┘
+              ┌───────────┴───────────┐
+              ↓                       ↓
+      Review a Pending         Enable / Disable
+      court request            any court
+              │                       │
+        ┌─────┴──────┐                │
+      Approve      Reject             │
+        │            │                │
+        ↓            ↓                │
+  Court is added   Court is not       │
+  & public         added (reason      │
+                   sent to Manager)   │
+        │            │                │
+        └────────────┴───────┬────────┘
+                             ↓
+                     ┌───────────────┐
+                     │ /availability │
+                     └───────────────┘
 ```
 
+> The Admin does not add or edit courts. Courts are created only from Manager requests that the Admin approves.
 > Disable is blocked if the court has upcoming bookings.
