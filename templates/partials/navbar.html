@@ -1,0 +1,18 @@
+<nav class="site-nav" aria-label="Điều hướng chính">
+  {% if current_user %}
+    <span class="user-name">{{ current_user.full_name }}</span>
+    {% if current_user.role == "USER" %}
+      <a href="{{ url_for('courts') }}">Danh sách sân</a>
+      <a href="{{ url_for('pages.my_bookings') }}">Lịch đặt của tôi</a>
+    {% elif current_user.role == "MANAGER" %}
+      <a href="{{ url_for('pages.manager_courts') }}">Sân của tôi</a>
+    {% elif current_user.role == "ADMIN" %}
+      <a href="{{ url_for('pages.admin_courts') }}">Quản lý sân</a>
+    {% endif %}
+    <a href="{{ url_for('auth.logout') }}">Đăng xuất</a>
+  {% else %}
+    <a href="{{ url_for('courts') }}">Danh sách sân</a>
+    <a href="/login">Đăng nhập</a>
+    <a class="nav-register" href="/register">Đăng ký</a>
+  {% endif %}
+</nav>

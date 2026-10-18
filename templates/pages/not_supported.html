@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Tính năng chưa hỗ trợ | SmashGo{% endblock %}
+
+{% block content %}
+<main class="state-shell">
+  <section class="state-card" aria-labelledby="not-supported-title">
+    <h1 id="not-supported-title">Tính năng này chưa được hỗ trợ</h1>
+    <p>Trang đang được hoàn thiện. Bạn có thể quay lại danh sách sân.</p>
+    <a class="primary-link" href="{{ url_for('courts') }}">Quay lại danh sách sân</a>
+  </section>
+</main>
+{% endblock %}

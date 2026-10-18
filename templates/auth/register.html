@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Đăng ký | SmashGo{% endblock %}
+
+{% block content %}
+<main class="auth-shell">
+  <section class="auth-card" aria-labelledby="register-title">
+    <h1 id="register-title">Tạo tài khoản</h1>
+    <p>Đăng ký tài khoản SmashGo để tiếp tục.</p>
+
+    {% if error_message %}
+    <p class="auth-error" role="alert">{{ error_message }}</p>
+    {% endif %}
+
+    <form class="auth-form" method="post" action="{{ url_for('auth.register') }}">
+      <input type="hidden" name="next" value="{{ next_url or '' }}">
+      <label for="full_name">
+        Họ tên
+        <input id="full_name" name="full_name" type="text" autocomplete="name" required>
+      </label>
+      <label for="email">
+        Email
+        <input id="email" name="email" type="email" autocomplete="email" required>
+      </label>
+      <label for="phone">
+        Số điện thoại (không bắt buộc)
+        <input id="phone" name="phone" type="tel" autocomplete="tel">
+      </label>
+      <label for="password">
+        Mật khẩu (ít nhất 8 ký tự)
+        <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+      </label>
+      <button type="submit">Đăng ký</button>
+    </form>
+
+    <p class="auth-switch">
+      Đã có tài khoản?
+      <a href="{{ url_for('auth.login', next=next_url) if next_url else url_for('auth.login') }}">Đăng nhập</a>
+    </p>
+  </section>
+</main>
+{% endblock %}

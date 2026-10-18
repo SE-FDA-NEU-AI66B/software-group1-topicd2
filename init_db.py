@@ -1,11 +1,32 @@
 import csv
-import hashlib
 import sqlite3
+from contextlib import closing
 from pathlib import Path
 
 from database import PROJECT_ROOT, get_database_path
+from werkzeug.security import generate_password_hash
 
 SEED_MANAGER_EMAIL = "walking-skeleton-manager@smashgo.local"
+SEED_USERS = (
+    {
+        "full_name": "SmashGo Demo User",
+        "email": "user@smashgo.local",
+        "password": "UserTest123!",
+        "role": "USER",
+    },
+    {
+        "full_name": "SmashGo Demo Manager",
+        "email": SEED_MANAGER_EMAIL,
+        "password": "ManagerTest123!",
+        "role": "MANAGER",
+    },
+    {
+        "full_name": "SmashGo Demo Admin",
+        "email": "admin@smashgo.local",
+        "password": "AdminTest123!",
+        "role": "ADMIN",
+    },
+)
 SCHEMA_PATH = PROJECT_ROOT / "schema.sql"
 COURTS_PATH = PROJECT_ROOT / "data" / "courts.csv"
 
@@ -14,22 +35,31 @@ def initialize_database(database_path: Path | None = None) -> int:
     target_path = database_path or get_database_path()
     target_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with sqlite3.connect(target_path) as connection:
+    with closing(sqlite3.connect(target_path)) as connection, connection:
         connection.execute("PRAGMA foreign_keys = ON")
         connection.executescript(SCHEMA_PATH.read_text(encoding="utf-8"))
 
-        demo_hash = hashlib.pbkdf2_hmac(
-            "sha256", b"disabled-walking-skeleton-account", b"smashgo-seed", 100_000
-        ).hex()
-        connection.execute(
-            """
-            INSERT OR IGNORE INTO Users (FullName, Email, PasswordHash, Role)
-            VALUES (?, ?, ?, 'MANAGER')
-            """,
-            ("SmashGo Demo Manager", SEED_MANAGER_EMAIL, demo_hash),
-        )
+        for seed_user in SEED_USERS:
+            connection.execute(
+                """
+                INSERT INTO Users (FullName, Email, PasswordHash, Role)
+                VALUES (?, ?, ?, ?)
+                ON CONFLICT(Email) DO UPDATE SET
+                    FullName = excluded.FullName,
+                    PasswordHash = excluded.PasswordHash,
+                    Role = excluded.Role
+                """,
+                (
+                    seed_user["full_name"],
+                    seed_user["email"],
+                    generate_password_hash(seed_user["password"]),
+                    seed_user["role"],
+                ),
+            )
+
         manager_id = connection.execute(
-            "SELECT UserID FROM Users WHERE Email = ?", (SEED_MANAGER_EMAIL,)
+            "SELECT UserID FROM Users WHERE Email = ? COLLATE NOCASE",
+            (SEED_MANAGER_EMAIL,),
         ).fetchone()[0]
 
         with COURTS_PATH.open(encoding="utf-8-sig", newline="") as seed_file:

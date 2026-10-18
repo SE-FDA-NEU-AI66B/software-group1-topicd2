@@ -1,0 +1,5 @@
+<section class="state-card state-error" role="alert">
+  <h1>{{ title|default("Chưa thể tải dữ liệu", true) }}</h1>
+  <p>{{ message|default("Đã xảy ra sự cố khi tải nội dung. Vui lòng thử lại.", true) }}</p>
+  <a href="{{ retry_url|default(request.path, true) }}">Thử lại</a>
+</section>

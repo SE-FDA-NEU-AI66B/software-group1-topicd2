@@ -1,25 +1,8 @@
-<!doctype html>
-<html lang="vi">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0c3b2e">
-  <title>Sân cầu lông | SmashGo</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}">
-</head>
-<body>
-  <header class="topbar">
-    <a class="brand" href="/courts" aria-label="SmashGo, danh sách sân">
-      <span class="brand-mark" aria-hidden="true"><span></span><span></span></span>
-      <span>smash<span class="brand-light">go</span></span>
-    </a>
-    <span class="topbar-note">HỆ THỐNG ĐẶT SÂN CẦU LÔNG</span>
-    <span class="live-indicator"><span></span> DỮ LIỆU TRỰC TIẾP</span>
-  </header>
+{% extends "base.html" %}
 
+{% block title %}Sân cầu lông | SmashGo{% endblock %}
+
+{% block content %}
   <main class="page-shell">
     <section class="intro" aria-labelledby="page-title">
       <div>
@@ -81,10 +64,4 @@
       <p class="data-note"><span></span> Danh sách được tải trực tiếp từ cơ sở dữ liệu SmashGo.</p>
     </section>
   </main>
-
-  <footer class="footer">
-    <span>SMASHGO <span class="footer-dot">·</span> HÀ NỘI</span>
-    <span>CHƠI HAY HƠN, ĐẶT SÂN DỄ HƠN</span>
-  </footer>
-</body>
-</html>
+{% endblock %}

@@ -1,16 +1,18 @@
 import os
-import sqlite3
+import secrets
 from contextlib import closing
 
-from flask import Flask, redirect, render_template, url_for
+from flask import Flask, redirect, render_template, session, url_for
 
-from database import get_database_path
+from database import get_database_path, get_db_connection
+from routes import auth_bp, pages_bp
 
 
 def create_app(test_config: dict | None = None) -> Flask:
     app = Flask(__name__)
     app.config.from_mapping(
         DATABASE_PATH=str(get_database_path()),
+        SECRET_KEY=os.getenv("SECRET_KEY") or secrets.token_hex(32),
         HOST=os.getenv("HOST", "127.0.0.1"),
         PORT=int(os.getenv("PORT", "5000")),
         DEBUG=os.getenv("FLASK_DEBUG", "false").lower() == "true",
@@ -18,14 +20,20 @@ def create_app(test_config: dict | None = None) -> Flask:
     if test_config:
         app.config.update(test_config)
 
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(pages_bp)
+
+    @app.context_processor
+    def inject_current_user():
+        return {"current_user": session.get("user")}
+
     @app.get("/")
     def home():
         return redirect(url_for("courts"))
 
     @app.get("/courts")
     def courts():
-        with closing(sqlite3.connect(app.config["DATABASE_PATH"])) as connection:
-            connection.row_factory = sqlite3.Row
+        with closing(get_db_connection(app.config["DATABASE_PATH"])) as connection:
             court_rows = connection.execute(
                 """
                 SELECT Court.CourtID, Court.CourtName, Court.Location,
