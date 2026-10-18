@@ -26,9 +26,9 @@
 
 **Project board right after Sprint 2 Planning:**
 
-<img src="images/sprint2-planning.PNG" alt="Project board on the planning day" width="500">
+<img src="D:\SOFTWARE\images\sprint2-planning1.PNG" alt="Project board on the planning day" width="500">
 
-<img src="images/sprint2-planning2.PNG" alt="Project board on the planning day" width="500">
+<img src="D:\SOFTWARE\images\Sprint2-planning.PNG" alt="Project board on the planning day" width="500">
 
 **Project board on the submission day:**
 
