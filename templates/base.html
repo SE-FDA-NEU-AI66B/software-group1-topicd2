@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  {% block head %}{% endblock %}
 </head>
 <body>
   <header class="topbar">
