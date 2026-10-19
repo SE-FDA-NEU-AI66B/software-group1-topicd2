@@ -9,6 +9,7 @@ update this file should not be approved.
 |-------|---------|--------|----------|---------|-------------|-----|--------|
 | `/` | Landing page | G | P0 | F1 | #3 | #14 | Done |
 | `/courts` | List active courts read from SQLite | G, U | P0 | F1 | US-01 | — | In progress |
+| `/book` | Select court, date and time, then hold the slot (`POST /api/bookings`) | G, U | P0 | F2 | US-04, US-05 (#91) | — | In progress |
 
 **Access codes:** G = guest (not logged in) · U = authenticated user · A = admin
 
@@ -20,5 +21,7 @@ Numbered, so issues and tests can cite them.
 
 | # | Rule | Enforced where | Tested by |
 |---|------|----------------|-----------|
-| BR1 | | | |
-| BR2 | | | |
+| BR1 | A court cannot be double-booked for a slot that is already reserved. | `booking_service.create_booking` (overlap check inside `BEGIN IMMEDIATE`) | `tests/test_booking.py`: `test_overlapping_seeded_booking_is_rejected_with_clear_message`, `test_simultaneous_requests_for_same_slot_have_one_winner` |
+| BR2 | A booking lasts at least 1 hour; back-to-back bookings must be contiguous. | `booking_service._check_booking_rules`, `_check_slot` | `tests/test_booking.py`: `test_booking_rule_violations`, `test_contiguous_booking_is_allowed` |
+| BR3 | A slot is held for 10 minutes pending payment. | `booking_service.create_booking` (`HoldExpiresAt`), `_release_expired_holds` | `tests/test_booking.py`: `test_create_booking_holds_slot_for_ten_minutes`, `test_expired_hold_releases_slot` |
+| BR6 | At most 2 active (upcoming) bookings per account. | `booking_service._check_active_limit` | `tests/test_booking.py`: `test_third_active_booking_is_rejected` |

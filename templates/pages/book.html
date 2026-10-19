@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Đặt sân | SmashGo{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/book.css') }}">
+{% endblock %}
+
+{% block content %}
+<main class="book-shell">
+  <section class="book-card" aria-labelledby="book-title">
+    <p class="eyebrow"><span class="eyebrow-line"></span> ĐẶT SÂN</p>
+    <h1 id="book-title">Chọn sân và giờ chơi</h1>
+    <p class="book-lead">Chọn sân, ngày và khung giờ. Sau khi xác nhận, sân được giữ cho bạn 10 phút để thanh toán.</p>
+
+    {% if restored %}
+    <p class="book-notice" role="status">Lựa chọn của bạn đã được giữ nguyên. Kiểm tra lại rồi bấm <strong>Xác nhận đặt sân</strong> để giữ chỗ.</p>
+    {% endif %}
+
+    <p class="book-error" id="book-error" role="alert" hidden></p>
+
+    {% if courts %}
+    <form class="book-form" id="book-form"
+          data-authenticated="{{ 'true' if current_user else 'false' }}"
+          data-login-url="{{ url_for('auth.login') }}"
+          data-book-url="{{ url_for('bookings.book') }}">
+      <label for="court">
+        Sân
+        <select id="court" name="courtId" required>
+          {% for court in courts %}
+          <option value="{{ court['CourtID'] }}"
+                  data-open="{{ court['OpenTime'] }}"
+                  data-close="{{ court['CloseTime'] }}"
+                  data-price="{{ court['PricePerHour'] }}"
+                  {% if selection.court_id == court['CourtID']|string %}selected{% endif %}>
+            {{ court['CourtName'] }} · {{ court['Location'] }}
+          </option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label for="booking-date">
+        Ngày chơi
+        <input id="booking-date" name="bookingDate" type="date" min="{{ today }}"
+               value="{{ selection.date or today }}" required>
+      </label>
+
+      <div class="book-times">
+        <label for="start-time">
+          Giờ bắt đầu
+          <select id="start-time" name="startTime" data-initial="{{ selection.start_time }}" required></select>
+        </label>
+        <label for="end-time">
+          Giờ kết thúc
+          <select id="end-time" name="endTime" data-initial="{{ selection.end_time }}" required></select>
+        </label>
+      </div>
+
+      <dl class="book-summary">
+        <div><dt>Giờ mở cửa</dt><dd id="summary-hours">—</dd></div>
+        <div><dt>Thời lượng</dt><dd id="summary-duration">—</dd></div>
+        <div><dt>Tạm tính</dt><dd id="summary-total">—</dd></div>
+      </dl>
+      <p class="book-hint">Mỗi lượt đặt ít nhất 1 giờ. Nếu sân đã có lượt đặt liền kề, hãy đặt nối tiếp ngay hoặc cách ra ít nhất 1 giờ.</p>
+
+      <button type="submit" id="book-submit">Xác nhận đặt sân</button>
+      {% if not current_user %}
+      <p class="book-hint">Bạn sẽ được chuyển sang trang đăng nhập; lựa chọn của bạn được giữ nguyên khi quay lại.</p>
+      {% endif %}
+    </form>
+
+    <section class="book-success" id="book-success" aria-live="polite" hidden>
+      <h2>Đã giữ chỗ cho bạn</h2>
+      <p>Lượt đặt <strong id="success-id"></strong> đang chờ thanh toán. Sân được giữ đến <strong id="success-hold"></strong>; quá thời hạn này, chỗ sẽ được nhả cho người khác.</p>
+      <p>Số tiền cần thanh toán: <strong id="success-amount"></strong></p>
+      <a class="primary-link" href="{{ url_for('pages.my_bookings') }}">Xem lịch đặt của tôi</a>
+    </section>
+    {% else %}
+      {% with title="Chưa có sân nhận đặt", message="Hiện chưa có sân nào đang hoạt động. Vui lòng quay lại sau." %}
+        {% include "partials/state_empty.html" %}
+      {% endwith %}
+    {% endif %}
+  </section>
+</main>
+<script src="{{ url_for('static', filename='api.js') }}"></script>
+<script src="{{ url_for('static', filename='book.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="720" viewBox="0 0 1260 720" font-family="Arial, sans-serif">
+  <title>Wireframe /book: chọn sân, ngày, giờ và giữ chỗ (issue #91)</title>
+  <rect width="1260" height="720" fill="#ffffff"/>
+  <style>
+    .frame { fill: #fafafa; stroke: #333; stroke-width: 1.5; }
+    .bar { fill: #d9d9d9; stroke: #333; }
+    .box { fill: #fff; stroke: #777; }
+    .btn { fill: #555; }
+    .label { font-size: 12px; fill: #333; font-weight: bold; }
+    .text { font-size: 12px; fill: #555; }
+    .small { font-size: 11px; fill: #777; }
+    .title { font-size: 20px; fill: #222; font-weight: bold; }
+    .caption { font-size: 14px; fill: #222; font-weight: bold; }
+    .btn-text { font-size: 13px; fill: #fff; font-weight: bold; }
+    .alert { fill: #f3f3f3; stroke: #333; stroke-dasharray: 4 3; }
+  </style>
+
+  <!-- Frame 1: default form -->
+  <text x="20" y="28" class="caption">1. Chọn sân / ngày / giờ (Guest hoặc User)</text>
+  <rect x="20" y="40" width="390" height="660" class="frame"/>
+  <rect x="20" y="40" width="390" height="40" class="bar"/>
+  <text x="34" y="65" class="label">smashgo</text>
+  <text x="250" y="65" class="small">Danh sách sân · Đăng nhập</text>
+  <text x="40" y="115" class="small">ĐẶT SÂN</text>
+  <text x="40" y="142" class="title">Chọn sân và giờ chơi</text>
+  <text x="40" y="164" class="text">Sân được giữ 10 phút để thanh toán.</text>
+  <text x="40" y="200" class="label">Sân</text>
+  <rect x="40" y="208" width="350" height="34" class="box"/>
+  <text x="50" y="230" class="text">SmashGo Cầu Giấy 1 · 102 Trần Thái Tông ▾</text>
+  <text x="40" y="268" class="label">Ngày chơi</text>
+  <rect x="40" y="276" width="350" height="34" class="box"/>
+  <text x="50" y="298" class="text">dd/mm/yyyy 📅</text>
+  <text x="40" y="336" class="label">Giờ bắt đầu</text>
+  <text x="222" y="336" class="label">Giờ kết thúc</text>
+  <rect x="40" y="344" width="168" height="34" class="box"/>
+  <text x="50" y="366" class="text">18:00 ▾</text>
+  <rect x="222" y="344" width="168" height="34" class="box"/>
+  <text x="232" y="366" class="text">20:00 ▾</text>
+  <rect x="40" y="396" width="116" height="54" class="box"/>
+  <rect x="157" y="396" width="116" height="54" class="box"/>
+  <rect x="274" y="396" width="116" height="54" class="box"/>
+  <text x="48" y="414" class="small">GIỜ MỞ CỬA</text><text x="48" y="438" class="label">06:00 – 23:00</text>
+  <text x="165" y="414" class="small">THỜI LƯỢNG</text><text x="165" y="438" class="label">2 giờ</text>
+  <text x="282" y="414" class="small">TẠM TÍNH</text><text x="282" y="438" class="label">180.000đ</text>
+  <text x="40" y="474" class="small">Ít nhất 1 giờ; đặt nối tiếp lượt liền kề hoặc cách ≥ 1 giờ.</text>
+  <rect x="40" y="490" width="350" height="42" class="btn"/>
+  <text x="152" y="516" class="btn-text">Xác nhận đặt sân</text>
+  <text x="40" y="556" class="small">Guest: bấm xác nhận → /login?next=/book?...&amp;restored=1</text>
+  <text x="40" y="574" class="small">→ quay lại /book, giữ nguyên lựa chọn, bấm xác nhận lần nữa</text>
+  <text x="40" y="592" class="small">→ POST /api/bookings</text>
+
+  <!-- Frame 2: error -->
+  <text x="435" y="28" class="caption">2. Lỗi khi giữ chỗ (409 / 422)</text>
+  <rect x="435" y="40" width="390" height="660" class="frame"/>
+  <rect x="435" y="40" width="390" height="40" class="bar"/>
+  <text x="449" y="65" class="label">smashgo</text>
+  <text x="455" y="142" class="title">Chọn sân và giờ chơi</text>
+  <rect x="455" y="170" width="350" height="56" class="alert"/>
+  <text x="467" y="192" class="text">⚠ SmashGo Cầu Giấy 1 đã có lịch trong khung</text>
+  <text x="467" y="210" class="text">20:00–22:00. Hãy chọn khung giờ khác hoặc sân khác.</text>
+  <text x="455" y="252" class="small">Thông báo theo mã lỗi (role="alert"):</text>
+  <text x="455" y="272" class="small">• SLOT_UNAVAILABLE (BR1): sân + khung giờ bị trùng</text>
+  <text x="455" y="290" class="small">• BOOKING_RULE_VIOLATION (BR2): ít hơn 1 giờ, để trống</text>
+  <text x="455" y="308" class="small">   &lt; 1 giờ với lượt liền kề, ngoài giờ mở cửa, giờ đã qua</text>
+  <text x="455" y="326" class="small">• ACTIVE_BOOKING_LIMIT (BR6): đã có 2 lượt sắp tới</text>
+  <rect x="455" y="350" width="350" height="130" class="box"/>
+  <text x="575" y="420" class="small">(form giữ nguyên để chọn lại)</text>
+  <rect x="455" y="496" width="350" height="42" class="btn"/>
+  <text x="567" y="522" class="btn-text">Xác nhận đặt sân</text>
+
+  <!-- Frame 3: success -->
+  <text x="850" y="28" class="caption">3. Giữ chỗ thành công (201)</text>
+  <rect x="850" y="40" width="390" height="660" class="frame"/>
+  <rect x="850" y="40" width="390" height="40" class="bar"/>
+  <text x="864" y="65" class="label">smashgo</text>
+  <text x="1070" y="65" class="small">Lịch đặt của tôi · Đăng xuất</text>
+  <text x="870" y="142" class="title">Chọn sân và giờ chơi</text>
+  <rect x="870" y="170" width="350" height="190" class="box"/>
+  <text x="886" y="200" class="caption">Đã giữ chỗ cho bạn</text>
+  <text x="886" y="226" class="text">Lượt đặt #12 đang chờ thanh toán (PENDING).</text>
+  <text x="886" y="246" class="text">Sân được giữ đến 18:10 (BR3, 10 phút).</text>
+  <text x="886" y="272" class="text">Số tiền cần thanh toán: 180.000đ</text>
+  <rect x="886" y="296" width="170" height="40" class="btn"/>
+  <text x="900" y="321" class="btn-text">Xem lịch đặt của tôi</text>
+  <text x="870" y="388" class="small">Bước thanh toán (liên kết ngân hàng, OTP) làm ở issue #92.</text>
+</svg>

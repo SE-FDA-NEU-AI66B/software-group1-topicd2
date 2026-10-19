@@ -1,0 +1,90 @@
+.book-shell {
+  width: min(100% - 40px, 620px);
+  margin: 52px auto;
+}
+
+.book-card {
+  padding: 30px;
+  border: 1px solid var(--line);
+  background: var(--white);
+}
+
+.book-card h1 {
+  margin: 8px 0 10px;
+  font-family: "Manrope", sans-serif;
+  font-size: 28px;
+}
+
+.book-lead,
+.book-hint { color: var(--muted); font-size: 14px; line-height: 1.6; }
+.book-hint { margin: 0; font-size: 12px; }
+
+.book-notice,
+.book-error {
+  margin: 18px 0;
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.book-notice { border: 1px solid #c9dfb0; background: #f5fbea; color: #2f5a1d; }
+.book-error { border: 1px solid #edc5b8; background: #fff5f1; color: #8d3e27; }
+
+.book-form { display: grid; gap: 16px; margin-top: 22px; }
+.book-form label { display: grid; gap: 6px; color: var(--ink); font-size: 12px; font-weight: 700; }
+.book-times { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.book-form input,
+.book-form select {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+}
+
+.book-form input:focus,
+.book-form select:focus { border-color: #398264; outline: 2px solid rgba(57, 130, 100, .16); }
+
+.book-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin: 4px 0 0;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+
+.book-summary div { padding: 12px; background: var(--paper); }
+.book-summary dt { color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; }
+.book-summary dd { margin: 4px 0 0; font-family: "Manrope", sans-serif; font-size: 16px; font-weight: 700; }
+
+.book-form button {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 3px;
+  background: var(--green);
+  color: var(--white);
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.book-form button:hover { background: #185742; }
+.book-form button:disabled { cursor: progress; opacity: .7; }
+
+.book-success { margin-top: 22px; padding: 22px; border: 1px solid #c9dfb0; background: #f5fbea; }
+.book-success h2 { margin: 0 0 10px; font-family: "Manrope", sans-serif; font-size: 20px; }
+.book-success p { color: var(--ink); font-size: 14px; line-height: 1.6; }
+
+@media (max-width: 700px) {
+  .book-shell { margin: 32px auto; }
+  .book-card { padding: 22px; }
+  .book-times,
+  .book-summary { grid-template-columns: 1fr; }
+}
