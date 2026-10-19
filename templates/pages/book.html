@@ -11,7 +11,7 @@
   <section class="book-card" aria-labelledby="book-title">
     <p class="eyebrow"><span class="eyebrow-line"></span> ĐẶT SÂN</p>
     <h1 id="book-title">Chọn sân và giờ chơi</h1>
-    <p class="book-lead">Chọn sân, ngày và khung giờ. Sau khi xác nhận, sân được giữ cho bạn 10 phút để thanh toán.</p>
+    <p class="book-lead">Chọn sân, ngày và khung giờ. Sau khi xác nhận, sân được giữ cho bạn 10 phút để thanh toán ở bước tiếp theo.</p>
 
     {% if restored %}
     <p class="book-notice" role="status">Lựa chọn của bạn đã được giữ nguyên. Kiểm tra lại rồi bấm <strong>Xác nhận đặt sân</strong> để giữ chỗ.</p>
@@ -69,12 +69,6 @@
       {% endif %}
     </form>
 
-    <section class="book-success" id="book-success" aria-live="polite" hidden>
-      <h2>Đã giữ chỗ cho bạn</h2>
-      <p>Lượt đặt <strong id="success-id"></strong> đang chờ thanh toán. Sân được giữ đến <strong id="success-hold"></strong>; quá thời hạn này, chỗ sẽ được nhả cho người khác.</p>
-      <p>Số tiền cần thanh toán: <strong id="success-amount"></strong></p>
-      <a class="primary-link" href="{{ url_for('pages.my_bookings') }}">Xem lịch đặt của tôi</a>
-    </section>
     {% else %}
       {% with title="Chưa có sân nhận đặt", message="Hiện chưa có sân nào đang hoạt động. Vui lòng quay lại sau." %}
         {% include "partials/state_empty.html" %}

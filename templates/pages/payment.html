@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Thanh toán | SmashGo{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/book.css') }}">
+{% endblock %}
+
+{% block content %}
+<main class="book-shell">
+  <section class="book-card" id="payment"
+           data-booking-id="{{ booking['BookingID'] }}"
+           data-seconds-left="{{ seconds_left }}"
+           data-success-url="{{ url_for('pages.my_bookings') }}">
+    <p class="eyebrow"><span class="eyebrow-line"></span> THANH TOÁN</p>
+    <h1>Thanh toán để xác nhận</h1>
+
+    <div class="hold-timer" role="timer" aria-live="off">
+      <span>Thời gian giữ chỗ còn</span>
+      <strong id="hold-countdown">--:--</strong>
+    </div>
+
+    <dl class="book-summary payment-summary">
+      <div><dt>Sân</dt><dd>{{ booking['CourtName'] }}</dd></div>
+      <div><dt>Thời gian</dt><dd>{{ booking['StartTime'] }}–{{ booking['EndTime'] }}, {{ booking['BookingDate'] }}</dd></div>
+      <div><dt>Số tiền</dt><dd>{{ "{:,.0f}".format(booking['DepositAmount']).replace(",", ".") }}đ</dd></div>
+    </dl>
+
+    <p class="book-error" id="payment-error" role="alert" hidden></p>
+    <p class="book-notice" id="payment-notice" role="status" hidden></p>
+
+    <section class="payment-section" aria-labelledby="accounts-title">
+      <h2 id="accounts-title">Tài khoản thanh toán</h2>
+      <div id="accounts-loading">{% include "partials/state_loading.html" %}</div>
+      <p class="book-hint" id="accounts-empty" hidden>Bạn chưa liên kết tài khoản nào. Hãy liên kết tài khoản bên dưới.</p>
+      <div class="account-list" id="account-list" role="radiogroup" aria-labelledby="accounts-title"></div>
+      <button type="button" class="link-button" id="show-link-form">+ Liên kết tài khoản mới</button>
+    </section>
+
+    <form class="book-form payment-section" id="link-form" hidden>
+      <h2>Liên kết tài khoản mới</h2>
+      <label for="bank-name">
+        Ngân hàng
+        <select id="bank-name" name="bankName" required>
+          {% for bank in banks %}
+          <option value="{{ bank }}">{{ bank }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label for="account-number">
+        Số tài khoản
+        <input id="account-number" name="accountNumber" inputmode="numeric" pattern="[0-9 ]{6,23}" autocomplete="off" required>
+      </label>
+      <label for="account-holder">
+        Tên chủ tài khoản
+        <input id="account-holder" name="accountHolderName" autocomplete="name" required>
+      </label>
+      <button type="submit">Gửi mã OTP</button>
+    </form>
+
+    <form class="book-form payment-section" id="otp-form" hidden>
+      <h2>Nhập mã OTP</h2>
+      <p class="book-hint" id="otp-hint"></p>
+      <label for="otp">
+        Mã OTP
+        <input id="otp" name="otp" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required>
+      </label>
+      <button type="submit">Xác minh</button>
+    </form>
+
+    <div class="book-form">
+      <button type="button" id="pay-button" disabled>Thanh toán</button>
+    </div>
+  </section>
+</main>
+<script src="{{ url_for('static', filename='api.js') }}"></script>
+<script src="{{ url_for('static', filename='payment.js') }}"></script>
+{% endblock %}

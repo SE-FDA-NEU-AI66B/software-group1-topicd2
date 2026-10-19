@@ -10,7 +10,6 @@
   const endSelect = document.getElementById("end-time");
   const submitButton = document.getElementById("book-submit");
   const errorBox = document.getElementById("book-error");
-  const successBox = document.getElementById("book-success");
 
   const toMinutes = (value) => {
     const [hours, minutes] = value.split(":").map(Number);
@@ -117,11 +116,9 @@
     submitButton.textContent = "Đang giữ chỗ...";
     try {
       const booking = await apiRequest("POST", "/api/bookings", selection);
-      document.getElementById("success-id").textContent = `#${booking.bookingId}`;
-      document.getElementById("success-hold").textContent = booking.holdExpiresAt.slice(11, 16);
-      document.getElementById("success-amount").textContent = formatMoney(booking.depositAmount);
-      form.hidden = true;
-      successBox.hidden = false;
+      // Continue to the payment step while the 10-minute hold runs (BR3).
+      window.location.assign(`${form.dataset.bookUrl}?bookingId=${booking.bookingId}`);
+      return;
     } catch (error) {
       if (error.code === "UNAUTHENTICATED") {
         redirectToLogin(selection);
