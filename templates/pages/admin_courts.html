@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Quản lý sân | SmashGo{% endblock %}
+
+{% block head %}
+<!-- Task #94: Load styles specific to the Admin court review workspace. -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_courts.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Task #94: Provide the Admin UI areas for pending requests and every court status. -->
+<main class="admin-courts-shell" id="admin-courts">
+  <header class="admin-courts-heading">
+    <div>
+      <p class="eyebrow"><span class="eyebrow-line"></span> QUẢN TRỊ</p>
+      <h1>Quản lý sân</h1>
+      <p class="admin-courts-intro">Duyệt đề xuất sân mới và kiểm soát trạng thái các sân.</p>
+    </div>
+  </header>
+
+  <p class="admin-notice" id="admin-notice" role="status" hidden></p>
+
+  <section class="admin-panel" aria-labelledby="requests-title">
+    <div class="admin-panel-heading">
+      <div>
+        <p class="section-index">01 / DUYỆT ĐỀ XUẤT</p>
+        <h2 id="requests-title">Yêu cầu chờ duyệt</h2>
+      </div>
+      <button type="button" class="secondary-button" id="reload-requests">Tải lại</button>
+    </div>
+    <div class="admin-state" id="requests-state" role="status">Đang tải yêu cầu...</div>
+    <ul class="admin-request-list" id="request-list" aria-live="polite"></ul>
+  </section>
+
+  <section class="admin-panel" aria-labelledby="courts-title">
+    <div class="admin-panel-heading">
+      <div>
+        <p class="section-index">02 / TRẠNG THÁI SÂN</p>
+        <h2 id="courts-title">Tất cả sân</h2>
+      </div>
+      <button type="button" class="secondary-button" id="reload-courts">Tải lại</button>
+    </div>
+    <div class="admin-state" id="courts-state" role="status">Đang tải danh sách sân...</div>
+    <div class="admin-table-wrap">
+      <table class="admin-court-table">
+        <thead>
+          <tr>
+            <th>Sân</th>
+            <th>Quản lý</th>
+            <th>Giá / giờ</th>
+            <th>Lịch sắp tới</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="court-list"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <dialog class="admin-dialog" id="reject-dialog" aria-labelledby="reject-title">
+    <form method="dialog" id="reject-form">
+      <h2 id="reject-title">Từ chối yêu cầu</h2>
+      <p id="reject-summary"></p>
+      <label for="reject-reason">Lý do từ chối</label>
+      <textarea id="reject-reason" maxlength="2000" rows="4" required></textarea>
+      <p class="admin-error" id="reject-error" role="alert" hidden></p>
+      <div class="admin-actions">
+        <button type="button" class="secondary-button" id="reject-cancel">Quay lại</button>
+        <button type="submit" class="danger-button" id="reject-confirm">Từ chối</button>
+      </div>
+    </form>
+  </dialog>
+</main>
+<!-- Task #94: Connect the shared JSON helper to Admin review and status interactions. -->
+<script src="{{ url_for('static', filename='api.js') }}"></script>
+<script src="{{ url_for('static', filename='admin_courts.js') }}"></script>
+{% endblock %}

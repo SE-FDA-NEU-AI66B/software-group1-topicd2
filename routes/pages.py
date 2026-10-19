@@ -47,4 +47,5 @@ def manager_courts():
 @pages_bp.get("/admin/courts")
 @role_required("ADMIN")
 def admin_courts():
-    return render_template("pages/not_supported.html")
+    # Task #94: Serve the Admin courts workspace in place of the unsupported placeholder.
+    return render_template("pages/admin_courts.html")
