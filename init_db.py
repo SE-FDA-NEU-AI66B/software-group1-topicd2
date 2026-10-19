@@ -48,6 +48,25 @@ SEED_USERS = (
         "role": "ADMIN",
     },
 )
+# Task #94: Stable names make the two pending Admin demo requests idempotent across database initialization.
+ADMIN_DEMO_REQUESTS = (
+    {
+        "court_name": "SmashGo Demo Court Request 1",
+        "location": "12 Nguyễn Khánh Toàn, Cầu Giấy, Hà Nội",
+        "description": "Sân demo mới chờ quản trị viên duyệt.",
+        "price_per_hour": 90000,
+        "open_time": "06:00",
+        "close_time": "23:00",
+    },
+    {
+        "court_name": "SmashGo Demo Court Request 2",
+        "location": "25 Thái Hà, Đống Đa, Hà Nội",
+        "description": "Sân demo thứ hai để kiểm tra quy trình từ chối.",
+        "price_per_hour": 100000,
+        "open_time": "05:30",
+        "close_time": "22:30",
+    },
+)
 SCHEMA_PATH = PROJECT_ROOT / "schema.sql"
 COURTS_PATH = PROJECT_ROOT / "data" / "courts.csv"
 
@@ -128,7 +147,50 @@ def initialize_database(database_path: Path | None = None) -> int:
 
         seed_demo_booking(connection)
         seed_booking_history(connection)
+        # Task #94: Seed pending requests and images so Admin review can be demonstrated after setup.
+        seed_admin_court_requests(connection, manager_id, courts[0]["ImageUrl"])
         return connection.execute("SELECT COUNT(*) FROM Court").fetchone()[0]
+
+
+# Task #94: Seed two pending CREATE requests without duplicating them on repeated initialization.
+def seed_admin_court_requests(
+    connection: sqlite3.Connection, manager_id: int, image_url: str
+) -> None:
+    for demo_request in ADMIN_DEMO_REQUESTS:
+        existing = connection.execute(
+            """
+            SELECT RequestID FROM Court_Request
+            WHERE ManagerID = ? AND CourtName = ?
+            """,
+            (manager_id, demo_request["court_name"]),
+        ).fetchone()
+        if existing:
+            continue
+
+        cursor = connection.execute(
+            """
+            INSERT INTO Court_Request (
+                ManagerID, RequestType, CourtName, Location, Description,
+                PricePerHour, OpenTime, CloseTime, Status
+            ) VALUES (?, 'CREATE', ?, ?, ?, ?, ?, ?, 'PENDING')
+            """,
+            (
+                manager_id,
+                demo_request["court_name"],
+                demo_request["location"],
+                demo_request["description"],
+                demo_request["price_per_hour"],
+                demo_request["open_time"],
+                demo_request["close_time"],
+            ),
+        )
+        connection.execute(
+            """
+            INSERT INTO Court_Request_Image (RequestID, Url, SortOrder)
+            VALUES (?, ?, 0)
+            """,
+            (cursor.lastrowid, image_url),
+        )
 
 
 def seed_demo_booking(connection: sqlite3.Connection) -> None:
