@@ -56,6 +56,11 @@ ERROR_MESSAGES = {
     ),
     "BOOKING_NOT_FOUND": "Không tìm thấy lượt đặt này. Hãy kiểm tra lại lịch đặt của bạn.",
     "NOT_BOOKING_OWNER": "Lượt đặt này không thuộc về bạn.",
+    "BOOKING_NOT_CANCELLABLE": (
+        "Lượt đặt này không thể hủy vì đã bị hủy, đã hết hạn giữ chỗ, đã hoàn tất "
+        "hoặc đã đến giờ chơi."
+    ),
+    "INVALID_STATUS_FILTER": "Bộ lọc trạng thái không hợp lệ.",
     "BANK_ACCOUNT_NOT_VERIFIED": (
         "Tài khoản chưa được xác minh. Hãy chọn một tài khoản đã xác minh, hoặc "
         "liên kết và nhập OTP trước khi thanh toán."

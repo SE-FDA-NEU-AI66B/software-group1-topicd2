@@ -35,7 +35,7 @@ def role_required(required_role: str):
 @pages_bp.get("/my-bookings")
 @role_required("USER")
 def my_bookings():
-    return render_template("pages/not_supported.html")
+    return render_template("pages/my_bookings.html")
 
 
 @pages_bp.get("/manager/courts")

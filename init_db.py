@@ -13,6 +13,15 @@ DEMO_BOOKING_OWNER_EMAIL = "user2@smashgo.local"
 # double-booking rejection (BR1, US-05) can be demonstrated right after setup.
 DEMO_BOOKING_START = "20:00"
 DEMO_BOOKING_END = "22:00"
+HISTORY_OWNER_EMAIL = "user@smashgo.local"
+# Bookings of the main test user in several states, for the /my-bookings demo.
+# (court index, days from today, start, end, booking status, payment status)
+HISTORY_BOOKINGS = (
+    (1, 3, "18:00", "20:00", "CONFIRMED", "SUCCESS"),
+    (2, -7, "19:00", "21:00", "COMPLETED", "SUCCESS"),
+    (3, -2, "07:00", "08:00", "CANCELLED", "REFUNDED"),
+    (4, -1, "17:00", "18:00", "EXPIRED", None),
+)
 SEED_USERS = (
     {
         "full_name": "SmashGo Demo User",
@@ -118,6 +127,7 @@ def initialize_database(database_path: Path | None = None) -> int:
             )
 
         seed_demo_booking(connection)
+        seed_booking_history(connection)
         return connection.execute("SELECT COUNT(*) FROM Court").fetchone()[0]
 
 
@@ -159,6 +169,85 @@ def seed_demo_booking(connection: sqlite3.Connection) -> None:
             DEMO_BOOKING_START,
         ),
     )
+
+
+
+def seed_booking_history(connection: sqlite3.Connection) -> None:
+    owner_id = connection.execute(
+        "SELECT UserID FROM Users WHERE Email = ? COLLATE NOCASE",
+        (HISTORY_OWNER_EMAIL,),
+    ).fetchone()[0]
+    if connection.execute("SELECT 1 FROM Booking WHERE UserID = ?", (owner_id,)).fetchone():
+        return
+
+    connection.execute(
+        """
+        INSERT INTO BankAccount (
+            UserID, BankName, AccountNumber, AccountHolderName, IsVerified, VerifiedAt
+        )
+        SELECT ?, 'Vietcombank', '0123456789', 'SMASHGO DEMO USER', 1, CURRENT_TIMESTAMP
+        WHERE NOT EXISTS (
+            SELECT 1 FROM BankAccount
+            WHERE UserID = ? AND BankName = 'Vietcombank' AND AccountNumber = '0123456789'
+        )
+        """,
+        (owner_id, owner_id),
+    )
+    bank_account_id = connection.execute(
+        "SELECT BankAccountID FROM BankAccount WHERE UserID = ? AND AccountNumber = '0123456789'",
+        (owner_id,),
+    ).fetchone()[0]
+    courts = connection.execute(
+        "SELECT CourtID, PricePerHour FROM Court WHERE Status = 'ACTIVE' ORDER BY CourtID"
+    ).fetchall()
+
+    for court_index, day_offset, start, end, status, payment_status in HISTORY_BOOKINGS:
+        court_id, price_per_hour = courts[court_index]
+        booking_date = date.today() + timedelta(days=day_offset)
+        hours = (int(end[:2]) - int(start[:2])) + (int(end[3:]) - int(start[3:])) / 60
+        amount = round(price_per_hour * hours)
+        cursor = connection.execute(
+            """
+            INSERT INTO Booking (
+                UserID, CourtID, BookingDate, StartTime, EndTime, TotalAmount,
+                DepositAmount, Status, HoldExpiresAt, CancelledAt, CancelledBy
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                owner_id,
+                court_id,
+                booking_date.isoformat(),
+                start,
+                end,
+                amount,
+                amount,
+                status,
+                f"{booking_date - timedelta(days=1)} 12:10:00" if status == "EXPIRED" else None,
+                f"{booking_date - timedelta(days=1)} 09:00:00" if status == "CANCELLED" else None,
+                owner_id if status == "CANCELLED" else None,
+            ),
+        )
+        if payment_status:
+            connection.execute(
+                """
+                INSERT INTO Payment (
+                    BookingID, BankAccountID, Amount, PaymentMethod, TransactionCode,
+                    Status, RefundAmount, PaidAt, RefundedAt
+                ) VALUES (?, ?, ?, 'BANK_TRANSFER', ?, ?, ?, ?, ?)
+                """,
+                (
+                    cursor.lastrowid,
+                    bank_account_id,
+                    amount,
+                    f"SEED-{cursor.lastrowid:06d}",
+                    payment_status,
+                    amount if payment_status == "REFUNDED" else None,
+                    f"{booking_date - timedelta(days=2)} 10:00:00",
+                    f"{booking_date - timedelta(days=1)} 09:00:00"
+                    if payment_status == "REFUNDED"
+                    else None,
+                ),
+            )
 
 
 if __name__ == "__main__":

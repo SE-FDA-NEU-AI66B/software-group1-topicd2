@@ -227,3 +227,154 @@ def create_booking(
         "totalAmount": total_amount,
         "depositAmount": total_amount,
     }
+
+
+BOOKING_STATUSES = ("PENDING", "CONFIRMED", "CHECKED_IN", "COMPLETED", "CANCELLED", "EXPIRED")
+CANCELLABLE_STATUSES = ("PENDING", "CONFIRMED")
+FULL_REFUND_NOTICE = timedelta(hours=4)
+LATE_CANCEL_REFUND_RATE = 0.5
+
+
+def _starts_at(row) -> datetime:
+    return datetime.strptime(f"{row['BookingDate']} {row['StartTime']}", "%Y-%m-%d %H:%M")
+
+
+def refund_for(paid_amount: float, starts_at: datetime, now: datetime) -> float:
+    """BR4: full refund more than 4 hours before play, otherwise 50% is kept."""
+    if starts_at - now > FULL_REFUND_NOTICE:
+        return paid_amount
+    return round(paid_amount * LATE_CANCEL_REFUND_RATE)
+
+
+def list_my_bookings(
+    database_path: str | Path,
+    user_id: int,
+    status: str | None = None,
+    now: datetime | None = None,
+) -> list[dict[str, Any]]:
+    if status is not None and status not in BOOKING_STATUSES:
+        raise BookingError("INVALID_STATUS_FILTER")
+    now = now or datetime.now()
+
+    with closing(get_db_connection(database_path)) as connection, connection:
+        _release_expired_holds(connection, now)
+        rows = connection.execute(
+            """
+            SELECT Booking.BookingID, Court.CourtName, Court.Location,
+                   Booking.BookingDate, Booking.StartTime, Booking.EndTime,
+                   Booking.Status, Booking.DepositAmount, Booking.HoldExpiresAt,
+                   Payment.Status AS PaymentStatus, Payment.Amount AS PaidAmount,
+                   Payment.RefundAmount
+            FROM Booking
+            JOIN Court ON Court.CourtID = Booking.CourtID
+            LEFT JOIN Payment ON Payment.BookingID = Booking.BookingID
+            WHERE Booking.UserID = ? AND (? IS NULL OR Booking.Status = ?)
+            ORDER BY Booking.BookingDate DESC, Booking.StartTime DESC
+            """,
+            (user_id, status, status),
+        ).fetchall()
+
+    bookings = []
+    for row in rows:
+        paid_amount = row["PaidAmount"] if row["PaymentStatus"] else 0
+        cancellable = row["Status"] in CANCELLABLE_STATUSES and _starts_at(row) > now
+        bookings.append(
+            {
+                "bookingId": row["BookingID"],
+                "courtName": row["CourtName"],
+                "location": row["Location"],
+                "bookingDate": row["BookingDate"],
+                "startTime": row["StartTime"],
+                "endTime": row["EndTime"],
+                "status": row["Status"],
+                "depositAmount": row["DepositAmount"],
+                "holdExpiresAt": row["HoldExpiresAt"] if row["Status"] == "PENDING" else None,
+                "paymentStatus": row["PaymentStatus"],
+                "paidAmount": paid_amount,
+                "refundAmount": row["RefundAmount"],
+                "canCancel": cancellable,
+                "refundIfCancelledNow": (
+                    refund_for(paid_amount, _starts_at(row), now) if cancellable else None
+                ),
+            }
+        )
+    return bookings
+
+
+def cancel_booking(
+    database_path: str | Path,
+    user_id: int,
+    booking_id: int,
+    cancel_reason: Any = None,
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    """Cancel the user's own booking and apply the BR4 refund policy."""
+    now = now or datetime.now()
+    reason = cancel_reason.strip()[:255] if isinstance(cancel_reason, str) else ""
+
+    with closing(get_db_connection(database_path)) as connection:
+        connection.isolation_level = None
+        connection.execute("BEGIN IMMEDIATE")
+        try:
+            _release_expired_holds(connection, now)
+            booking = connection.execute(
+                """
+                SELECT UserID, BookingDate, StartTime, Status FROM Booking
+                WHERE BookingID = ?
+                """,
+                (booking_id,),
+            ).fetchone()
+            if booking is None:
+                raise BookingError("BOOKING_NOT_FOUND")
+            if booking["UserID"] != user_id:
+                raise BookingError("NOT_BOOKING_OWNER")
+            if booking["Status"] not in CANCELLABLE_STATUSES or _starts_at(booking) <= now:
+                raise BookingError("BOOKING_NOT_CANCELLABLE")
+
+            payment = connection.execute(
+                "SELECT PaymentID, Amount FROM Payment WHERE BookingID = ? AND Status = 'SUCCESS'",
+                (booking_id,),
+            ).fetchone()
+            timestamp = now.strftime(DATETIME_FORMAT)
+            refund_amount = 0
+            payment_status = None
+            if payment is not None:
+                refund_amount = refund_for(payment["Amount"], _starts_at(booking), now)
+                payment_status = (
+                    "REFUNDED" if refund_amount == payment["Amount"] else "PARTIALLY_REFUNDED"
+                )
+                connection.execute(
+                    """
+                    UPDATE Payment SET Status = ?, RefundAmount = ?, RefundedAt = ?
+                    WHERE PaymentID = ?
+                    """,
+                    (payment_status, refund_amount, timestamp, payment["PaymentID"]),
+                )
+
+            connection.execute(
+                """
+                UPDATE Booking
+                SET Status = 'CANCELLED', CancelledAt = ?, CancelledBy = ?, CancelReason = ?
+                WHERE BookingID = ?
+                """,
+                (timestamp, user_id, reason or None, booking_id),
+            )
+            # BR5: the reminder for a cancelled booking must not be sent.
+            connection.execute(
+                """
+                DELETE FROM Notification
+                WHERE BookingID = ? AND Type = 'BOOKING_REMINDER' AND SentAt IS NULL
+                """,
+                (booking_id,),
+            )
+            connection.execute("COMMIT")
+        except BaseException:
+            connection.execute("ROLLBACK")
+            raise
+
+    return {
+        "bookingId": booking_id,
+        "status": "CANCELLED",
+        "refundAmount": refund_amount,
+        "paymentStatus": payment_status,
+    }

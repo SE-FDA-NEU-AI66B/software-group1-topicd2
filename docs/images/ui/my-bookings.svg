@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1300" height="1040" viewBox="0 0 1300 1040" font-family="Arial, sans-serif">
+  <title>Wireframe /my-bookings: 4 trạng thái và hộp thoại hủy lịch (issue #93)</title>
+  <rect width="1300" height="1040" fill="#ffffff"/>
+  <style>
+    .frame { fill: #fafafa; stroke: #333; stroke-width: 1.5; }
+    .bar { fill: #d9d9d9; stroke: #333; }
+    .box { fill: #fff; stroke: #777; }
+    .btn { fill: #555; }
+    .ghost { fill: #fff; stroke: #333; }
+    .pill { fill: #e5e5e5; stroke: #999; }
+    .label { font-size: 12px; fill: #333; font-weight: bold; }
+    .text { font-size: 12px; fill: #555; }
+    .small { font-size: 11px; fill: #777; }
+    .title { font-size: 18px; fill: #222; font-weight: bold; }
+    .caption { font-size: 14px; fill: #222; font-weight: bold; }
+    .btn-text { font-size: 11px; fill: #fff; font-weight: bold; }
+    .ghost-text { font-size: 11px; fill: #333; font-weight: bold; }
+    .shade { fill: #000; opacity: .25; }
+  </style>
+
+  <!-- Shared header for each frame is a grey bar + title -->
+
+  <!-- 1. Loading -->
+  <text x="20" y="28" class="caption">1. Loading</text>
+  <rect x="20" y="40" width="300" height="420" class="frame"/>
+  <rect x="20" y="40" width="300" height="34" class="bar"/>
+  <text x="32" y="62" class="label">smashgo</text>
+  <text x="36" y="110" class="title">Lịch đặt của tôi</text>
+  <rect x="220" y="94" width="86" height="26" class="btn"/><text x="232" y="111" class="btn-text">Đặt sân mới</text>
+  <circle cx="120" cy="250" r="10" fill="none" stroke="#777" stroke-width="3" stroke-dasharray="40 20"/>
+  <text x="138" y="254" class="text">Đang tải dữ liệu...</text>
+
+  <!-- 2. Empty -->
+  <text x="345" y="28" class="caption">2. Empty</text>
+  <rect x="345" y="40" width="300" height="420" class="frame"/>
+  <rect x="345" y="40" width="300" height="34" class="bar"/>
+  <text x="357" y="62" class="label">smashgo</text>
+  <text x="361" y="110" class="title">Lịch đặt của tôi</text>
+  <rect x="545" y="94" width="86" height="26" class="btn"/><text x="557" y="111" class="btn-text">Đặt sân mới</text>
+  <rect x="361" y="180" width="268" height="120" class="box"/>
+  <text x="400" y="225" class="label">Bạn chưa có lịch đặt nào</text>
+  <text x="378" y="250" class="small">Chọn một sân và khung giờ để đặt</text>
+  <text x="425" y="266" class="small">lượt chơi đầu tiên.</text>
+
+  <!-- 3. Error -->
+  <text x="670" y="28" class="caption">3. Error</text>
+  <rect x="670" y="40" width="300" height="420" class="frame"/>
+  <rect x="670" y="40" width="300" height="34" class="bar"/>
+  <text x="682" y="62" class="label">smashgo</text>
+  <text x="686" y="110" class="title">Lịch đặt của tôi</text>
+  <rect x="870" y="94" width="86" height="26" class="btn"/><text x="882" y="111" class="btn-text">Đặt sân mới</text>
+  <rect x="686" y="180" width="268" height="130" class="box" stroke-dasharray="4 3"/>
+  <text x="740" y="222" class="label">Chưa thể tải lịch đặt</text>
+  <text x="700" y="246" class="small">Thông báo lỗi từ API (vd. mất kết nối).</text>
+  <text x="790" y="284" class="label">Thử lại</text>
+
+  <!-- 4. Data -->
+  <text x="20" y="500" class="caption">4. Data</text>
+  <rect x="20" y="512" width="625" height="508" class="frame"/>
+  <rect x="20" y="512" width="625" height="34" class="bar"/>
+  <text x="32" y="534" class="label">smashgo</text>
+  <text x="440" y="534" class="small">Danh sách sân · Lịch đặt của tôi · Đăng xuất</text>
+  <text x="36" y="582" class="title">Lịch đặt của tôi</text>
+  <rect x="545" y="566" width="86" height="26" class="btn"/><text x="557" y="583" class="btn-text">Đặt sân mới</text>
+
+  <rect x="36" y="606" width="595" height="76" class="box"/>
+  <text x="50" y="628" class="label">SmashGo Cầu Giấy 1</text>
+  <text x="50" y="646" class="text">08:00–10:00 · 21/10/2026</text>
+  <text x="50" y="664" class="small">Cần thanh toán 180.000đ · Giữ chỗ đến 14:21</text>
+  <rect x="510" y="616" width="106" height="20" rx="10" class="pill"/><text x="520" y="630" class="small">Chờ thanh toán</text>
+  <rect x="452" y="648" width="76" height="26" class="btn"/><text x="462" y="665" class="btn-text">Thanh toán</text>
+  <rect x="534" y="648" width="82" height="26" class="ghost"/><text x="552" y="665" class="ghost-text">Hủy lịch</text>
+
+  <rect x="36" y="690" width="595" height="76" class="box"/>
+  <text x="50" y="712" class="label">SmashGo Cầu Giấy 2</text>
+  <text x="50" y="730" class="text">18:00–20:00 · 22/10/2026</text>
+  <text x="50" y="748" class="small">Đã thanh toán 190.000đ</text>
+  <rect x="520" y="700" width="96" height="20" rx="10" class="pill"/><text x="532" y="714" class="small">Đã xác nhận</text>
+  <rect x="534" y="732" width="82" height="26" class="ghost"/><text x="552" y="749" class="ghost-text">Hủy lịch</text>
+
+  <rect x="36" y="774" width="595" height="64" class="box"/>
+  <text x="50" y="796" class="label">SmashGo Đống Đa 1</text>
+  <text x="50" y="814" class="text">07:00–08:00 · 17/10/2026</text>
+  <text x="50" y="830" class="small">Đã hoàn 100.000đ / 100.000đ</text>
+  <rect x="546" y="784" width="70" height="20" rx="10" class="pill"/><text x="560" y="798" class="small">Đã hủy</text>
+
+  <rect x="36" y="846" width="595" height="64" class="box"/>
+  <text x="50" y="868" class="label">SmashGo Cầu Giấy 3</text>
+  <text x="50" y="886" class="text">19:00–21:00 · 12/10/2026</text>
+  <text x="50" y="902" class="small">Đã thanh toán 200.000đ</text>
+  <rect x="546" y="856" width="70" height="20" rx="10" class="pill"/><text x="558" y="870" class="small">Đã chơi</text>
+
+  <text x="36" y="944" class="small">Trạng thái: Chờ thanh toán · Đã xác nhận · Đã nhận sân · Đã chơi · Đã hủy · Hết hạn giữ chỗ.</text>
+  <text x="36" y="962" class="small">"Thanh toán" chỉ hiện cho lịch PENDING → /book?bookingId=N. "Hủy lịch" chỉ hiện khi còn hủy được.</text>
+
+  <!-- 5. Cancel dialog -->
+  <text x="670" y="500" class="caption">5. Hộp thoại xác nhận hủy (BR4)</text>
+  <rect x="670" y="512" width="610" height="508" class="frame"/>
+  <rect x="670" y="512" width="610" height="508" class="shade"/>
+  <rect x="760" y="580" width="430" height="370" class="box"/>
+  <text x="780" y="614" class="title">Hủy lượt đặt?</text>
+  <text x="780" y="640" class="text">SmashGo Cầu Giấy 2, 18:00–20:00 ngày 22/10/2026.</text>
+  <rect x="780" y="656" width="390" height="50" class="pill"/>
+  <text x="792" y="676" class="small">Hủy trước giờ chơi hơn 4 giờ được hoàn đủ;</text>
+  <text x="792" y="694" class="small">hủy trong vòng 4 giờ sẽ mất 50% tiền cọc.</text>
+  <text x="780" y="730" class="label">Nếu hủy bây giờ, bạn được hoàn đủ 190.000đ.</text>
+  <text x="780" y="748" class="small">(trong 4 giờ: "được hoàn 95.000đ và mất 95.000đ")</text>
+  <text x="780" y="778" class="label">Lý do (không bắt buộc)</text>
+  <rect x="780" y="786" width="390" height="50" class="box"/>
+  <rect x="972" y="860" width="80" height="30" class="ghost"/><text x="988" y="879" class="ghost-text">Giữ lịch</text>
+  <rect x="1060" y="860" width="110" height="30" class="btn"/><text x="1074" y="879" class="btn-text">Xác nhận hủy</text>
+  <text x="780" y="920" class="small">Lỗi BOOKING_NOT_CANCELLABLE / NOT_BOOKING_OWNER hiện trong hộp thoại.</text>
+</svg>

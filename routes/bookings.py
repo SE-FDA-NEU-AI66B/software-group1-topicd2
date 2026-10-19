@@ -13,7 +13,13 @@ from flask import (
 )
 
 import bank_gateway
-from booking_service import DATETIME_FORMAT, BookingError, create_booking
+from booking_service import (
+    DATETIME_FORMAT,
+    BookingError,
+    cancel_booking,
+    create_booking,
+    list_my_bookings,
+)
 from database import get_db_connection
 from errors import user_message
 from payment_service import pay_booking
@@ -36,6 +42,7 @@ ERROR_STATUSES = {
     "BANK_ACCOUNT_EXISTS": 409,
     "VERIFICATION_EXPIRED_OR_LOCKED": 409,
     "HOLD_EXPIRED_OR_ALREADY_PAID": 409,
+    "BOOKING_NOT_CANCELLABLE": 409,
     "BOOKING_RULE_VIOLATION": 422,
     "BANK_ACCOUNT_NOT_VERIFIED": 422,
     "PAYMENT_FAILED": 502,
@@ -43,6 +50,7 @@ ERROR_STATUSES = {
 # Reasons that share the generic INVALID_INPUT code but need their own message.
 INVALID_INPUT_REASONS = {
     "INVALID_INPUT": "INVALID_BOOKING_INPUT",
+    "INVALID_STATUS_FILTER": "INVALID_STATUS_FILTER",
     "INVALID_BANK_ACCOUNT_INPUT": "INVALID_BANK_ACCOUNT_INPUT",
 }
 
@@ -166,6 +174,45 @@ def api_create_booking():
         return error_response(booking_error)
 
     return jsonify(booking), 201
+
+
+@bookings_bp.get("/api/bookings/mine")
+def api_my_bookings():
+    current_user, error = api_user()
+    if error:
+        return error
+
+    try:
+        bookings = list_my_bookings(
+            current_app.config["DATABASE_PATH"],
+            current_user["user_id"],
+            request.args.get("status") or None,
+        )
+    except BookingError as booking_error:
+        return error_response(booking_error)
+    return jsonify(bookings)
+
+
+@bookings_bp.delete("/api/bookings/<int:booking_id>")
+def api_cancel_booking(booking_id: int):
+    current_user, error = api_user()
+    if error:
+        return error
+
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        payload = {}
+
+    try:
+        result = cancel_booking(
+            current_app.config["DATABASE_PATH"],
+            current_user["user_id"],
+            booking_id,
+            payload.get("cancelReason"),
+        )
+    except BookingError as booking_error:
+        return error_response(booking_error)
+    return jsonify(result), 200
 
 
 @bookings_bp.post("/api/bookings/<int:booking_id>/payment")
