@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="760" viewBox="0 0 1260 760" font-family="Arial, sans-serif">
+  <title>Wireframe /book?bookingId=N: liên kết ngân hàng, OTP, thanh toán (issue #92)</title>
+  <rect width="1260" height="760" fill="#ffffff"/>
+  <style>
+    .frame { fill: #fafafa; stroke: #333; stroke-width: 1.5; }
+    .bar { fill: #d9d9d9; stroke: #333; }
+    .dark { fill: #555; }
+    .box { fill: #fff; stroke: #777; }
+    .selected { fill: #eee; stroke: #333; stroke-width: 2; }
+    .btn { fill: #555; }
+    .label { font-size: 12px; fill: #333; font-weight: bold; }
+    .text { font-size: 12px; fill: #555; }
+    .small { font-size: 11px; fill: #777; }
+    .title { font-size: 20px; fill: #222; font-weight: bold; }
+    .caption { font-size: 14px; fill: #222; font-weight: bold; }
+    .btn-text { font-size: 13px; fill: #fff; font-weight: bold; }
+    .timer { font-size: 24px; fill: #fff; font-weight: bold; }
+    .alert { fill: #f3f3f3; stroke: #333; stroke-dasharray: 4 3; }
+  </style>
+
+  <!-- Frame 1: choose account -->
+  <text x="20" y="28" class="caption">1. Chọn tài khoản đã xác minh</text>
+  <rect x="20" y="40" width="390" height="700" class="frame"/>
+  <rect x="20" y="40" width="390" height="40" class="bar"/>
+  <text x="34" y="65" class="label">smashgo</text>
+  <text x="40" y="115" class="small">THANH TOÁN</text>
+  <text x="40" y="142" class="title">Thanh toán để xác nhận</text>
+  <rect x="40" y="160" width="350" height="48" class="dark"/>
+  <text x="54" y="189" class="btn-text">Thời gian giữ chỗ còn</text>
+  <text x="300" y="194" class="timer">09:42</text>
+  <rect x="40" y="220" width="116" height="54" class="box"/>
+  <rect x="157" y="220" width="116" height="54" class="box"/>
+  <rect x="274" y="220" width="116" height="54" class="box"/>
+  <text x="48" y="238" class="small">SÂN</text><text x="48" y="260" class="label">Cầu Giấy 1</text>
+  <text x="165" y="238" class="small">THỜI GIAN</text><text x="165" y="260" class="label">18:00–20:00</text>
+  <text x="282" y="238" class="small">SỐ TIỀN</text><text x="282" y="260" class="label">180.000đ</text>
+  <text x="40" y="306" class="caption">Tài khoản thanh toán</text>
+  <rect x="40" y="318" width="350" height="40" class="selected"/>
+  <text x="54" y="343" class="label">◉ Vietcombank •••• 6789</text>
+  <text x="300" y="343" class="small">Đã xác minh</text>
+  <rect x="40" y="364" width="350" height="40" class="box"/>
+  <text x="54" y="389" class="text">○ ACB •••• 2222 (mờ)</text>
+  <text x="250" y="389" class="small">Chưa xác minh</text>
+  <text x="40" y="428" class="label">+ Liên kết tài khoản mới</text>
+  <rect x="40" y="452" width="350" height="44" class="btn"/>
+  <text x="180" y="479" class="btn-text">Thanh toán</text>
+  <text x="40" y="520" class="small">Chỉ hiện 4 số cuối. Tài khoản chưa xác minh không chọn được.</text>
+  <text x="40" y="538" class="small">Thành công → chuyển sang /my-bookings.</text>
+  <text x="40" y="556" class="small">Hết giờ đếm ngược → khóa form, báo hết giữ chỗ (BR3).</text>
+
+  <!-- Frame 2: link + OTP -->
+  <text x="435" y="28" class="caption">2. Liên kết tài khoản mới và nhập OTP</text>
+  <rect x="435" y="40" width="390" height="700" class="frame"/>
+  <rect x="435" y="40" width="390" height="40" class="bar"/>
+  <text x="449" y="65" class="label">smashgo</text>
+  <rect x="455" y="100" width="350" height="48" class="dark"/>
+  <text x="469" y="129" class="btn-text">Thời gian giữ chỗ còn</text>
+  <text x="715" y="134" class="timer">08:15</text>
+  <text x="455" y="182" class="caption">Liên kết tài khoản mới</text>
+  <text x="455" y="208" class="label">Ngân hàng</text>
+  <rect x="455" y="216" width="350" height="34" class="box"/><text x="465" y="238" class="text">Vietcombank ▾</text>
+  <text x="455" y="274" class="label">Số tài khoản</text>
+  <rect x="455" y="282" width="350" height="34" class="box"/><text x="465" y="304" class="text">9704 1234 5678 9</text>
+  <text x="455" y="340" class="label">Tên chủ tài khoản</text>
+  <rect x="455" y="348" width="350" height="34" class="box"/><text x="465" y="370" class="text">NGUYEN VAN A</text>
+  <rect x="455" y="396" width="350" height="40" class="btn"/><text x="590" y="421" class="btn-text">Gửi mã OTP</text>
+  <line x1="455" y1="458" x2="805" y2="458" stroke="#aaa" stroke-dasharray="4 3"/>
+  <text x="455" y="486" class="caption">Nhập mã OTP</text>
+  <text x="455" y="506" class="small">Đã gửi cho Vietcombank •••• 6789. Hiệu lực 5 phút.</text>
+  <rect x="455" y="518" width="350" height="34" class="box"/><text x="465" y="540" class="text">● ● ● ● ● ●</text>
+  <rect x="455" y="566" width="350" height="40" class="btn"/><text x="598" y="591" class="btn-text">Xác minh</text>
+  <text x="455" y="630" class="small">Xác minh xong → tài khoản xuất hiện trong danh sách và</text>
+  <text x="455" y="648" class="small">được chọn sẵn; nút Thanh toán bật lên.</text>
+
+  <!-- Frame 3: errors -->
+  <text x="850" y="28" class="caption">3. Thông báo lỗi</text>
+  <rect x="850" y="40" width="390" height="700" class="frame"/>
+  <rect x="850" y="40" width="390" height="40" class="bar"/>
+  <text x="864" y="65" class="label">smashgo</text>
+  <rect x="870" y="100" width="350" height="50" class="alert"/>
+  <text x="882" y="122" class="text">⚠ Mã OTP chưa đúng. Bạn còn 2 lần thử.</text>
+  <text x="882" y="140" class="small">INVALID_OTP</text>
+  <rect x="870" y="162" width="350" height="64" class="alert"/>
+  <text x="882" y="184" class="text">⚠ Mã OTP đã hết hạn hoặc nhập sai quá số lần.</text>
+  <text x="882" y="200" class="text">Hãy liên kết lại tài khoản để nhận mã mới.</text>
+  <text x="882" y="217" class="small">VERIFICATION_EXPIRED_OR_LOCKED</text>
+  <rect x="870" y="238" width="350" height="64" class="alert"/>
+  <text x="882" y="260" class="text">⚠ Tài khoản chưa được xác minh. Hãy chọn tài</text>
+  <text x="882" y="276" class="text">khoản đã xác minh hoặc nhập OTP trước.</text>
+  <text x="882" y="293" class="small">BANK_ACCOUNT_NOT_VERIFIED</text>
+  <rect x="870" y="314" width="350" height="64" class="alert"/>
+  <text x="882" y="336" class="text">⚠ Lượt đặt đã hết 10 phút giữ chỗ hoặc đã</text>
+  <text x="882" y="352" class="text">được thanh toán.</text>
+  <text x="882" y="369" class="small">HOLD_EXPIRED_OR_ALREADY_PAID</text>
+  <rect x="870" y="390" width="350" height="64" class="alert"/>
+  <text x="882" y="412" class="text">⚠ Ngân hàng từ chối giao dịch, bạn chưa bị trừ</text>
+  <text x="882" y="428" class="text">tiền. Hãy thử lại hoặc chọn tài khoản khác.</text>
+  <text x="882" y="445" class="small">PAYMENT_FAILED</text>
+  <text x="870" y="490" class="small">Lỗi hiện ở đầu form (role="alert"); form giữ nguyên để thử lại.</text>
+</svg>
