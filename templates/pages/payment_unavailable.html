@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Không thể thanh toán | SmashGo{% endblock %}
+
+{% block content %}
+<main class="state-shell">
+  <section class="state-card" aria-labelledby="payment-unavailable-title">
+    <h1 id="payment-unavailable-title">Lượt đặt này không còn chờ thanh toán</h1>
+    <p>Lượt đặt đã hết 10 phút giữ chỗ, đã được thanh toán, hoặc không thuộc về bạn. Hãy xem lại lịch đặt hoặc đặt khung giờ khác.</p>
+    <a class="primary-link" href="{{ url_for('pages.my_bookings') }}">Xem lịch đặt của tôi</a>
+  </section>
+</main>
+{% endblock %}
