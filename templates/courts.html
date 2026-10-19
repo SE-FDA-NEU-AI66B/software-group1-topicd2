@@ -52,7 +52,10 @@
               <td class="location-cell">{{ court['Location'] }}</td>
               <td><span class="hours">{{ court['OpenTime'] }} <span>—</span> {{ court['CloseTime'] }}</span></td>
               <td class="price">{{ "{:,.0f}".format(court['PricePerHour']) }}<small>đ</small></td>
-              <td><span class="status"><span></span> Đang nhận đặt</span></td>
+              <td>
+                <span class="status"><span></span> Đang nhận đặt</span>
+                <a class="court-book-link" href="{{ url_for('bookings.book', courtId=court['CourtID']) }}">Đặt sân →</a>
+              </td>
             </tr>
             {% endfor %}
           </tbody>

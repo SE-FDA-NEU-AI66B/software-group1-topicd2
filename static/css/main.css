@@ -52,6 +52,7 @@
 
 .state-error { color: #8d3e27; }
 .state-error a { display: inline-block; margin-top: 8px; color: #276849; font-weight: 700; }
+.court-book-link { display: block; margin-top: 6px; color: #276849; font-size: 12px; font-weight: 700; }
 
 @keyframes state-spin { to { transform: rotate(360deg); } }
 
