@@ -109,8 +109,8 @@ SQLite database.
 ## 4. Create and seed the database
 
 From the repository root, run this one command. It creates the SQLite database,
-creates all 13 tables, and seeds three test accounts plus 12 courts with their
-images:
+creates all 13 tables, and seeds four test accounts, 12 courts with their
+images, and one confirmed demo booking (see below):
 
 **Windows (PowerShell):**
 
@@ -141,8 +141,17 @@ cho môi trường phát triển; cơ sở dữ liệu chỉ lưu mật khẩu d
 | Vai trò | Email | Mật khẩu giả |
 | --- | --- | --- |
 | User | `user@smashgo.local` | `UserTest123!` |
+| User 2 | `user2@smashgo.local` | `User2Test123!` |
 | Manager | `walking-skeleton-manager@smashgo.local` | `ManagerTest123!` |
 | Admin | `admin@smashgo.local` | `AdminTest123!` |
+
+### Lịch đặt mẫu để demo đặt trùng
+
+`init_db.py` tạo sẵn một lịch **đã xác nhận** của `user2@smashgo.local` trên sân
+đầu tiên (*SmashGo Cầu Giấy 1*), **ngày mai từ 20:00 đến 22:00** (tính theo ngày
+chạy lệnh). Đăng nhập bằng `user@smashgo.local`, mở `/book`, chọn sân đó, ngày
+mai, 20:00–21:30 rồi xác nhận: hệ thống từ chối và báo khung 20:00–22:00 đã có
+lịch (BR1).
 
 ## 5. Start the app and verify the result
 
@@ -170,6 +179,21 @@ prices. The header should say “HỆ THỐNG ĐẶT SÂN CẦU LÔNG”; the co
 To stop the server, return to its terminal and press `Ctrl+C`. Court photos and
 web fonts are hosted externally, so they may not load without an internet
 connection; the court details should still be visible.
+
+### Kiểm tra đặt trùng đồng thời (US-05) bằng 2 trình duyệt
+
+1. Mở hai trình duyệt khác nhau (hoặc một cửa sổ thường và một cửa sổ ẩn danh)
+   tại `http://127.0.0.1:5000/book`.
+2. Trình duyệt A đăng nhập `user@smashgo.local`, trình duyệt B đăng nhập
+   `user2@smashgo.local`.
+3. Ở cả hai, chọn cùng một sân, cùng ngày và cùng khung giờ còn trống (ví dụ
+   *SmashGo Cầu Giấy 2*, ngày mai, 15:00–17:00).
+4. Bấm **Xác nhận đặt sân** ở hai trình duyệt gần như cùng lúc.
+
+Kết quả đúng: chỉ một bên thấy "Đã giữ chỗ cho bạn", bên còn lại nhận thông
+báo khung giờ đã có lịch. Trường hợp chạy song song thật sự được kiểm tra tự
+động bởi `test_simultaneous_requests_for_same_slot_have_one_winner` trong
+`tests/test_booking.py`.
 
 ## 6. Troubleshooting
 
