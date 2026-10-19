@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Lịch đặt của tôi | SmashGo{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/book.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/my_bookings.css') }}">
+{% endblock %}
+
+{% block content %}
+<main class="bookings-shell" id="my-bookings"
+      data-pay-url="{{ url_for('bookings.book') }}"
+      data-book-url="{{ url_for('courts') }}">
+  <div class="bookings-heading">
+    <div>
+      <p class="eyebrow"><span class="eyebrow-line"></span> LỊCH ĐẶT</p>
+      <h1>Lịch đặt của tôi</h1>
+    </div>
+    <a class="primary-link" href="{{ url_for('courts') }}">Đặt sân mới</a>
+  </div>
+
+  <p class="book-notice" id="bookings-notice" role="status" hidden></p>
+
+  <div data-state="loading">
+    {% include "partials/state_loading.html" %}
+  </div>
+  <div data-state="empty" hidden>
+    {% with title="Bạn chưa có lịch đặt nào", message="Chọn một sân và khung giờ để đặt lượt chơi đầu tiên." %}
+      {% include "partials/state_empty.html" %}
+    {% endwith %}
+  </div>
+  <div data-state="error" hidden>
+    {% with title="Chưa thể tải lịch đặt", message="Đã xảy ra sự cố khi tải lịch đặt của bạn. Vui lòng thử lại." %}
+      {% include "partials/state_error.html" %}
+    {% endwith %}
+  </div>
+  <ul class="booking-list" data-state="data" id="booking-list" hidden></ul>
+
+  <dialog class="cancel-dialog" id="cancel-dialog" aria-labelledby="cancel-title">
+    <form method="dialog" id="cancel-form">
+      <h2 id="cancel-title">Hủy lượt đặt?</h2>
+      <p id="cancel-summary"></p>
+      <p class="cancel-policy">
+        Chính sách hoàn tiền: hủy trước giờ chơi <strong>hơn 4 giờ</strong> được hoàn đủ;
+        hủy <strong>trong vòng 4 giờ</strong> sẽ mất 50% tiền cọc.
+      </p>
+      <p class="cancel-refund" id="cancel-refund"></p>
+      <p class="book-error" id="cancel-error" role="alert" hidden></p>
+      <label for="cancel-reason">
+        Lý do (không bắt buộc)
+        <textarea id="cancel-reason" name="cancelReason" maxlength="255" rows="2"></textarea>
+      </label>
+      <div class="cancel-actions">
+        <button type="button" class="secondary-button" id="cancel-dismiss">Giữ lịch</button>
+        <button type="submit" class="danger-button" id="cancel-confirm">Xác nhận hủy</button>
+      </div>
+    </form>
+  </dialog>
+</main>
+<script src="{{ url_for('static', filename='api.js') }}"></script>
+<script src="{{ url_for('static', filename='my_bookings.js') }}"></script>
+{% endblock %}
