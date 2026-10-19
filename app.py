@@ -5,7 +5,7 @@ from contextlib import closing
 from flask import Flask, redirect, render_template, session, url_for
 
 from database import get_database_path, get_db_connection
-from routes import auth_bp, bookings_bp, pages_bp
+from routes import auth_bp, bank_accounts_bp, bookings_bp, pages_bp
 
 
 def create_app(test_config: dict | None = None) -> Flask:
@@ -23,6 +23,7 @@ def create_app(test_config: dict | None = None) -> Flask:
     app.register_blueprint(auth_bp)
     app.register_blueprint(pages_bp)
     app.register_blueprint(bookings_bp)
+    app.register_blueprint(bank_accounts_bp)
 
     @app.context_processor
     def inject_current_user():
