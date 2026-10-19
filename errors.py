@@ -39,6 +39,35 @@ ERROR_MESSAGES = {
         "Bạn đang có {limit} lượt đặt sắp tới. Hãy chơi xong hoặc hủy một lượt "
         "trước khi đặt thêm."
     ),
+    "INVALID_BANK_ACCOUNT_INPUT": (
+        "Thông tin tài khoản chưa hợp lệ. Hãy chọn ngân hàng trong danh sách, nhập "
+        "số tài khoản từ 6 đến 19 chữ số và tên chủ tài khoản."
+    ),
+    "BANK_ACCOUNT_EXISTS": (
+        "Tài khoản này đã được liên kết và xác minh. Hãy chọn nó trong danh sách "
+        "tài khoản của bạn."
+    ),
+    "BANK_ACCOUNT_NOT_FOUND": "Không tìm thấy tài khoản ngân hàng này. Hãy tải lại trang.",
+    "NOT_ACCOUNT_OWNER": "Tài khoản ngân hàng này không thuộc về bạn.",
+    "INVALID_OTP": "Mã OTP chưa đúng. Bạn còn {attempts_left} lần thử.",
+    "VERIFICATION_EXPIRED_OR_LOCKED": (
+        "Mã OTP đã hết hạn hoặc bạn đã nhập sai quá số lần cho phép. Hãy liên kết "
+        "lại tài khoản để nhận mã mới."
+    ),
+    "BOOKING_NOT_FOUND": "Không tìm thấy lượt đặt này. Hãy kiểm tra lại lịch đặt của bạn.",
+    "NOT_BOOKING_OWNER": "Lượt đặt này không thuộc về bạn.",
+    "BANK_ACCOUNT_NOT_VERIFIED": (
+        "Tài khoản chưa được xác minh. Hãy chọn một tài khoản đã xác minh, hoặc "
+        "liên kết và nhập OTP trước khi thanh toán."
+    ),
+    "HOLD_EXPIRED_OR_ALREADY_PAID": (
+        "Lượt đặt đã hết 10 phút giữ chỗ hoặc đã được thanh toán. Hãy kiểm tra lịch "
+        "đặt của bạn hoặc đặt lại khung giờ khác."
+    ),
+    "PAYMENT_FAILED": (
+        "Ngân hàng từ chối giao dịch, bạn chưa bị trừ tiền. Hãy thử lại hoặc chọn "
+        "tài khoản khác trong thời gian giữ chỗ."
+    ),
 }
 
 FALLBACK_MESSAGE = (
