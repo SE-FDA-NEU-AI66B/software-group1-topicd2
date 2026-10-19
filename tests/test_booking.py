@@ -30,8 +30,12 @@ def user_id(database_path, email):
         return connection.execute("SELECT UserID FROM Users WHERE Email = ?", (email,)).fetchone()[0]
 
 
-def login(client, email="user@smashgo.local", password="UserTest123!"):
-    response = client.post("/login", data={"email": email, "password": password})
+DEMO_USER = ("user@smashgo.local", "UserTest123!")
+
+
+def login(client, account=DEMO_USER):
+    email, secret = account
+    response = client.post("/login", data={"email": email, "password": secret})
     assert response.status_code == 302
 
 
@@ -160,7 +164,7 @@ def test_api_requires_logged_in_user(app):
     assert response.status_code == 401
     assert response.get_json()["code"] == "UNAUTHENTICATED"
 
-    login(client, "admin@smashgo.local", "AdminTest123!")
+    login(client, ("admin@smashgo.local", "AdminTest123!"))
     assert book(client).status_code == 403
 
 
@@ -221,5 +225,5 @@ def test_login_returns_user_to_book_with_selection(app):
 
 def test_manager_cannot_open_book_page(app):
     client = app.test_client()
-    login(client, "walking-skeleton-manager@smashgo.local", "ManagerTest123!")
+    login(client, ("walking-skeleton-manager@smashgo.local", "ManagerTest123!"))
     assert client.get("/book").status_code == 403
