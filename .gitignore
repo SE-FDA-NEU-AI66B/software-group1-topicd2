@@ -7,6 +7,7 @@
 credentials.json
 
 # Databases and dumps
+instance/
 *.sqlite
 *.sqlite3
 *.db
