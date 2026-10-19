@@ -180,6 +180,22 @@ To stop the server, return to its terminal and press `Ctrl+C`. Court photos and
 web fonts are hosted externally, so they may not load without an internet
 connection; the court details should still be visible.
 
+### Cổng thanh toán giả lập (mock)
+
+Dự án không kết nối ngân hàng thật. `bank_gateway.py` giả lập ngân hàng với các
+giá trị cố định để demo và test:
+
+| Tình huống | Cách làm |
+| --- | --- |
+| Mã OTP khi liên kết tài khoản | Luôn là `123456` (hiệu lực 5 phút, tối đa 3 lần nhập sai) |
+| Thanh toán thành công | Dùng số tài khoản bất kỳ có 6–19 chữ số, ví dụ `9704123456789` |
+| Thanh toán thất bại (`PAYMENT_FAILED`) | Dùng số tài khoản kết thúc bằng `0000`, ví dụ `123450000` |
+
+Luồng demo: giữ chỗ ở `/book` → trang thanh toán có đồng hồ đếm ngược 10 phút →
+**Liên kết tài khoản mới** → nhập OTP `123456` → **Thanh toán** → chuyển sang
+`/my-bookings`. Nhập sai OTP 3 lần hoặc để quá 5 phút thì phải liên kết lại để
+nhận mã mới.
+
 ### Kiểm tra đặt trùng đồng thời (US-05) bằng 2 trình duyệt
 
 1. Mở hai trình duyệt khác nhau (hoặc một cửa sổ thường và một cửa sổ ẩn danh)
