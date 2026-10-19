@@ -180,6 +180,23 @@ To stop the server, return to its terminal and press `Ctrl+C`. Court photos and
 web fonts are hosted externally, so they may not load without an internet
 connection; the court details should still be visible.
 
+### Lịch đặt mẫu của tài khoản `user@smashgo.local`
+
+Để xem màn `/my-bookings` có dữ liệu ngay, `init_db.py` tạo cho
+`user@smashgo.local` một tài khoản ngân hàng đã xác minh (Vietcombank, 4 số cuối
+`6789`) và 4 lịch ở các trạng thái khác nhau (ngày tính theo hôm chạy lệnh):
+
+| Trạng thái | Ngày | Ghi chú |
+| --- | --- | --- |
+| Đã xác nhận | 3 ngày tới, 18:00–20:00 | Đã thanh toán; có nút **Hủy lịch** (hoàn đủ vì còn hơn 4 giờ) |
+| Đã chơi | 7 ngày trước | Không hủy được |
+| Đã hủy | 2 ngày trước | Đã hoàn tiền đủ |
+| Hết hạn giữ chỗ | Hôm qua | Không thanh toán trong 10 phút |
+
+Vì đã có 1 lịch sắp tới, tài khoản này chỉ đặt thêm được 1 lượt trước khi chạm
+giới hạn 2 lượt (BR6). Bước này chỉ chạy khi tài khoản chưa có lịch nào, nên chạy
+lại `init_db.py` không tạo trùng.
+
 ### Cổng thanh toán giả lập (mock)
 
 Dự án không kết nối ngân hàng thật. `bank_gateway.py` giả lập ngân hàng với các
