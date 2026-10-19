@@ -49,7 +49,11 @@ def test_seed_contains_confirmed_demo_booking(database_path):
     initialize_database(database_path)
     with sqlite3.connect(database_path) as connection:
         rows = connection.execute(
-            "SELECT CourtID, BookingDate, StartTime, EndTime, Status FROM Booking"
+            """
+            SELECT CourtID, BookingDate, StartTime, EndTime, Status
+            FROM Booking JOIN Users USING (UserID)
+            WHERE Email = 'user2@smashgo.local'
+            """
         ).fetchall()
     assert rows == [(1, TOMORROW, "20:00", "22:00", "CONFIRMED")]
 
@@ -108,7 +112,12 @@ def test_contiguous_booking_is_allowed(app):
 
 def test_third_active_booking_is_rejected(app):
     client = app.test_client()
-    login(client)
+    # A fresh account: the seeded demo user already has an upcoming booking.
+    registered = client.post(
+        "/register",
+        data={"full_name": "Limit Tester", "email": "limit@smashgo.local", "password": DEMO_USER[1]},
+    )
+    assert registered.status_code == 302
     assert book(client, startTime="08:00", endTime="09:00").status_code == 201
     assert book(client, startTime="11:00", endTime="12:00").status_code == 201
 

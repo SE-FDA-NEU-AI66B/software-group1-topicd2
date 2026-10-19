@@ -73,11 +73,15 @@ def test_link_returns_only_last_four_digits(client):
         "accountNumberLast4": "9012",
         "verificationStatus": "PENDING",
     }
-    listed = client.get("/api/bank-accounts").get_json()
-    assert listed == [
-        {"bankAccountId": body["bankAccountId"], "bankName": "BIDV", "accountNumberLast4": "9012", "isVerified": False}
-    ]
-    assert "123456789012" not in client.get("/api/bank-accounts").get_data(as_text=True)
+    listed = client.get("/api/bank-accounts")
+    assert {
+        "bankAccountId": body["bankAccountId"],
+        "bankName": "BIDV",
+        "accountNumberLast4": "9012",
+        "isVerified": False,
+    } in listed.get_json()
+    assert "123456789012" not in listed.get_data(as_text=True)
+    assert "0123456789" not in listed.get_data(as_text=True)
 
 
 def test_invalid_account_input_is_rejected(client):
