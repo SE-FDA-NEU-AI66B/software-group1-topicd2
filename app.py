@@ -1,11 +1,20 @@
 import os
 import secrets
-from contextlib import closing
+from datetime import date
 
-from flask import Flask, redirect, render_template, session, url_for
+from flask import Flask, redirect, render_template, request, session, url_for
 
-from database import get_database_path, get_db_connection
-from routes import admin_api_bp, auth_bp, bank_accounts_bp, bookings_bp, pages_bp
+from booking_service import BookingError
+from court_service import list_active_courts
+from database import get_database_path
+from routes import (
+    admin_api_bp,
+    auth_bp,
+    bank_accounts_bp,
+    bookings_bp,
+    court_pages_bp,
+    pages_bp,
+)
 
 
 def create_app(test_config: dict | None = None) -> Flask:
@@ -26,6 +35,8 @@ def create_app(test_config: dict | None = None) -> Flask:
     app.register_blueprint(bank_accounts_bp)
     # Task #94: Register Admin JSON endpoints for court review and status management.
     app.register_blueprint(admin_api_bp)
+    # Task #95: Register public court details and availability endpoints.
+    app.register_blueprint(court_pages_bp)
 
     @app.context_processor
     def inject_current_user():
@@ -37,26 +48,34 @@ def create_app(test_config: dict | None = None) -> Flask:
 
     @app.get("/courts")
     def courts():
-        with closing(get_db_connection(app.config["DATABASE_PATH"])) as connection:
-            court_rows = connection.execute(
-                """
-                SELECT Court.CourtID, Court.CourtName, Court.Location,
-                       Court.Description, Court.PricePerHour, Court.OpenTime,
-                       Court.CloseTime,
-                       (
-                           SELECT Court_Image.Url
-                           FROM Court_Image
-                           WHERE Court_Image.CourtID = Court.CourtID
-                           ORDER BY Court_Image.SortOrder, Court_Image.ImageID
-                           LIMIT 1
-                       ) AS ImageUrl
-                FROM Court
-                WHERE Court.Status = 'ACTIVE'
-                ORDER BY Court.CourtID
-                """
-            ).fetchall()
-
-        return render_template("courts.html", courts=court_rows)
+        filters = {
+            "date": request.args.get("date", "").strip(),
+            "start_time": request.args.get("startTime", "").strip(),
+            "end_time": request.args.get("endTime", "").strip(),
+            "location": request.args.get("location", "").strip(),
+        }
+        filter_error = None
+        try:
+            court_rows = list_active_courts(
+                app.config["DATABASE_PATH"],
+                filters["date"],
+                filters["start_time"],
+                filters["end_time"],
+                filters["location"],
+            )
+        except BookingError:
+            court_rows = []
+            filter_error = (
+                "Để lọc theo giờ, hãy chọn ngày, giờ bắt đầu và giờ kết thúc hợp lệ "
+                "(tối thiểu 1 giờ, theo bước 30 phút)."
+            )
+        return render_template(
+            "courts.html",
+            courts=court_rows,
+            filters=filters,
+            filter_error=filter_error,
+            today=date.today().isoformat(),
+        )
 
     return app
 
