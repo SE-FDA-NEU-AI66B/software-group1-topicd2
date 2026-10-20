@@ -107,10 +107,11 @@ def test_cancel_more_than_four_hours_before_refunds_in_full(client, database_pat
         "/api/bookings",
         json={"courtId": 1, "bookingDate": IN_TWO_DAYS, "startTime": "08:00", "endTime": "10:00"},
     ).get_json()["bookingId"]
-    accounts = client.get("/api/bank-accounts").get_json()
+    account_id = client.get("/api/bank-accounts").get_json()[0]["bankAccountId"]
+    client.post(f"/api/bookings/{booking_id}/payment/otp", json={"bankAccountId": account_id})
     paid = client.post(
         f"/api/bookings/{booking_id}/payment",
-        json={"bankAccountId": accounts[0]["bankAccountId"], "paymentMethod": "BANK_TRANSFER"},
+        json={"bankAccountId": account_id, "paymentMethod": "BANK_TRANSFER", "otp": "123456"},
     )
     assert paid.status_code == 200
     assert query(database_path, "SELECT COUNT(*) FROM Notification WHERE BookingID = ?", (booking_id,)) == [(1,)]
