@@ -22,7 +22,7 @@ from booking_service import (
 )
 from database import get_db_connection
 from errors import user_message
-from payment_service import pay_booking
+from payment_service import pay_booking, request_payment_otp
 from routes.auth import default_url_for_role
 
 bookings_bp = Blueprint("bookings", __name__)
@@ -215,6 +215,28 @@ def api_cancel_booking(booking_id: int):
     return jsonify(result), 200
 
 
+@bookings_bp.post("/api/bookings/<int:booking_id>/payment/otp")
+def api_request_payment_otp(booking_id: int):
+    current_user, error = api_user()
+    if error:
+        return error
+
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        payload = {}
+
+    try:
+        result = request_payment_otp(
+            current_app.config["DATABASE_PATH"],
+            current_user["user_id"],
+            booking_id,
+            payload.get("bankAccountId"),
+        )
+    except BookingError as booking_error:
+        return error_response(booking_error)
+    return jsonify(result), 200
+
+
 @bookings_bp.post("/api/bookings/<int:booking_id>/payment")
 def api_pay_booking(booking_id: int):
     current_user, error = api_user()
@@ -231,6 +253,7 @@ def api_pay_booking(booking_id: int):
             current_user["user_id"],
             booking_id,
             payload.get("bankAccountId"),
+            payload.get("otp"),
         )
     except BookingError as booking_error:
         return error_response(booking_error)
