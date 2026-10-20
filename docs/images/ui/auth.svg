@@ -1,0 +1,66 @@
+<!-- Task #96: Wireframes for the shared login and User registration screens. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680" role="img" aria-labelledby="title description">
+  <title id="title">SmashGo login and registration wireframes</title>
+  <desc id="description">Shared sign-in screen and User account registration screen, including return-to-booking flow.</desc>
+  <rect width="1200" height="680" fill="#f4f7f1"/>
+  <style>
+    .frame { fill: #fff; stroke: #dce5dc; stroke-width: 2; }
+    .bar { fill: #0c3b2e; }
+    .brand { fill: #fff; font: 700 21px Arial, sans-serif; }
+    .caption { fill: #e8794b; font: 700 13px Arial, sans-serif; }
+    .title { fill: #18382e; font: 700 30px Arial, sans-serif; }
+    .copy { fill: #697970; font: 15px Arial, sans-serif; }
+    .label { fill: #18382e; font: 700 14px Arial, sans-serif; }
+    .field { fill: #fff; stroke: #b9c8bf; }
+    .hint { fill: #697970; font: 13px Arial, sans-serif; }
+    .button { fill: #0c3b2e; }
+    .button-text { fill: #fff; font: 700 14px Arial, sans-serif; }
+    .link { fill: #276849; font: 700 14px Arial, sans-serif; }
+    .note { fill: #eef4ef; stroke: #dce5dc; }
+  </style>
+
+  <text x="32" y="32" class="caption">P0 · SHARED AUTHENTICATION SCREENS</text>
+
+  <rect x="32" y="52" width="548" height="590" class="frame"/>
+  <rect x="32" y="52" width="548" height="58" class="bar"/>
+  <text x="60" y="89" class="brand">smashgo</text>
+  <text x="76" y="158" class="caption">SIGN IN</text>
+  <text x="76" y="202" class="title">Log in to SmashGo</text>
+  <text x="76" y="230" class="copy">Sign in to continue to your booking.</text>
+  <text x="76" y="282" class="label">Email</text>
+  <rect x="76" y="294" width="460" height="46" rx="3" class="field"/>
+  <text x="92" y="323" class="hint">name@example.com</text>
+  <text x="76" y="376" class="label">Password</text>
+  <rect x="76" y="388" width="460" height="46" rx="3" class="field"/>
+  <text x="92" y="417" class="hint">••••••••</text>
+  <rect x="76" y="462" width="460" height="48" rx="3" class="button"/>
+  <text x="258" y="492" class="button-text">Log in</text>
+  <text x="115" y="546" class="copy">Don't have an account?</text>
+  <text x="284" y="546" class="link">Register</text>
+  <rect x="76" y="570" width="460" height="48" rx="3" class="note"/>
+  <text x="92" y="591" class="hint">Role is detected from the account. After sign-in,</text>
+  <text x="92" y="608" class="hint">return to the requested page or the role's home.</text>
+
+  <rect x="620" y="52" width="548" height="590" class="frame"/>
+  <rect x="620" y="52" width="548" height="58" class="bar"/>
+  <text x="648" y="89" class="brand">smashgo</text>
+  <text x="664" y="158" class="caption">CREATE ACCOUNT</text>
+  <text x="664" y="202" class="title">Create your account</text>
+  <text x="664" y="230" class="copy">Registration creates a User account.</text>
+  <text x="664" y="272" class="label">Full name</text>
+  <rect x="664" y="282" width="460" height="40" rx="3" class="field"/>
+  <text x="680" y="307" class="hint">Your name</text>
+  <text x="664" y="350" class="label">Email</text>
+  <rect x="664" y="360" width="460" height="40" rx="3" class="field"/>
+  <text x="680" y="385" class="hint">name@example.com</text>
+  <text x="664" y="428" class="label">Phone (optional)</text>
+  <rect x="664" y="438" width="460" height="40" rx="3" class="field"/>
+  <text x="680" y="463" class="hint">Phone number</text>
+  <text x="664" y="506" class="label">Password · at least 8 characters</text>
+  <rect x="664" y="516" width="460" height="40" rx="3" class="field"/>
+  <text x="680" y="541" class="hint">••••••••</text>
+  <rect x="664" y="570" width="220" height="44" rx="3" class="button"/>
+  <text x="728" y="598" class="button-text">Register</text>
+  <text x="906" y="598" class="copy">Already registered?</text>
+  <text x="1045" y="598" class="link">Log in</text>
+</svg>

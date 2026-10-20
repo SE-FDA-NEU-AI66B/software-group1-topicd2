@@ -425,6 +425,9 @@ explicitly. Available one-hour slots start every 30 minutes and link to `/book`
 with the court, date, start time and end time prefilled. See
 `docs/images/ui/courts-availability.svg` for the wireframe.
 
+The screen-to-story mapping, P0 wireframes, current navigation flows and
+user-facing error messages are maintained in [`docs/ui.md`](ui.md).
+
 ---
 
 ## 5. Design decisions
@@ -488,3 +491,9 @@ with the court, date, start time and end time prefilled. See
 - **What changed:** Booking reminders are stored as in-app notifications and released by a background job inside the Booking Service; the same job expires unpaid holds. No external notification service is used.
 - **Why:** An external service would add setup work that the walking skeleton and `SETUP.md` should not need, and the reminder rule (BR5) only needs the user to see it in the app.
 - **Effect on this document:** `Notification` (`ScheduledAt`, `SentAt`), `Booking.ReminderOffsetMinutes`, `Booking.HoldExpiresAt`, and the reminder flow in section 1.3.
+
+### Change 7: M1 screen flow aligned with the implemented routes
+
+- **What changed:** The M1 `/availability` screen is replaced by location/date/time filters on `/courts` and date-specific availability on `/courts/{courtId}`. The root route redirects to `/courts`, and the booking flow has a payment step at `/book?bookingId=...` with bank-account linking and OTP verification.
+- **Why:** The implemented flow lets users go directly from court discovery to details, availability, booking, and payment without a separate availability screen. Login and registration preserve the booking destination.
+- **Effect on this document:** [`docs/ui.md`](ui.md) records the current story-to-screen mapping, route status, P0 wireframes, navigation flow, and user-facing API errors.
