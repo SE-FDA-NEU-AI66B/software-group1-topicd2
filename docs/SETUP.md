@@ -184,6 +184,11 @@ courts, including the court names, Hanoi addresses, opening hours, and hourly
 prices. The header should say “HỆ THỐNG ĐẶT SÂN CẦU LÔNG”; the count should read
 “12 SÂN ĐANG HOẠT ĐỘNG” and “12 kết quả” should appear above the list.
 
+Use the search form to filter by location or a date plus start/end time. Choose
+**Chi tiết sân** to view its price, address, condition, photos, and one-hour
+availability slots. Selecting an available slot opens `/book` with the court,
+date, and times prefilled. The root route `/` redirects to `/courts`.
+
 To stop the server, return to its terminal and press `Ctrl+C`. Court photos and
 web fonts are hosted externally, so they may not load without an internet
 connection; the court details should still be visible.
