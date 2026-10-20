@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-<main class="book-shell">
+<main class="book-shell book-selection-shell">
   <section class="book-card" aria-labelledby="book-title">
     <p class="eyebrow"><span class="eyebrow-line"></span> ĐẶT SÂN</p>
     <h1 id="book-title">Chọn sân và giờ chơi</h1>
@@ -23,12 +23,14 @@
     <form class="book-form" id="book-form"
           data-authenticated="{{ 'true' if current_user else 'false' }}"
           data-login-url="{{ url_for('auth.login') }}"
-          data-book-url="{{ url_for('bookings.book') }}">
+          data-book-url="{{ url_for('bookings.book') }}"
+          data-availability-url="{{ url_for('court_pages.api_court_availability', court_id=0) }}">
       <label for="court">
         Sân
         <select id="court" name="courtId" required>
           {% for court in courts %}
           <option value="{{ court['CourtID'] }}"
+                  data-name="{{ court['CourtName'] }}"
                   data-open="{{ court['OpenTime'] }}"
                   data-close="{{ court['CloseTime'] }}"
                   data-price="{{ court['PricePerHour'] }}"
@@ -44,6 +46,27 @@
         <input id="booking-date" name="bookingDate" type="date" min="{{ today }}"
                value="{{ selection.date or today }}" required>
       </label>
+
+      <section class="booking-schedule-panel" aria-labelledby="booking-schedule-title">
+        <div class="booking-schedule-heading">
+          <div>
+            <p class="eyebrow"><span class="eyebrow-line"></span> LỊCH SÂN</p>
+            <h2 id="booking-schedule-title">Chọn khung giờ</h2>
+          </div>
+          <p class="booking-schedule-hint">Chọn ô còn trống để điền sân và giờ bắt đầu.</p>
+        </div>
+        <p id="booking-schedule-state" class="booking-schedule-state" role="status" aria-live="polite">
+          Đang tải lịch sân...
+        </p>
+        <div class="booking-schedule-scroll" role="region" aria-label="Lịch trống của các sân" tabindex="0">
+          <div id="booking-schedule-grid" class="booking-schedule-grid"></div>
+        </div>
+        <p class="availability-legend">
+          <span><i class="legend-available"></i> Còn trống</span>
+          <span><i class="legend-booked"></i> Đã đặt</span>
+          <span><i class="legend-unavailable"></i> Không thể đặt</span>
+        </p>
+      </section>
 
       <div class="book-times">
         <label for="start-time">
