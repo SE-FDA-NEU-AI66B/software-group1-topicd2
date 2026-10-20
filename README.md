@@ -14,24 +14,32 @@ Sports field booking platform for players, helping to find a field, choose a tim
 
 **Product Owner (fixed for the whole period):** @dqchien
 
-**Scrum Master (rotating every sprint):** @quynhquynh-blip (Sprint 1)
+**Scrum Master (rotating every sprint):**
+
+- Sprint 1: @quynhquynh-blip
+- Sprint 2: @Buithaoaineu
+- Sprint 3: @dqchien
 
 **Board:** https://github.com/orgs/SE-FDA-NEU-AI66B/projects/24
 
-**Definition of Done** 
+## First screen
+
+![SmashGo court discovery first screen](images/1st%20screen.PNG)
+
+**Definition of Done**
 A story is Done when **all** of the following are true. Not "mostly true".
 If one box is unticked, the story stays in the sprint and carries over.
 
-| # | Criterion | Who checks |
-|---|-----------|------------|
-| 1 | Every acceptance criterion on the issue passes | Reviewer, by hand |
-| 2 | The feature works from a clean clone with only the README steps | Reviewer |
-| 3 | At least one automated test covers the new behaviour | CI |
-| 4 | CI is green on the PR branch | CI |
-| 5 | Code reviewed and approved by a teammate who did not write it | GitHub |
-| 6 | Merged into `main` | GitHub |
-| 7 | No secrets, `.env`, or database dumps in the diff | CI |
-| 8 | `docs/traceability.md` updated if a screen or route changed | Reviewer |
+| #   | Criterion                                                       | Who checks        |
+| --- | --------------------------------------------------------------- | ----------------- |
+| 1   | Every acceptance criterion on the issue passes                  | Reviewer, by hand |
+| 2   | The feature works from a clean clone with only the README steps | Reviewer          |
+| 3   | At least one automated test covers the new behaviour            | CI                |
+| 4   | CI is green on the PR branch                                    | CI                |
+| 5   | Code reviewed and approved by a teammate who did not write it   | GitHub            |
+| 6   | Merged into `main`                                              | GitHub            |
+| 7   | No secrets, `.env`, or database dumps in the diff               | CI                |
+| 8   | `docs/traceability.md` updated if a screen or route changed     | Reviewer          |
 
 ## Run the walking skeleton
 

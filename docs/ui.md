@@ -88,7 +88,9 @@ GET / or /courts
   -> POST /api/bookings
        -> create a 10-minute PENDING hold
   -> GET /book?bookingId={bookingId}
-       -> link bank account if needed, then verify with OTP
+       -> link bank account if needed, then verify the account with OTP
+       -> request a payment OTP for the selected verified account
+       -> enter the payment OTP
        -> POST /api/bookings/{bookingId}/payment
   -> GET /my-bookings
 ```
@@ -137,3 +139,47 @@ the message as an alert. These M2 messages are the required user-facing copy:
 returned by `POST /api/bookings`. `BANK_ACCOUNT_NOT_VERIFIED` and
 `HOLD_EXPIRED_OR_ALREADY_PAID` are returned by
 `POST /api/bookings/{bookingId}/payment`.
+
+## What changed since M2
+
+M2 documented the architecture and API contracts. Since then, the repository
+has added the corresponding user-facing routes, screens, API handlers, and
+automated tests:
+
+### Change 1: Designed court discovery and booking flows are implemented
+
+- **What changed:** Court search, court details and availability now lead into
+  sign-in or registration when needed, a 10-minute booking hold, and payment.
+  Booking creation checks overlapping bookings within a serialized
+  `BEGIN IMMEDIATE` transaction.
+- **Evidence:** `routes/courts.py`, `routes/auth.py`, `routes/bookings.py`,
+  `booking_service.py`, and `tests/test_courts.py` / `tests/test_booking.py`.
+- **Effect on this document:** The current routes and their implemented status
+  are listed above. `/availability` is not a standalone route; filters are on
+  `/courts` and availability is shown on `/courts/{courtId}`.
+
+### Change 2: Payment now requests a separate OTP for each payment
+
+- **What changed:** In addition to verifying a linked bank account, the
+  payment flow sends a payment OTP to the selected verified account before
+  charging it. The first linked account is marked primary and selected by
+  default. The payment OTP expires after five minutes and is limited to three
+  attempts.
+- **Evidence:** `POST /api/bookings/{bookingId}/payment/otp` in
+  `routes/bookings.py`; OTP and primary-account handling in `payment_service.py`
+  and `static/payment.js`; coverage in `tests/test_payment.py`.
+- **Effect on this document:** The payment flow includes requesting and entering
+  a payment OTP before `POST /api/bookings/{bookingId}/payment`. Only the
+  account's last four digits are displayed.
+
+### Change 3: Booking management and Admin screens are implemented
+
+- **What changed:** Users can view their bookings and cancel eligible bookings;
+  Admins can review court requests and activate or deactivate courts. The
+  Manager court workspace is still an unsupported-feature placeholder and is
+  not implemented.
+- **Evidence:** `routes/bookings.py` and `booking_service.py`;
+  `routes/admin.py` and `admin_service.py`; corresponding tests in
+  `tests/test_my_bookings.py` and `tests/test_admin_courts.py`.
+- **Effect on this document:** `/my-bookings` and `/admin/courts` are marked
+  Implemented in the table above; `/manager/courts` remains Placeholder.
