@@ -73,6 +73,11 @@ ERROR_MESSAGES = {
         "Ngân hàng từ chối giao dịch, bạn chưa bị trừ tiền. Hãy thử lại hoặc chọn "
         "tài khoản khác trong thời gian giữ chỗ."
     ),
+    "PAYMENT_OTP_INVALID": "Mã OTP thanh toán chưa đúng. Bạn còn {attempts_left} lần thử.",
+    "PAYMENT_OTP_EXPIRED_OR_LOCKED": (
+        "Mã OTP thanh toán đã hết hạn, đã dùng hoặc bị nhập sai quá số lần cho phép. "
+        "Hãy bấm Gửi lại mã để nhận mã mới."
+    ),
 }
 
 FALLBACK_MESSAGE = (
