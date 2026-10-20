@@ -123,13 +123,13 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 | US-15 | As a manager, I want to add a new badminton court so that I can provide my court for users to book after it is approved by an administrator.                | P1       |      5 |
 | US-16 | As a manager, I want to edit or delete my own badminton courts so that I can keep my court information up to date.                                          | P1       |      3 |
 | US-17 | As a manager, I want to view the status of my court submission so that I know whether my new court is pending, approved, or rejected by an administrator.   | P1       |      3 |
-| US-18 | As a manager, I want to receive and view reports about my badminton courts from guests or users so that I can identify and address problems with my courts. | P2       |      3 |
+| US-18 | As a manager, I want to receive and view reports about my badminton courts from registered users so that I can identify and address problems with my courts. | P2       |      3 |
 
 ### User Stories - Report
 
 | ID    | Story                                                                                                                                 | Priority | Points |
 | ----- | ------------------------------------------------------------------------------------------------------------------------------------- | -------- | -----: |
-| US-19 | As a guest or user, I want to report an issue with a badminton court so that the manager of that court is notified and can act on it. | P1       |      5 |
+| US-19 | As a registered user, I want to report an issue with a badminton court so that the manager of that court is notified and can act on it. | P1       |      5 |
 
 ### US-01 — View Available Badminton Courts
 
@@ -185,7 +185,7 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 
 4. **Given** a booking is "Pending" and the 10-minute hold has passed without a successful payment,  
    **When** the hold expires,  
-   **Then** the system automatically cancels the booking and releases the slot for other users (BR3).
+   **Then** the system changes the booking status to `EXPIRED` and releases the slot for other users (BR3).
 
 5. **Given** the user has selected one available 2-hour time slot,  
    **When** the user submits the required booking information,  
@@ -351,7 +351,7 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 
 **Acceptance Criteria**
 
-1. **Given** a guest or user submits a report about a badminton court owned by the manager,
+1. **Given** a registered user submits a report about a badminton court owned by the manager,
    **When** the report is submitted,
    **Then** the system associates the report with the corresponding court and manager.
 
@@ -363,7 +363,7 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 
 **Acceptance Criteria**
 
-1. **Given** a guest or user is viewing a badminton court,
+1. **Given** a registered user is viewing a badminton court,
    **When** they submit a report with a reason and description,
    **Then** the system creates a report for the selected court and sends it to the manager of that court.
 
@@ -376,8 +376,8 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 | ID  | Rule                                                                                                                                                                            | Worked example                                                                                                                                                                                                                         |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | BR1 | A court cannot be double-booked for a time slot that is already reserved.                                                                                                       | Court 3 (Maxping Vinh Tuy) is already booked for 20:00–22:00. Another user tries to book the same court for 20:00–21:30 → rejected; the system shows "Court 3 is already booked for the 20:00–22:00 slot."                             |
-| BR2 | Every booking must last at least 1 hour. If multiple groups play on the same court back-to-back, their bookings must be contiguous — no gap is allowed between them.            | Booking 20:00–21:00 → valid (meets the 1-hour minimum). On Court 1: Group A books 16:00–18:00, Group B books 18:30–... → invalid, because there is a 30-minute gap between the two bookings.                                           |
-| BR3 | The slot is held for 10 minutes pending payment; the reservation will be automatically cancelled if this time limit is exceeded.                                                | If a user selects Court 3 for the 20:00–21:00 slot at 18:00, the system holds the reservation until 18:10. If payment is not transferred by 18:10, the slot is automatically released and becomes available for others to book.        |
+| BR2 | Every booking must last at least 1 hour. On the same court, bookings may be back-to-back; if there is a gap, it must be at least 1 hour.                                         | A booking from 20:00–21:00 is valid. On Court 1, Group A books 16:00–18:00 and Group B books 18:30–20:00 → invalid because the gap is only 30 minutes. Back-to-back bookings or a gap of 1 hour or more are valid.                   |
+| BR3 | The slot is held for 10 minutes pending payment; if the hold expires without successful payment, the booking status becomes `EXPIRED` and the slot is released.                  | If a user selects Court 3 for the 20:00–21:00 slot at 18:00, the system holds the reservation until 18:10. If payment has not succeeded by 18:10, the booking becomes `EXPIRED` and the slot is released for others to book.        |
 | BR4 | Cancelling more than 4 hours before play time gets a full refund; cancelling within 4 hours forfeits 50% of the deposit.                                                        | Booking for 20:00, cancelled at 15:00 (5 hours before) → full refund. Cancelled at 17:00 (3 hours before) → only 50% refunded.                                                                                                         |
 | BR5 | The system automatically sends a reminder notification 4 hours before play time.                                                                                                | Booking starts at 20:00 → reminder notification is sent at 16:00 the same day.                                                                                                                                                         |
 | BR6 | Each account may hold at most 2 active (upcoming) bookings at a time.                                                                                                           | A user already has 2 upcoming bookings (e.g., Sep 16 and Sep 18). Trying to add a 3rd booking → rejected with the message "You already have 2 active bookings — please complete or cancel one before booking another."                 |
@@ -389,8 +389,9 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 
 | Route             | Purpose                                                                                                                                                                                 | Access | Priority                        |
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------------------------------- |
-| `/`               | Browse badminton courts and view court information                                                                                                                                      | G, U   | P0                              |
-| `/availability`   | View available courts by date and time                                                                                                                                                  | G, U   | P0                              |
+| `/`               | Redirect to `/courts`                                                                                                                                                                   | G, U   | P0                              |
+| `/courts`         | Browse and filter badminton courts by location, date, and time                                                                                                                          | G, U   | P0                              |
+| `/courts/{courtId}` | View court details and date-specific availability                                                                                                                                     | G, U   | P0                              |
 | `/login`          | Sign in with email and password (shared by all roles)                                                                                                                                   | G      | P0                              |
 | `/register`       | Create a new User account                                                                                                                                                               | G      | P0                              |
 | `/book`           | Select court, date, time, then link bank and pay                                                                                                                                        | G, U   | P0                              |
@@ -440,18 +441,24 @@ SmashGo is a system that enables badminton players of all levels to book courts 
 ```text
                   ┌───────────────┐
                   │       /       │
-                  │ Browse courts │
+                  │ Redirect      │
                   └───────┬───────┘
                           │
                     View / Search
                           ↓
                   ┌───────────────┐
-                  │ /availability │◄────────────────┐
+                  │   /courts     │◄────────────────┐
                   │ Find a court  │                 │
                   └───────┬───────┘                 │
                           │                         │
                      Select court                   │
                           ↓                         │
+                  ┌───────────────┐                 │
+                  │ /courts/{id}  │                 │
+                  │ Details and   │                 │
+                  │ availability │                 │
+                  └───────┬───────┘                 │
+                          │                         │
                   ┌───────────────┐                 │
                   │     /book     │                 │
                   │  Select date  │                 │
@@ -534,7 +541,7 @@ SmashGo is a system that enables badminton players of all levels to book courts 
                  View approved court
                          ↓
                  ┌───────────────┐
-                 │ /availability │
+                 │ /courts/{id}  │
                  └───────────────┘
 ```
 
@@ -576,7 +583,7 @@ SmashGo is a system that enables badminton players of all levels to book courts 
         └────────────┴───────┬────────┘
                              ↓
                      ┌───────────────┐
-                     │ /availability │
+                     │   /courts     │
                      └───────────────┘
 ```
 
