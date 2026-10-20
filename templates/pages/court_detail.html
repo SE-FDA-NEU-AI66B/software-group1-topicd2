@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}{{ court.courtName }} | SmashGo{% endblock %}
+
+{% block head %}
+<!-- Task #95: Load dedicated styles for court details and availability slots. -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/court_catalog.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Task #95: Show public court details and an accessible availability state container. -->
+<main class="court-detail-shell" id="court-detail"
+      data-court-id="{{ court.courtId }}"
+      data-court-name="{{ court.courtName }}"
+      data-availability-url="{{ availability_url }}"
+      data-book-url="{{ book_url }}">
+  <a class="court-back-link" href="{{ url_for('courts') }}">← Quay lại danh sách sân</a>
+
+  <section class="court-detail-card" aria-labelledby="court-detail-title">
+    <div class="court-detail-copy">
+      <p class="eyebrow"><span class="eyebrow-line"></span> CHI TIẾT SÂN</p>
+      <h1 id="court-detail-title">{{ court.courtName }}</h1>
+      <p class="court-detail-location">{{ court.location }}</p>
+      <p class="court-detail-description">{{ court.description or "Chưa có mô tả tình trạng sân." }}</p>
+      <dl class="court-detail-facts">
+        <div><dt>Giá thuê</dt><dd>{{ "{:,.0f}".format(court.pricePerHour) }}đ / giờ</dd></div>
+        <div><dt>Giờ mở cửa</dt><dd>{{ court.openTime }} – {{ court.closeTime }}</dd></div>
+        <div><dt>Trạng thái</dt><dd>Đang nhận đặt</dd></div>
+      </dl>
+    </div>
+    <div class="court-detail-gallery" aria-label="Ảnh sân">
+      {% if court.images %}
+        {% for image in court.images %}
+        <img src="{{ image.url }}" alt="Ảnh {{ court.courtName }}" loading="lazy">
+        {% endfor %}
+      {% else %}
+        <p class="court-detail-no-image">Chưa có ảnh sân.</p>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="availability-panel" aria-labelledby="availability-title">
+    <div class="availability-heading">
+      <div>
+        <p class="section-index">LỊCH SÂN</p>
+        <h2 id="availability-title">Chọn khung giờ</h2>
+      </div>
+      <label for="availability-date">Ngày chơi</label>
+      <input id="availability-date" type="date" min="{{ today }}" value="{{ today }}">
+    </div>
+    <div id="availability-state" class="availability-state" role="status" aria-live="polite">
+      <span class="state-loading-indicator" aria-hidden="true"></span>
+      Đang tải lịch trống...
+    </div>
+    <ul id="availability-slots" class="availability-slots" aria-label="Các khung giờ một tiếng"></ul>
+    <p class="availability-legend">
+      <span><i class="legend-available"></i> Còn trống</span>
+      <span><i class="legend-booked"></i> Đã có lịch</span>
+      <span><i class="legend-unavailable"></i> Không thể đặt</span>
+    </p>
+  </section>
+</main>
+<!-- Task #95: Load the shared API helper and the date-driven slot selection behavior. -->
+<script src="{{ url_for('static', filename='api.js') }}"></script>
+<script src="{{ url_for('static', filename='court_detail.js') }}"></script>
+{% endblock %}

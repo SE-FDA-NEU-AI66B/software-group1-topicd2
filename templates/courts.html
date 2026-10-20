@@ -2,6 +2,11 @@
 
 {% block title %}Sân cầu lông | SmashGo{% endblock %}
 
+{% block head %}
+<!-- Task #95: Load responsive styles for court search and court-detail links. -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/court_catalog.css') }}">
+{% endblock %}
+
 {% block content %}
   <main class="page-shell">
     <section class="intro" aria-labelledby="page-title">
@@ -14,6 +19,38 @@
         <span class="count-number">{{ "%02d"|format(courts|length) }}</span>
         <span class="count-label">SÂN ĐANG<br>HOẠT ĐỘNG</span>
       </div>
+    </section>
+
+    <!-- Task #95: Let guests filter courts by location and a requested date/time without a price filter. -->
+    <section class="court-search" aria-labelledby="search-title">
+      <div>
+        <p class="section-index">TÌM KIẾM</p>
+        <h2 id="search-title">Tìm sân phù hợp</h2>
+      </div>
+      <form class="court-search-form" method="get" action="{{ url_for('courts') }}" id="court-search-form">
+        <label>
+          Khu vực / địa chỉ
+          <input type="search" name="location" value="{{ filters.location }}" maxlength="100"
+                 placeholder="Ví dụ: Cầu Giấy">
+        </label>
+        <label>
+          Ngày chơi
+          <input type="date" name="date" min="{{ today }}" value="{{ filters.date }}">
+        </label>
+        <label>
+          Giờ bắt đầu
+          <input type="time" name="startTime" step="1800" value="{{ filters.start_time }}">
+        </label>
+        <label>
+          Giờ kết thúc
+          <input type="time" name="endTime" step="1800" value="{{ filters.end_time }}">
+        </label>
+        <button type="submit" id="court-search-submit">Tìm sân</button>
+      </form>
+      <p class="court-search-loading" id="court-search-loading" role="status" hidden>Đang tìm sân...</p>
+      {% if filter_error %}
+      <p class="court-filter-error" role="alert">{{ filter_error }}</p>
+      {% endif %}
     </section>
 
     <section class="directory" aria-labelledby="directory-title">
@@ -54,7 +91,12 @@
               <td class="price">{{ "{:,.0f}".format(court['PricePerHour']) }}<small>đ</small></td>
               <td>
                 <span class="status"><span></span> Đang nhận đặt</span>
+                <a class="court-detail-link" href="{{ url_for('court_pages.court_detail', court_id=court['CourtID']) }}">Chi tiết sân</a>
+                {% if filters.date and filters.start_time and filters.end_time %}
+                <a class="court-book-link" href="{{ url_for('bookings.book', courtId=court['CourtID'], date=filters.date, startTime=filters.start_time, endTime=filters.end_time) }}">Đặt sân →</a>
+                {% else %}
                 <a class="court-book-link" href="{{ url_for('bookings.book', courtId=court['CourtID']) }}">Đặt sân →</a>
+                {% endif %}
               </td>
             </tr>
             {% endfor %}
@@ -62,9 +104,15 @@
         </table>
       </div>
       {% else %}
-      <p class="empty-state">Chưa có sân nào đang hoạt động.</p>
+      {% if filters.location or filters.date or filters.start_time or filters.end_time %}
+      <p class="empty-state" role="status">Không tìm thấy sân phù hợp với bộ lọc. Hãy thử vị trí hoặc khung giờ khác.</p>
+      {% else %}
+      <p class="empty-state" role="status">Chưa có sân nào đang hoạt động.</p>
+      {% endif %}
       {% endif %}
       <p class="data-note"><span></span> Danh sách được tải trực tiếp từ cơ sở dữ liệu SmashGo.</p>
     </section>
   </main>
+  <!-- Task #95: Announce the server-rendered filter submission loading state accessibly. -->
+  <script src="{{ url_for('static', filename='court_catalog.js') }}"></script>
 {% endblock %}

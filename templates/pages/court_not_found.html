@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Không tìm thấy sân | SmashGo{% endblock %}
+
+{% block content %}
+<!-- Task #95: Explain when a court is missing or not publicly bookable. -->
+<main class="state-shell">
+  <section class="state-card" aria-labelledby="court-not-found-title">
+    <h1 id="court-not-found-title">Không tìm thấy sân</h1>
+    <p>Sân không tồn tại hoặc hiện không nhận đặt. Hãy quay lại danh sách sân đang hoạt động.</p>
+    <a class="primary-link" href="{{ url_for('courts') }}">Xem danh sách sân</a>
+  </section>
+</main>
+{% endblock %}

@@ -8,7 +8,8 @@ update this file should not be approved.
 | Route | Purpose | Access | Priority | Feature | Story issue | PR | Status |
 |-------|---------|--------|----------|---------|-------------|-----|--------|
 | `/` | Landing page | G | P0 | F1 | #3 | #14 | Done |
-| `/courts` | List active courts read from SQLite | G, U | P0 | F1 | US-01 | — | In progress |
+| `/courts` | List active courts with location and date/time filters; links to details and prefilled booking (`GET /api/courts`) | G, U | P0 | F1 | US-01 (#95) | — | In progress |
+| `/courts/{courtId}` | Show active court price, photos, address and condition; load date-based availability (`GET /api/courts/{id}`, `GET /api/courts/{id}/availability`) | G, U | P0 | F1 | US-02, US-03 (#95) | — | In progress |
 | `/book` | Select court, date and time, then hold the slot (`POST /api/bookings`) | G, U | P0 | F2 | US-04, US-05 (#91) | — | In progress |
 | `/book?bookingId=` | Payment step: 10-minute countdown, link bank account, OTP, pay (`/api/bank-accounts`, `POST /api/bookings/{id}/payment`) | U | P0 | F2 | US-04 (#92) | — | In progress |
 | `/my-bookings` | List own bookings with status (loading, empty, error, data); pay a pending one; cancel with BR4 refund (`GET /api/bookings/mine`, `DELETE /api/bookings/{id}`) | U | P0 (view); P1 (cancel) | F3 | US-06, US-08 (#93) | — | In progress |

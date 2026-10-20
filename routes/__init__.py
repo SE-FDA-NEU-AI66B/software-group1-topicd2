@@ -3,7 +3,16 @@ from .admin import admin_api_bp
 from .auth import auth_bp
 from .bank_accounts import bank_accounts_bp
 from .bookings import bookings_bp
+from .courts import court_pages_bp
 from .pages import pages_bp
 
 # Task #94: Export the Admin API blueprint so the application can register it.
-__all__ = ("admin_api_bp", "auth_bp", "bank_accounts_bp", "bookings_bp", "pages_bp")
+# Task #95: Export public court detail and availability routes for application registration.
+__all__ = (
+    "admin_api_bp",
+    "auth_bp",
+    "bank_accounts_bp",
+    "bookings_bp",
+    "court_pages_bp",
+    "pages_bp",
+)
