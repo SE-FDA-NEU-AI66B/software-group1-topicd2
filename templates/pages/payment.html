@@ -34,11 +34,14 @@
       <div id="accounts-loading">{% include "partials/state_loading.html" %}</div>
       <p class="book-hint" id="accounts-empty" hidden>Bạn chưa liên kết tài khoản nào. Hãy liên kết tài khoản bên dưới.</p>
       <div class="account-list" id="account-list" role="radiogroup" aria-labelledby="accounts-title"></div>
-      <button type="button" class="link-button" id="show-link-form">+ Liên kết tài khoản mới</button>
+      <button type="button" class="link-button" id="show-link-form" aria-label="Liên kết tài khoản mới" hidden>+ Thêm tài khoản</button>
     </section>
 
     <form class="book-form payment-section" id="link-form" hidden>
-      <h2>Liên kết tài khoản mới</h2>
+      <div class="section-heading">
+        <h2>Liên kết tài khoản mới</h2>
+        <button type="button" class="link-button" id="hide-link-form" hidden>Đóng</button>
+      </div>
       <label for="bank-name">
         Ngân hàng
         <select id="bank-name" name="bankName" required>
@@ -68,9 +71,20 @@
       <button type="submit">Xác minh</button>
     </form>
 
-    <div class="book-form">
+    <div class="book-form" id="pay-actions">
       <button type="button" id="pay-button" disabled>Thanh toán</button>
     </div>
+
+    <form class="book-form payment-section" id="pay-otp-form" hidden>
+      <h2>Xác nhận thanh toán</h2>
+      <p class="book-hint" id="pay-otp-hint"></p>
+      <label for="pay-otp">
+        Mã OTP
+        <input id="pay-otp" name="otp" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required>
+      </label>
+      <button type="submit">Xác nhận thanh toán</button>
+      <button type="button" class="link-button" id="resend-pay-otp">Gửi lại mã</button>
+    </form>
   </section>
 </main>
 <script src="{{ url_for('static', filename='api.js') }}"></script>

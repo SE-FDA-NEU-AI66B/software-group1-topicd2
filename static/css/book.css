@@ -112,6 +112,12 @@
 .account-option:has(input:disabled) { cursor: not-allowed; opacity: .6; }
 .account-option small { color: var(--muted); font-size: 11px; font-weight: 600; }
 
+.book-form .link-button,
+.book-form .link-button:hover { min-height: 0; padding: 0; background: none; color: #276849; font-size: 13px; justify-self: start; }
+.section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.section-heading .link-button { margin-top: 0; }
+.account-option .primary-badge { color: #276849; }
+
 .link-button {
   margin-top: 10px;
   padding: 0;
