@@ -1,0 +1,46 @@
+<!-- Task #94: Wireframe for Admin pending requests, rejection reasons and court status actions. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="820" viewBox="0 0 1200 820" role="img" aria-labelledby="title description">
+  <title id="title">SmashGo Admin court management wireframe</title>
+  <desc id="description">Admin page with pending court requests and a table of all courts with status controls.</desc>
+  <rect width="1200" height="820" fill="#f4f7f1"/>
+  <rect width="1200" height="68" fill="#0c3b2e"/>
+  <text x="72" y="43" fill="#ffffff" font-family="Arial, sans-serif" font-size="22" font-weight="700">smashgo</text>
+  <text x="880" y="41" fill="#dce5dc" font-family="Arial, sans-serif" font-size="14">Quản lý sân · Admin</text>
+  <text x="76" y="126" fill="#e8794b" font-family="Arial, sans-serif" font-size="13" font-weight="700">QUẢN TRỊ</text>
+  <text x="76" y="174" fill="#18382e" font-family="Arial, sans-serif" font-size="36" font-weight="700">Quản lý sân</text>
+  <text x="76" y="202" fill="#697970" font-family="Arial, sans-serif" font-size="15">Duyệt đề xuất sân mới và kiểm soát trạng thái các sân.</text>
+
+  <rect x="72" y="232" width="1056" height="292" fill="#ffffff" stroke="#dce5dc"/>
+  <text x="96" y="264" fill="#e8794b" font-family="Arial, sans-serif" font-size="12" font-weight="700">01 / DUYỆT ĐỀ XUẤT</text>
+  <text x="96" y="296" fill="#18382e" font-family="Arial, sans-serif" font-size="22" font-weight="700">Yêu cầu chờ duyệt</text>
+  <rect x="96" y="318" width="1008" height="176" fill="#ffffff" stroke="#dce5dc"/>
+  <rect x="116" y="338" width="138" height="102" fill="#e6f4ea" stroke="#dce5dc"/>
+  <text x="142" y="392" fill="#697970" font-family="Arial, sans-serif" font-size="13">Ảnh sân</text>
+  <text x="278" y="354" fill="#18382e" font-family="Arial, sans-serif" font-size="17" font-weight="700">SmashGo Demo Court Request 1</text>
+  <text x="278" y="380" fill="#697970" font-family="Arial, sans-serif" font-size="14">Đề xuất bởi SmashGo Demo Manager</text>
+  <text x="278" y="406" fill="#697970" font-family="Arial, sans-serif" font-size="14">12 Nguyễn Khánh Toàn, Cầu Giấy, Hà Nội</text>
+  <text x="278" y="432" fill="#697970" font-family="Arial, sans-serif" font-size="14">06:00–23:00 · 90.000đ / giờ</text>
+  <rect x="884" y="348" width="88" height="38" rx="3" fill="#0c3b2e"/>
+  <text x="905" y="372" fill="#ffffff" font-family="Arial, sans-serif" font-size="13" font-weight="700">Duyệt</text>
+  <rect x="982" y="348" width="102" height="38" rx="3" fill="#a6452a"/>
+  <text x="1001" y="372" fill="#ffffff" font-family="Arial, sans-serif" font-size="13" font-weight="700">Từ chối</text>
+  <text x="884" y="420" fill="#697970" font-family="Arial, sans-serif" font-size="12">Từ chối cần lý do</text>
+
+  <rect x="72" y="548" width="1056" height="224" fill="#ffffff" stroke="#dce5dc"/>
+  <text x="96" y="580" fill="#e8794b" font-family="Arial, sans-serif" font-size="12" font-weight="700">02 / TRẠNG THÁI SÂN</text>
+  <text x="96" y="612" fill="#18382e" font-family="Arial, sans-serif" font-size="22" font-weight="700">Tất cả sân</text>
+  <line x1="96" y1="638" x2="1104" y2="638" stroke="#dce5dc"/>
+  <text x="100" y="662" fill="#697970" font-family="Arial, sans-serif" font-size="12" font-weight="700">SÂN</text>
+  <text x="460" y="662" fill="#697970" font-family="Arial, sans-serif" font-size="12" font-weight="700">QUẢN LÝ</text>
+  <text x="630" y="662" fill="#697970" font-family="Arial, sans-serif" font-size="12" font-weight="700">LỊCH SẮP TỚI</text>
+  <text x="790" y="662" fill="#697970" font-family="Arial, sans-serif" font-size="12" font-weight="700">TRẠNG THÁI</text>
+  <text x="960" y="662" fill="#697970" font-family="Arial, sans-serif" font-size="12" font-weight="700">THAO TÁC</text>
+  <line x1="96" y1="676" x2="1104" y2="676" stroke="#dce5dc"/>
+  <text x="100" y="704" fill="#18382e" font-family="Arial, sans-serif" font-size="14">SmashGo Cầu Giấy 1</text>
+  <text x="460" y="704" fill="#18382e" font-family="Arial, sans-serif" font-size="14">SmashGo Demo Manager</text>
+  <text x="658" y="704" fill="#18382e" font-family="Arial, sans-serif" font-size="14">1</text>
+  <rect x="790" y="686" width="74" height="26" rx="13" fill="#e6f4ea"/>
+  <text x="804" y="704" fill="#276849" font-family="Arial, sans-serif" font-size="12" font-weight="700">ACTIVE</text>
+  <rect x="960" y="684" width="112" height="34" rx="3" fill="#a6452a"/>
+  <text x="977" y="706" fill="#ffffff" font-family="Arial, sans-serif" font-size="12" font-weight="700">Tạm ngưng</text>
+</svg>

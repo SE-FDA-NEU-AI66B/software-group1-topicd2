@@ -1,0 +1,189 @@
+/* Task #94: Style the Admin request queue, court status table and rejection dialog. */
+.admin-courts-shell {
+  width: min(100% - 40px, 1180px);
+  margin: 48px auto;
+}
+
+.admin-courts-heading {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 26px;
+}
+
+.admin-courts-heading h1 {
+  margin: 10px 0;
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(32px, 4vw, 48px);
+}
+
+.admin-courts-intro,
+.admin-subtext {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.admin-panel {
+  margin-top: 22px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  background: var(--white);
+}
+
+.admin-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.admin-panel-heading h2 {
+  margin: 6px 0 0;
+  font-family: "Manrope", sans-serif;
+  font-size: 22px;
+}
+
+.admin-state {
+  padding: 14px;
+  background: var(--paper);
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.admin-request-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-request {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px;
+  border: 1px solid var(--line);
+}
+
+.admin-request-details h3 {
+  margin: 0 0 8px;
+  font-family: "Manrope", sans-serif;
+  font-size: 17px;
+}
+
+.admin-request-details p {
+  margin: 4px 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.admin-request-details .admin-description { color: var(--ink); }
+
+.admin-gallery {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.admin-gallery img {
+  width: 96px;
+  height: 68px;
+  object-fit: cover;
+}
+
+.admin-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.primary-button,
+.admin-actions .danger-button {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 3px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.primary-button { background: var(--green); color: var(--white); }
+.primary-button:hover { background: #185742; }
+.admin-actions .danger-button { background: #a6452a; color: var(--white); }
+
+.admin-notice {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border: 1px solid #bad3c2;
+  background: #e6f4ea;
+  color: #276849;
+  font-size: 14px;
+}
+
+.admin-table-wrap { overflow-x: auto; }
+
+.admin-court-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.admin-court-table th,
+.admin-court-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.admin-court-table th { color: var(--muted); text-transform: uppercase; }
+.admin-court-table td { font-size: 13px; }
+.admin-court-table td:first-child { min-width: 210px; font-weight: 700; }
+.admin-subtext { display: block; margin-top: 4px; font-weight: 400; }
+
+.admin-status {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--paper);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.status-active { background: #e6f4ea; color: #276849; }
+.status-disabled { background: #fff1ec; color: #8d3e27; }
+.status-maintenance { background: #fff4df; color: #8d5a12; }
+
+.admin-dialog {
+  width: min(100% - 32px, 460px);
+  padding: 26px;
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.admin-dialog::backdrop { background: rgba(12, 59, 46, .45); }
+.admin-dialog h2 { margin: 0 0 12px; font-family: "Manrope", sans-serif; font-size: 21px; }
+.admin-dialog p { color: var(--muted); font-size: 14px; }
+.admin-dialog label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 700; }
+
+.admin-dialog textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--line);
+  font: inherit;
+  resize: vertical;
+}
+
+.admin-dialog .admin-actions { justify-content: flex-end; margin-top: 14px; }
+.admin-error { color: #8d3e27 !important; }
+
+@media (max-width: 760px) {
+  .admin-courts-shell { margin: 30px auto; }
+  .admin-panel { padding: 16px; }
+  .admin-request { flex-direction: column; }
+  .admin-actions { flex-wrap: wrap; }
+  .admin-panel-heading { align-items: flex-start; }
+}

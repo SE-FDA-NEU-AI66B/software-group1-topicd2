@@ -110,7 +110,8 @@ SQLite database.
 
 From the repository root, run this one command. It creates the SQLite database,
 creates all 13 tables, and seeds four test accounts, 12 courts with their
-images, and one confirmed demo booking (see below):
+images, one confirmed demo booking, four booking-history examples, and two
+pending court requests for the Admin review screen (see below):
 
 **Windows (PowerShell):**
 
@@ -144,6 +145,13 @@ cho môi trường phát triển; cơ sở dữ liệu chỉ lưu mật khẩu d
 | User 2 | `user2@smashgo.local` | `User2Test123!` |
 | Manager | `walking-skeleton-manager@smashgo.local` | `ManagerTest123!` |
 | Admin | `admin@smashgo.local` | `AdminTest123!` |
+
+### Admin duyệt yêu cầu thêm sân
+
+Đăng nhập bằng tài khoản Admin rồi mở `/admin/courts`. Màn hình có hai yêu cầu
+demo đang chờ duyệt và danh sách toàn bộ sân, bao gồm sân đã tạm ngưng. Có thể
+duyệt yêu cầu để tạo sân mới, hoặc từ chối sau khi nhập lý do. Hai yêu cầu demo
+không bị nhân bản khi chạy lại `init_db.py`.
 
 ### Lịch đặt mẫu để demo đặt trùng
 
