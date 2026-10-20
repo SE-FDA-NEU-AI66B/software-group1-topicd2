@@ -36,20 +36,20 @@
   <text x="282" y="238" class="small">SỐ TIỀN</text><text x="282" y="260" class="label">180.000đ</text>
   <text x="40" y="306" class="caption">Tài khoản thanh toán</text>
   <rect x="40" y="318" width="350" height="40" class="selected"/>
-  <text x="54" y="343" class="label">◉ Vietcombank •••• 6789</text>
-  <text x="300" y="343" class="small">Đã xác minh</text>
+  <text x="54" y="343" class="label">◉ Vietcombank •••• 6789 (chọn sẵn)</text>
+  <text x="290" y="343" class="small">Tài khoản chính</text>
   <rect x="40" y="364" width="350" height="40" class="box"/>
   <text x="54" y="389" class="text">○ ACB •••• 2222 (mờ)</text>
   <text x="250" y="389" class="small">Chưa xác minh</text>
-  <text x="40" y="428" class="label">+ Liên kết tài khoản mới</text>
+  <text x="40" y="428" class="label">+ Thêm tài khoản (form liên kết ẩn cho tới khi bấm)</text>
   <rect x="40" y="452" width="350" height="44" class="btn"/>
   <text x="180" y="479" class="btn-text">Thanh toán</text>
   <text x="40" y="520" class="small">Chỉ hiện 4 số cuối. Tài khoản chưa xác minh không chọn được.</text>
-  <text x="40" y="538" class="small">Thành công → chuyển sang /my-bookings.</text>
+  <text x="40" y="538" class="small">Bấm Thanh toán → OTP gửi tới tài khoản đang chọn → nhập OTP → /my-bookings.</text>
   <text x="40" y="556" class="small">Hết giờ đếm ngược → khóa form, báo hết giữ chỗ (BR3).</text>
 
   <!-- Frame 2: link + OTP -->
-  <text x="435" y="28" class="caption">2. Liên kết tài khoản mới và nhập OTP</text>
+  <text x="435" y="28" class="caption">2. Chưa có tài khoản, hoặc sau khi bấm +</text>
   <rect x="435" y="40" width="390" height="700" class="frame"/>
   <rect x="435" y="40" width="390" height="40" class="bar"/>
   <text x="449" y="65" class="label">smashgo</text>

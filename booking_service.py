@@ -21,6 +21,12 @@ RULE_VIOLATION_REASONS = {
     "OUTSIDE_OPENING_HOURS",
     "BOOKING_IN_PAST",
 }
+# Payment OTP errors share the API codes of account verification but have
+# their own messages.
+REASON_CODES = {
+    "PAYMENT_OTP_INVALID": "INVALID_OTP",
+    "PAYMENT_OTP_EXPIRED_OR_LOCKED": "VERIFICATION_EXPIRED_OR_LOCKED",
+}
 
 
 @dataclass
@@ -32,7 +38,7 @@ class BookingError(Exception):
     def code(self) -> str:
         if self.reason in RULE_VIOLATION_REASONS:
             return "BOOKING_RULE_VIOLATION"
-        return self.reason
+        return REASON_CODES.get(self.reason, self.reason)
 
 
 def parse_minutes(value: str) -> int | None:

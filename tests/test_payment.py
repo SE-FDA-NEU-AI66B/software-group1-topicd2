@@ -52,6 +52,15 @@ def link_and_verify(client, account_number="9704123456789"):
     return account_id
 
 
+def pay(client, booking_id, account_id, otp=bank_gateway.MOCK_OTP):
+    sent = client.post(f"/api/bookings/{booking_id}/payment/otp", json={"bankAccountId": account_id})
+    assert sent.status_code == 200
+    return client.post(
+        f"/api/bookings/{booking_id}/payment",
+        json={"bankAccountId": account_id, "paymentMethod": "BANK_TRANSFER", "otp": otp},
+    )
+
+
 def query(database_path, sql, params=()):
     with sqlite3.connect(database_path) as connection:
         return connection.execute(sql, params).fetchall()
@@ -79,6 +88,7 @@ def test_link_returns_only_last_four_digits(client):
         "bankName": "BIDV",
         "accountNumberLast4": "9012",
         "isVerified": False,
+        "isPrimary": False,
     } in listed.get_json()
     assert "123456789012" not in listed.get_data(as_text=True)
     assert "0123456789" not in listed.get_data(as_text=True)
@@ -167,10 +177,7 @@ def test_payment_confirms_booking_and_schedules_reminder(client, database_path):
     booking_id = hold_booking(client)
     account_id = link_and_verify(client)
 
-    response = client.post(
-        f"/api/bookings/{booking_id}/payment",
-        json={"bankAccountId": account_id, "paymentMethod": "BANK_TRANSFER"},
-    )
+    response = pay(client, booking_id, account_id)
 
     assert response.status_code == 200
     assert response.get_json()["status"] == "CONFIRMED"
@@ -207,12 +214,94 @@ def test_gateway_failure_keeps_booking_pending(client, database_path):
     booking_id = hold_booking(client)
     account_id = link_and_verify(client, account_number="123450000")
 
-    response = client.post(f"/api/bookings/{booking_id}/payment", json={"bankAccountId": account_id})
+    response = pay(client, booking_id, account_id)
 
     assert response.status_code == 502
     assert response.get_json()["code"] == "PAYMENT_FAILED"
     assert query(database_path, "SELECT Status FROM Booking WHERE BookingID = ?", (booking_id,)) == [("PENDING",)]
     assert query(database_path, "SELECT COUNT(*) FROM Payment WHERE BookingID = ?", (booking_id,)) == [(0,)]
+
+    # The OTP was used up by the failed attempt; a retry needs a new one.
+    retry = client.post(
+        f"/api/bookings/{booking_id}/payment",
+        json={"bankAccountId": account_id, "otp": bank_gateway.MOCK_OTP},
+    )
+    assert retry.status_code == 409
+    assert retry.get_json()["code"] == "VERIFICATION_EXPIRED_OR_LOCKED"
+
+
+def test_payment_requires_otp_sent_to_the_account(client, database_path):
+    login(client)
+    booking_id = hold_booking(client)
+    primary = next(account for account in client.get("/api/bank-accounts").get_json() if account["isPrimary"])
+
+    without_otp = client.post(f"/api/bookings/{booking_id}/payment", json={"bankAccountId": primary["bankAccountId"]})
+    assert without_otp.status_code == 409
+    assert without_otp.get_json()["code"] == "VERIFICATION_EXPIRED_OR_LOCKED"
+    assert "Gửi lại mã" in without_otp.get_json()["message"]
+
+    sent = client.post(f"/api/bookings/{booking_id}/payment/otp", json={"bankAccountId": primary["bankAccountId"]})
+    assert sent.status_code == 200
+    assert sent.get_json()["accountNumberLast4"] == primary["accountNumberLast4"]
+
+    wrong = client.post(
+        f"/api/bookings/{booking_id}/payment",
+        json={"bankAccountId": primary["bankAccountId"], "otp": "000000"},
+    )
+    assert wrong.status_code == 400
+    assert wrong.get_json()["code"] == "INVALID_OTP"
+    assert "thanh toán" in wrong.get_json()["message"]
+    assert query(database_path, "SELECT Status FROM Booking WHERE BookingID = ?", (booking_id,)) == [("PENDING",)]
+
+    right = client.post(
+        f"/api/bookings/{booking_id}/payment",
+        json={"bankAccountId": primary["bankAccountId"], "otp": bank_gateway.MOCK_OTP},
+    )
+    assert right.status_code == 200
+
+
+def test_payment_otp_locks_after_three_wrong_attempts(client):
+    login(client)
+    booking_id = hold_booking(client)
+    account_id = client.get("/api/bank-accounts").get_json()[0]["bankAccountId"]
+    client.post(f"/api/bookings/{booking_id}/payment/otp", json={"bankAccountId": account_id})
+
+    codes = [
+        client.post(f"/api/bookings/{booking_id}/payment", json={"bankAccountId": account_id, "otp": "000000"})
+        .get_json()["code"]
+        for _ in range(3)
+    ]
+    assert codes == ["INVALID_OTP", "INVALID_OTP", "VERIFICATION_EXPIRED_OR_LOCKED"]
+
+    assert pay(client, booking_id, account_id).status_code == 200
+
+
+def test_payment_otp_requires_verified_account(client):
+    login(client)
+    booking_id = hold_booking(client)
+    account_id = client.post(
+        "/api/bank-accounts",
+        json={"bankName": "ACB", "accountNumber": "11112222", "accountHolderName": "Nguyen Van A"},
+    ).get_json()["bankAccountId"]
+
+    response = client.post(f"/api/bookings/{booking_id}/payment/otp", json={"bankAccountId": account_id})
+
+    assert response.status_code == 422
+    assert response.get_json()["code"] == "BANK_ACCOUNT_NOT_VERIFIED"
+
+
+def test_first_linked_account_stays_primary(client):
+    login(client)
+    seeded_primary = client.get("/api/bank-accounts").get_json()[0]
+    assert seeded_primary["isPrimary"] is True
+
+    new_account_id = link_and_verify(client)
+    accounts = client.get("/api/bank-accounts").get_json()
+
+    assert [account["bankAccountId"] for account in accounts if account["isPrimary"]] == [
+        seeded_primary["bankAccountId"]
+    ]
+    assert accounts[-1]["bankAccountId"] == new_account_id
 
 
 def test_expired_hold_cannot_be_paid(client, database_path):
