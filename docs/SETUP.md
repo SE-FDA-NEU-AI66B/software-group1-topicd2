@@ -217,14 +217,25 @@ giá trị cố định để demo và test:
 
 | Tình huống | Cách làm |
 | --- | --- |
-| Mã OTP khi liên kết tài khoản | Luôn là `123456` (hiệu lực 5 phút, tối đa 3 lần nhập sai) |
+| Mã OTP khi liên kết tài khoản và khi thanh toán | Luôn là `123456` (hiệu lực 5 phút, tối đa 3 lần nhập sai, mỗi mã dùng một lần) |
 | Thanh toán thành công | Dùng số tài khoản bất kỳ có 6–19 chữ số, ví dụ `9704123456789` |
 | Thanh toán thất bại (`PAYMENT_FAILED`) | Dùng số tài khoản kết thúc bằng `0000`, ví dụ `123450000` |
 
-Luồng demo: giữ chỗ ở `/book` → trang thanh toán có đồng hồ đếm ngược 10 phút →
-**Liên kết tài khoản mới** → nhập OTP `123456` → **Thanh toán** → chuyển sang
-`/my-bookings`. Nhập sai OTP 3 lần hoặc để quá 5 phút thì phải liên kết lại để
-nhận mã mới.
+Luồng demo: giữ chỗ ở `/book` → trang thanh toán có đồng hồ đếm ngược 10 phút.
+
+- **Chưa có tài khoản nào:** form liên kết hiện sẵn → nhập ngân hàng, số tài khoản,
+  tên chủ tài khoản → nhập OTP `123456` để xác minh.
+- **Đã có tài khoản:** form liên kết được ẩn; tài khoản liên kết đầu tiên là
+  **tài khoản chính** và được chọn sẵn. Muốn thêm tài khoản khác thì bấm
+  **+ Thêm tài khoản**.
+
+Bấm **Thanh toán** → mã OTP được gửi tới tài khoản đang chọn (mặc định là tài
+khoản chính) → nhập `123456` → **Xác nhận thanh toán** → chuyển sang
+`/my-bookings`. Nhập sai OTP 3 lần hoặc để quá 5 phút thì bấm **Gửi lại mã**
+(khi thanh toán) hoặc liên kết lại (khi xác minh tài khoản) để nhận mã mới.
+
+Tài khoản `user@smashgo.local` đã có sẵn tài khoản chính Vietcombank
+•••• 6789 nên có thể thanh toán ngay mà không cần liên kết.
 
 ### Kiểm tra đặt trùng đồng thời (US-05) bằng 2 trình duyệt
 
