@@ -8,8 +8,11 @@
   const dateInput = document.getElementById("booking-date");
   const startSelect = document.getElementById("start-time");
   const endSelect = document.getElementById("end-time");
+  const scheduleState = document.getElementById("booking-schedule-state");
+  const scheduleGrid = document.getElementById("booking-schedule-grid");
   const submitButton = document.getElementById("book-submit");
   const errorBox = document.getElementById("book-error");
+  let scheduleRequest = 0;
 
   const toMinutes = (value) => {
     const [hours, minutes] = value.split(":").map(Number);
@@ -18,6 +21,13 @@
   const toTime = (total) =>
     `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
   const formatMoney = (amount) => `${Number(amount).toLocaleString("vi-VN")}đ`;
+
+  function element(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
 
   function selectedCourt() {
     const option = courtSelect.selectedOptions[0];
@@ -63,6 +73,118 @@
     );
   }
 
+  function updateScheduleSelection() {
+    if (!scheduleGrid) return;
+    for (const slot of scheduleGrid.querySelectorAll("[data-slot-start]")) {
+      slot.classList.toggle(
+        "is-selected",
+        slot.dataset.courtId === courtSelect.value
+          && slot.dataset.slotStart === startSelect.value
+          && slot.classList.contains("slot-available"),
+      );
+    }
+  }
+
+  function chooseScheduleSlot(courtId, slot) {
+    courtSelect.value = String(courtId);
+    refreshStartTimes();
+    startSelect.value = slot.startTime;
+    refreshEndTimes(slot.endTime);
+    refreshSummary();
+    updateScheduleSelection();
+  }
+
+  function renderSchedule(courts, startTimes) {
+    const columns = `minmax(150px, 1.4fr) repeat(${startTimes.length}, minmax(64px, 1fr))`;
+    const header = element("div", "booking-schedule-header");
+    header.style.gridTemplateColumns = columns;
+    header.append(element("span", "booking-schedule-court-label", "Sân"));
+    for (const startTime of startTimes) {
+      header.append(element("span", "booking-schedule-time-label", startTime));
+    }
+
+    const rows = courts.map(({ court, slots }) => {
+      const row = element("div", "booking-schedule-row");
+      row.style.gridTemplateColumns = columns;
+      row.append(element("span", "booking-schedule-court-label", court.name));
+      const slotsByStart = new Map(slots.map((slot) => [slot.startTime, slot]));
+
+      for (const [index, startTime] of startTimes.entries()) {
+        const slot = slotsByStart.get(startTime);
+        if (!slot) {
+          row.append(element("span", "schedule-slot slot-outside"));
+          continue;
+        }
+
+        const status = slot.status.toLowerCase();
+        if (slot.available) {
+          const button = element("button", `schedule-slot slot-${status}`, startTime);
+          button.type = "button";
+          button.dataset.courtId = String(court.id);
+          button.dataset.slotStart = startTime;
+          button.setAttribute(
+            "aria-label",
+            `${court.name}, ${startTime}–${slot.endTime}, còn trống, chọn khung giờ`,
+          );
+          button.addEventListener("click", () => chooseScheduleSlot(court.id, slot));
+          row.append(button);
+        } else {
+          const statusLabel = slot.status === "BOOKED" ? "Đã đặt" : "Không thể đặt";
+          const cell = element("span", `schedule-slot slot-${status}`);
+          cell.setAttribute("aria-label", `${court.name}, ${startTime}–${slot.endTime}: ${statusLabel}`);
+          cell.title = `${startTime}–${slot.endTime}: ${statusLabel}`;
+          row.append(cell);
+        }
+      }
+      return row;
+    });
+
+    scheduleGrid.replaceChildren(header, ...rows);
+    updateScheduleSelection();
+  }
+
+  async function loadSchedule() {
+    const requestId = ++scheduleRequest;
+    scheduleState.hidden = false;
+    scheduleState.className = "booking-schedule-state is-loading";
+    scheduleState.textContent = "Đang tải lịch sân...";
+    scheduleGrid.replaceChildren();
+
+    const courts = [...courtSelect.options].map((option) => ({
+      id: option.value,
+      name: option.dataset.name,
+    }));
+    const query = new URLSearchParams({ date: dateInput.value });
+
+    try {
+      const availability = await Promise.all(courts.map(async (court) => {
+        const availabilityUrl = form.dataset.availabilityUrl.replace(
+          "/0/availability",
+          `/${court.id}/availability`,
+        );
+        const result = await apiRequest("GET", `${availabilityUrl}?${query}`);
+        return { court, slots: result.slots };
+      }));
+      if (requestId !== scheduleRequest) return;
+
+      const startTimes = [...new Set(availability.flatMap(({ slots }) =>
+        slots.map((slot) => slot.startTime),
+      ))].sort((left, right) => toMinutes(left) - toMinutes(right));
+      if (startTimes.length === 0) {
+        scheduleState.className = "booking-schedule-state";
+        scheduleState.textContent = "Không có khung giờ đặt được trong ngày này.";
+        return;
+      }
+
+      renderSchedule(availability, startTimes);
+      scheduleState.hidden = true;
+    } catch (error) {
+      if (requestId !== scheduleRequest) return;
+      scheduleState.className = "booking-schedule-state is-error";
+      scheduleState.textContent = error.message;
+    }
+  }
+
   function showError(message) {
     errorBox.textContent = message;
     errorBox.hidden = false;
@@ -94,12 +216,15 @@
     refreshStartTimes();
     refreshEndTimes();
     refreshSummary();
+    updateScheduleSelection();
   });
   startSelect.addEventListener("change", () => {
     refreshEndTimes();
     refreshSummary();
+    updateScheduleSelection();
   });
   endSelect.addEventListener("change", refreshSummary);
+  dateInput.addEventListener("change", loadSchedule);
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -134,4 +259,5 @@
   refreshStartTimes(startSelect.dataset.initial);
   refreshEndTimes(endSelect.dataset.initial);
   refreshSummary();
+  loadSchedule();
 })();

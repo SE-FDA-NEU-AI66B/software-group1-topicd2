@@ -212,6 +212,10 @@ def test_guest_sees_book_page_with_selection_prefilled(app):
     assert f'value="{TOMORROW}"' in page
     assert 'data-initial="18:00"' in page
     assert 'data-initial="20:00"' in page
+    assert 'data-availability-url="/api/courts/0/availability"' in page
+    assert 'id="booking-schedule-grid"' in page
+    assert 'data-name="SmashGo Cầu Giấy 1"' in page
+    assert "Chọn ô còn trống" in page
     selected_options = re.findall(r'<option value="(\d+)"[^>]*\bselected\b', page)
     assert selected_options == ["3"]
 
