@@ -35,9 +35,11 @@
 ---
 
 **P0 screen with real data**
+
 <img src="../images/P0 - Choose available slot.PNG" alt="Project board on the planning day" width="500">
 
 **Error message shown to the user**
+
 <img src="../images/error message.PNG" alt="Project board on the planning day" width="500">
 
 ---

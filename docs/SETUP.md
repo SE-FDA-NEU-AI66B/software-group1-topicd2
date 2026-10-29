@@ -1,18 +1,15 @@
-# SmashGo setup guide
+# SmashGo - Hướng dẫn cài đặt và chạy
 
-Follow the steps for your operating system from a fresh clone. The commands
-below assume you are using PowerShell on Windows, or a terminal on macOS/Linux.
+Hướng dẫn này dành cho máy mới, từ lúc lấy mã nguồn đến khi mở được ứng dụng
+trên trình duyệt. Các lệnh Windows dùng PowerShell; các lệnh macOS/Linux dùng
+Terminal. Không cần cài máy chủ cơ sở dữ liệu hoặc Node.js.
 
-## 1. Prerequisites
+## 1. Chuẩn bị
 
-- **Git 2.30 or newer** to clone the repository.
-- **Python 3.12 or newer**. The project CI currently runs on Python 3.12.
-- A terminal opened in the project folder.
+Cài **Git** và **Python 3.12 trở lên**. Trên Windows, chọn cài Python Launcher
+(`py`) nếu trình cài đặt có tùy chọn này.
 
-SQLite is included with Python; no database server is needed. Node.js is not
-required because this project has no Node-based build step.
-
-Check the installed versions:
+Mở terminal và kiểm tra:
 
 **Windows (PowerShell):**
 
@@ -28,14 +25,14 @@ git --version
 python3 --version
 ```
 
-If Git or Python is missing, install it from [git-scm.com](https://git-scm.com/)
-or [python.org](https://www.python.org/downloads/), then reopen the terminal.
-On Windows, select the Python launcher when installing Python.
+Nếu một lệnh không được nhận diện, hãy cài công cụ tương ứng, mở terminal mới
+rồi kiểm tra lại.
 
-## 2. Clone the project and install dependencies
+## 2. Tải mã nguồn và cài thư viện
 
-Run the commands for your operating system. They create a local virtual
-environment so the project's Python packages do not affect other projects.
+Chạy các lệnh theo hệ điều hành. Môi trường `.venv` giúp thư viện của SmashGo
+không ảnh hưởng các dự án Python khác. Không cần kích hoạt môi trường; các bước
+sau gọi Python bên trong `.venv` trực tiếp.
 
 **Windows (PowerShell):**
 
@@ -47,37 +44,22 @@ py -3 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-If PowerShell blocks activating the virtual environment with an execution policy
-error, the commands above do not require activation. Alternatively, allow
-activation scripts for this PowerShell process only, then activate the
-environment:
-
-```powershell
-Set-ExecutionPolicy -Scope Process RemoteSigned
-.\.venv\Scripts\Activate.ps1
-```
-
-This setting applies only to the current PowerShell window. If you use Windows
-Command Prompt (CMD), activate the environment with
-`.venv\Scripts\activate.bat` instead.
-
-Password hashing uses `werkzeug.security`, which is included with Flask; no
-additional package is required.
-
 **macOS/Linux:**
 
 ```sh
 git clone https://github.com/SE-FDA-NEU-AI66B/software-group1-topicd2.git
 cd software-group1-topicd2
 python3 -m venv .venv
-source .venv/bin/activate
-python3 -m pip install --upgrade pip
-python3 -m pip install -r requirements.txt
+./.venv/bin/python -m pip install --upgrade pip
+./.venv/bin/python -m pip install -r requirements.txt
 ```
 
-## 3. Configure the application
+Nếu đã có mã nguồn, bỏ qua lệnh `git clone` và mở terminal tại thư mục
+`software-group1-topicd2` (thư mục chứa `app.py`).
 
-Copy the example environment file to `.env` from the repository root.
+## 3. Cấu hình và tạo dữ liệu
+
+Tạo file cấu hình `.env` từ file mẫu ở thư mục gốc:
 
 **Windows (PowerShell):**
 
@@ -91,27 +73,23 @@ Copy-Item .env.example .env
 cp .env.example .env
 ```
 
-The example values work for a local run and do not require external API
-credentials. The example session key is for local development only. If you need
-to change the settings, `.env` contains:
+Nếu đã có `.env`, giữ nguyên file đó và không chạy lệnh sao chép để tránh ghi
+đè cấu hình hiện có.
 
-| Variable | Default | Purpose |
+Các giá trị mặc định phù hợp để chạy trên chính máy này:
+
+| Tên | Giá trị mặc định | Ý nghĩa |
 | --- | --- | --- |
-| `HOST` | `127.0.0.1` | Listen only on this computer. |
-| `PORT` | `5000` | Local web server port. |
-| `DATABASE_PATH` | `instance/smashgo.sqlite3` | SQLite database file; a relative path is based on the project root. |
-| `FLASK_DEBUG` | `false` | Keep debug mode disabled for a normal run. |
-| `SECRET_KEY` | `dev-only-change-me` | Signs login sessions. The example value is only for local development; use a private random value for any deployed environment. |
+| `HOST` | `127.0.0.1` | Chỉ nhận kết nối từ máy đang chạy ứng dụng. |
+| `PORT` | `5000` | Cổng web. Nếu cổng đang bận, đổi thành `5001`. |
+| `DATABASE_PATH` | `instance/smashgo.sqlite3` | Đường dẫn tệp cơ sở dữ liệu SQLite. |
+| `FLASK_DEBUG` | `false` | Không bật chế độ debug khi chạy bình thường. |
+| `SECRET_KEY` | `dev-only-change-me` | Khóa phiên đăng nhập; giá trị mẫu chỉ dùng cục bộ. |
 
-Keep `.env` local; do not commit it. Git ignores this file and the generated
-SQLite database.
+Không chia sẻ hoặc commit `.env`. Không dùng khóa mẫu hay các tài khoản demo cho
+môi trường thật.
 
-## 4. Create and seed the database
-
-From the repository root, run this one command. It creates the SQLite database,
-creates all 13 tables, and seeds four test accounts, 12 courts with their
-images, one confirmed demo booking, four booking-history examples, and two
-pending court requests for the Admin review screen (see below):
+Khởi tạo cơ sở dữ liệu và dữ liệu demo từ thư mục gốc:
 
 **Windows (PowerShell):**
 
@@ -119,51 +97,32 @@ pending court requests for the Admin review screen (see below):
 .\.venv\Scripts\python.exe init_db.py
 ```
 
-**macOS/Linux** (with the virtual environment activated):
+**macOS/Linux:**
 
 ```sh
-python3 init_db.py
+./.venv/bin/python init_db.py
 ```
 
-On a fresh clone, expect output similar to:
+Lệnh tạo thư mục cơ sở dữ liệu nếu cần, tạo bảng và thêm dữ liệu mẫu. Khi thành
+công, terminal báo `Database ready: ...`. Chạy lại lệnh không nhân bản các dữ
+liệu demo đã được seed. Dữ liệu được lưu cục bộ tại `instance/smashgo.sqlite3`.
 
-```text
-Database ready: 12 courts in ...\instance\smashgo.sqlite3
-```
+### Tài khoản demo
 
-The path separator in the database path differs by operating system. Running
-the command again is safe and does not duplicate the seeded records.
+Các tài khoản này chỉ dành cho ứng dụng chạy cục bộ:
 
-### Tài khoản test
-
-Các tài khoản dưới đây chỉ dùng để kiểm tra cục bộ. Mật khẩu là mật khẩu giả
-cho môi trường phát triển; cơ sở dữ liệu chỉ lưu mật khẩu dưới dạng hash.
-
-| Vai trò | Email | Mật khẩu giả |
+| Vai trò | Email | Mật khẩu |
 | --- | --- | --- |
 | User | `user@smashgo.local` | `UserTest123!` |
 | User 2 | `user2@smashgo.local` | `User2Test123!` |
 | Manager | `walking-skeleton-manager@smashgo.local` | `ManagerTest123!` |
 | Admin | `admin@smashgo.local` | `AdminTest123!` |
 
-### Admin duyệt yêu cầu thêm sân
+Ứng dụng không kết nối ngân hàng thật. OTP demo là `123456`.
 
-Đăng nhập bằng tài khoản Admin rồi mở `/admin/courts`. Màn hình có hai yêu cầu
-demo đang chờ duyệt và danh sách toàn bộ sân, bao gồm sân đã tạm ngưng. Có thể
-duyệt yêu cầu để tạo sân mới, hoặc từ chối sau khi nhập lý do. Hai yêu cầu demo
-không bị nhân bản khi chạy lại `init_db.py`.
+## 4. Chạy ứng dụng
 
-### Lịch đặt mẫu để demo đặt trùng
-
-`init_db.py` tạo sẵn một lịch **đã xác nhận** của `user2@smashgo.local` trên sân
-đầu tiên (*SmashGo Cầu Giấy 1*), **ngày mai từ 20:00 đến 22:00** (tính theo ngày
-chạy lệnh). Đăng nhập bằng `user@smashgo.local`, mở `/book`, chọn sân đó, ngày
-mai, 20:00–21:30 rồi xác nhận: hệ thống từ chối và báo khung 20:00–22:00 đã có
-lịch (BR1).
-
-## 5. Start the app and verify the result
-
-Start the development server from the repository root.
+Từ thư mục gốc của dự án, chạy:
 
 **Windows (PowerShell):**
 
@@ -171,137 +130,55 @@ Start the development server from the repository root.
 .\.venv\Scripts\python.exe app.py
 ```
 
-**macOS/Linux** (with the virtual environment activated):
+**macOS/Linux:**
 
 ```sh
-python3 app.py
+./.venv/bin/python app.py
 ```
 
-Keep this terminal open, then visit
-[http://127.0.0.1:5000/courts](http://127.0.0.1:5000/courts). The page title
-should be **“Sân cầu lông | SmashGo”** and the page should show **12** active
-courts, including the court names, Hanoi addresses, opening hours, and hourly
-prices. The header should say “HỆ THỐNG ĐẶT SÂN CẦU LÔNG”; the count should read
-“12 SÂN ĐANG HOẠT ĐỘNG” and “12 kết quả” should appear above the list.
+Để terminal đang chạy mở, rồi truy cập
+[http://127.0.0.1:5000/courts](http://127.0.0.1:5000/courts). Trang danh sách
+sân sẽ hiển thị các sân mẫu. Nhấn `Ctrl+C` trong terminal để dừng ứng dụng.
 
-Use the search form to filter by location or a date plus start/end time. Choose
-**Chi tiết sân** to view its price, address, condition, photos, and one-hour
-availability slots. Selecting an available slot opens `/book` with the court,
-date, and times prefilled. The root route `/` redirects to `/courts`.
+## 5. Xử lý lỗi thường gặp
 
-To stop the server, return to its terminal and press `Ctrl+C`. Court photos and
-web fonts are hosted externally, so they may not load without an internet
-connection; the court details should still be visible.
-
-### Lịch đặt mẫu của tài khoản `user@smashgo.local`
-
-Để xem màn `/my-bookings` có dữ liệu ngay, `init_db.py` tạo cho
-`user@smashgo.local` một tài khoản ngân hàng đã xác minh (Vietcombank, 4 số cuối
-`6789`) và 4 lịch ở các trạng thái khác nhau (ngày tính theo hôm chạy lệnh):
-
-| Trạng thái | Ngày | Ghi chú |
-| --- | --- | --- |
-| Đã xác nhận | 3 ngày tới, 18:00–20:00 | Đã thanh toán; có nút **Hủy lịch** (hoàn đủ vì còn hơn 4 giờ) |
-| Đã chơi | 7 ngày trước | Không hủy được |
-| Đã hủy | 2 ngày trước | Đã hoàn tiền đủ |
-| Hết hạn giữ chỗ | Hôm qua | Không thanh toán trong 10 phút |
-
-Vì đã có 1 lịch sắp tới, tài khoản này chỉ đặt thêm được 1 lượt trước khi chạm
-giới hạn 2 lượt (BR6). Bước này chỉ chạy khi tài khoản chưa có lịch nào, nên chạy
-lại `init_db.py` không tạo trùng.
-
-### Cổng thanh toán giả lập (mock)
-
-Dự án không kết nối ngân hàng thật. `bank_gateway.py` giả lập ngân hàng với các
-giá trị cố định để demo và test:
-
-| Tình huống | Cách làm |
-| --- | --- |
-| Mã OTP khi liên kết tài khoản và khi thanh toán | Luôn là `123456` (hiệu lực 5 phút, tối đa 3 lần nhập sai, mỗi mã dùng một lần) |
-| Thanh toán thành công | Dùng số tài khoản bất kỳ có 6–19 chữ số, ví dụ `9704123456789` |
-| Thanh toán thất bại (`PAYMENT_FAILED`) | Dùng số tài khoản kết thúc bằng `0000`, ví dụ `123450000` |
-
-Luồng demo: giữ chỗ ở `/book` → trang thanh toán có đồng hồ đếm ngược 10 phút.
-
-- **Chưa có tài khoản nào:** form liên kết hiện sẵn → nhập ngân hàng, số tài khoản,
-  tên chủ tài khoản → nhập OTP `123456` để xác minh.
-- **Đã có tài khoản:** form liên kết được ẩn; tài khoản liên kết đầu tiên là
-  **tài khoản chính** và được chọn sẵn. Muốn thêm tài khoản khác thì bấm
-  **+ Thêm tài khoản**.
-
-Bấm **Thanh toán** → mã OTP được gửi tới tài khoản đang chọn (mặc định là tài
-khoản chính) → nhập `123456` → **Xác nhận thanh toán** → chuyển sang
-`/my-bookings`. Nhập sai OTP 3 lần hoặc để quá 5 phút thì bấm **Gửi lại mã**
-(khi thanh toán) hoặc liên kết lại (khi xác minh tài khoản) để nhận mã mới.
-
-Tài khoản `user@smashgo.local` đã có sẵn tài khoản chính Vietcombank
-•••• 6789 nên có thể thanh toán ngay mà không cần liên kết.
-
-### Kiểm tra đặt trùng đồng thời (US-05) bằng 2 trình duyệt
-
-1. Mở hai trình duyệt khác nhau (hoặc một cửa sổ thường và một cửa sổ ẩn danh)
-   tại `http://127.0.0.1:5000/book`.
-2. Trình duyệt A đăng nhập `user@smashgo.local`, trình duyệt B đăng nhập
-   `user2@smashgo.local`.
-3. Ở cả hai, chọn cùng một sân, cùng ngày và cùng khung giờ còn trống (ví dụ
-   *SmashGo Cầu Giấy 2*, ngày mai, 15:00–17:00).
-4. Bấm **Xác nhận đặt sân** ở hai trình duyệt gần như cùng lúc.
-
-Kết quả đúng: chỉ một bên thấy "Đã giữ chỗ cho bạn", bên còn lại nhận thông
-báo khung giờ đã có lịch. Trường hợp chạy song song thật sự được kiểm tra tự
-động bởi `test_simultaneous_requests_for_same_slot_have_one_winner` trong
-`tests/test_booking.py`.
-
-## 6. Troubleshooting
-
-- **Python is missing or older than 3.12:** Install Python 3.12 or newer.
-  On Windows, enable the Python launcher during installation. On macOS/Linux,
-  ensure `python3` runs the newly installed version; then close and reopen the
-  terminal and retry the version check in Step 1.
-- **`ModuleNotFoundError: No module named 'flask'`:** The dependencies were not
-  installed in this project's virtual environment. From the repository root,
-  rerun the install command for your operating system:
-
-  **Windows (PowerShell):**
-
-  ```powershell
-  .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-  ```
-
-  **macOS/Linux** (with `.venv` activated):
-
-  ```sh
-  python3 -m pip install -r requirements.txt
-  ```
-- **The server reports that port 5000 is already in use:** Stop the other
-  process using that port, or change `PORT` in `.env` (for example, to `5001`)
-  and open `http://127.0.0.1:5001/courts` instead.
-- **The page says there are no active courts:** Stop the server, rerun
-  `init_db.py` from the repository root using the virtual environment's Python,
-  then start `app.py` again. Check that `DATABASE_PATH` in `.env` points to
-  `instance/smashgo.sqlite3`.
-
-## 7. Setup verification
-
-For an optional automated check, install pytest into the virtual environment
-and run the tests from the repository root:
-
-**Windows (PowerShell):**
-
-```powershell
-.\.venv\Scripts\python.exe -m pip install pytest
-.\.venv\Scripts\python.exe -m pytest -q
-```
-
-**macOS/Linux** (with the virtual environment activated):
-
-```sh
-python3 -m pip install pytest
-python3 -m pytest -q
-```
-
-**Tested by:** Chử Vũ Anh Thư on 2026-10-01, Windows 11, Python 3.12.3,
-Microsoft Edge; approximately 1 minute including reading the instructions
-(the page loaded in about 1 second). On a clean machine, the documented setup
-and seed succeeded, `/courts` displayed 12 courts, and rerunning `init_db.py`
-did not duplicate the seed data.
+- **`git`, `py`, hoặc `python3` không được nhận diện:** Cài Git/Python, kiểm tra
+  đã bật Python Launcher trên Windows, sau đó mở terminal mới. Nếu `py -3`
+  không dùng được nhưng `python` có sẵn trên Windows, thay `py -3` trong các
+  lệnh bằng `python`.
+- **Không tạo được `.venv` hoặc báo thiếu `venv`:** Cài bản Python đầy đủ từ
+  python.org, rồi chạy lại lệnh tạo môi trường ở bước 2. Trên Linux, nếu hệ
+  thống báo thiếu gói venv, cài gói venv dành cho đúng phiên bản Python bằng
+  trình quản lý gói của hệ điều hành.
+- **PowerShell chặn `Activate.ps1`:** Hướng dẫn này không cần kích hoạt môi
+  trường. Hãy chạy các lệnh `.\.venv\Scripts\python.exe ...` như trên.
+- **`No module named flask` hoặc `No module named dotenv`:** Từ thư mục gốc,
+  cài lại thư viện bằng lệnh `.\.venv\Scripts\python.exe -m pip install -r requirements.txt`
+  trên Windows, hoặc `./.venv/bin/python -m pip install -r requirements.txt`
+  trên macOS/Linux. Đảm bảo dùng Python trong `.venv`, không phải Python khác.
+- **Cài thư viện lỗi do mạng hoặc tải gói:** Kiểm tra Internet, proxy hoặc
+  firewall; sau đó chạy lại lệnh cài thư viện ở bước 2. Không cần cài thêm
+  thư viện ngoài `requirements.txt` để chạy ứng dụng.
+- **Báo không tìm thấy `pip`:** Dùng Python của môi trường ảo để chạy
+  `.\.venv\Scripts\python.exe -m ensurepip --upgrade` trên Windows, hoặc
+  `./.venv/bin/python -m ensurepip --upgrade` trên macOS/Linux; sau đó cài lại
+  thư viện như ở bước 2.
+- **`Database ready` báo lỗi hoặc không tìm thấy cơ sở dữ liệu:** Đảm bảo
+  terminal đang ở thư mục dự án, `.env` nằm cạnh `app.py`, và
+  `DATABASE_PATH` trỏ đến đường dẫn có thể ghi. Chạy lại `init_db.py` trước
+  khi chạy `app.py`; không cần tạo SQLite riêng.
+- **SQLite báo `database is locked`:** Dừng các cửa sổ ứng dụng đang chạy bằng
+  `Ctrl+C`, chờ một chút, rồi khởi động lại ứng dụng. Không mở đồng thời nhiều
+  bản chạy trên cùng một tệp cơ sở dữ liệu.
+- **Danh sách sân trống:** Dừng ứng dụng bằng `Ctrl+C`, chạy lại `init_db.py`
+  từ thư mục gốc, rồi khởi động lại ứng dụng.
+- **Cổng 5000 đang được sử dụng:** Đổi `PORT=5000` thành `PORT=5001` trong
+  `.env`, khởi động lại ứng dụng và truy cập
+  [http://127.0.0.1:5001/courts](http://127.0.0.1:5001/courts).
+- **Hình sân hoặc phông chữ không tải:** Một số hình ảnh và phông chữ lấy từ
+  Internet; kiểm tra kết nối mạng. Phần danh sách và thông tin sân vẫn dùng
+  được khi các tài nguyên này không tải.
+- **Ứng dụng thoát ngay khi khởi động:** Đọc lỗi trong terminal. Nếu lỗi nhắc
+  đến cấu hình hoặc dữ liệu, xác nhận đang ở thư mục gốc, đã tạo `.env`, cài
+  thư viện và khởi tạo cơ sở dữ liệu theo các bước trên. Nếu lỗi vẫn còn, lưu
+  toàn bộ thông báo lỗi cùng hệ điều hành và phiên bản Python để nhóm hỗ trợ.
