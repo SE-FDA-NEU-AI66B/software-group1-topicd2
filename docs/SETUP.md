@@ -178,6 +178,11 @@ Chạy toàn bộ test từ thư mục gốc:
 Nếu đã kích hoạt `.venv`, chỉ cần gõ `pytest` hoặc `pytest -v`. Khi thành công,
 dòng cuối báo `... passed` và không có `failed`.
 
+**Tested by:** Phan Thị Anh Quỳnh, 2026-10-31, Windows 11, Python 3.13.9. Clone
+mới vào thư mục trống (không có `.env`, không có `instance/`), làm theo bước 2
+và bước 5 ở trên; cả `pytest` và `python -m pytest -v` đều báo 84 passed, không
+phải sửa tay.
+
 ## 6. Xử lý lỗi thường gặp
 
 - **`git`, `py`, hoặc `python3` không được nhận diện:** Cài Git/Python, kiểm tra
