@@ -1,7 +1,7 @@
-from datetime import date
 
 from flask import Blueprint, current_app, jsonify, render_template, request, url_for
 
+import clock
 from booking_service import BookingError
 from court_service import (
     get_active_court,
@@ -73,7 +73,7 @@ def court_detail(court_id: int):
     return render_template(
         "pages/court_detail.html",
         court=court,
-        today=date.today().isoformat(),
+        today=clock.today().isoformat(),
         availability_url=url_for("court_pages.api_court_availability", court_id=court_id),
         book_url=url_for("bookings.book"),
     )

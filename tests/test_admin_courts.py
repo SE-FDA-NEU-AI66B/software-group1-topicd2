@@ -1,34 +1,33 @@
-import sqlite3
-
 import pytest
+from support import (
+    ADMIN,
+    ADMIN_ID,
+    COURT_A,
+    COURT_B,
+    MANAGER,
+    TOMORROW,
+    USER,
+    add_booking,
+    add_court_request,
+    execute,
+    login,
+    query,
+)
 
-from app import create_app
-from init_db import initialize_database
 
-DEMO_ADMIN = ("admin@smashgo.local", "AdminTest123!")
-DEMO_USER = ("user@smashgo.local", "UserTest123!")
-DEMO_MANAGER = ("walking-skeleton-manager@smashgo.local", "ManagerTest123!")
-
-
-# Task #94: Build an isolated database and Flask client with the Admin demo requests seeded.
+# Task #94: Give the Admin two pending requests and one upcoming booking on court A.
 @pytest.fixture
-def admin_environment(tmp_path):
-    database_path = tmp_path / "smashgo.sqlite3"
-    initialize_database(database_path)
-    app = create_app({"TESTING": True, "DATABASE_PATH": str(database_path)})
-    return app.test_client(), database_path
-
-
-# Task #94: Authenticate a test client with one of the seeded roles.
-def login(client, account):
-    email, password = account
-    assert client.post("/login", data={"email": email, "password": password}).status_code == 302
+def admin_environment(client, database_path):
+    add_booking(database_path, COURT_A, TOMORROW, "20:00", "22:00", "CONFIRMED")
+    add_court_request(database_path, "Sân Mới Hoàng Mai", "https://example.com/hoang-mai.jpg")
+    add_court_request(database_path, "Sân Mới Long Biên", "https://example.com/long-bien.jpg")
+    return client, database_path
 
 
 # Task #94: Confirm the Admin page uses its dedicated rendered template.
 def test_admin_page_renders_court_management_workspace(admin_environment):
     client, _ = admin_environment
-    login(client, DEMO_ADMIN)
+    login(client, ADMIN)
 
     response = client.get("/admin/courts")
 
@@ -42,8 +41,8 @@ def test_admin_page_renders_court_management_workspace(admin_environment):
     ("account", "expected_status", "expected_code"),
     [
         (None, 401, "UNAUTHENTICATED"),
-        (DEMO_USER, 403, "ADMIN_REQUIRED"),
-        (DEMO_MANAGER, 403, "ADMIN_REQUIRED"),
+        (USER, 403, "ADMIN_REQUIRED"),
+        (MANAGER, 403, "ADMIN_REQUIRED"),
     ],
 )
 def test_admin_apis_require_admin_role(
@@ -62,17 +61,16 @@ def test_admin_apis_require_admin_role(
 # Task #94: Return all court statuses and upcoming booking counts to Admins.
 def test_admin_court_list_includes_disabled_courts_and_images(admin_environment):
     client, database_path = admin_environment
-    login(client, DEMO_ADMIN)
-    with sqlite3.connect(database_path) as connection:
-        connection.execute("UPDATE Court SET Status = 'DISABLED' WHERE CourtID = 12")
+    login(client, ADMIN)
+    execute(database_path, "UPDATE Court SET Status = 'DISABLED' WHERE CourtID = ?", (COURT_B,))
 
     response = client.get("/api/admin/courts")
 
     assert response.status_code == 200
     courts = response.get_json()
-    assert len(courts) == 12
-    first_court = next(court for court in courts if court["courtId"] == 1)
-    disabled_court = next(court for court in courts if court["courtId"] == 12)
+    assert len(courts) == 2
+    first_court = next(court for court in courts if court["courtId"] == COURT_A)
+    disabled_court = next(court for court in courts if court["courtId"] == COURT_B)
     assert first_court["upcomingBookings"] == 1
     assert first_court["images"][0]["url"].startswith("https://")
     assert disabled_court["status"] == "DISABLED"
@@ -81,7 +79,7 @@ def test_admin_court_list_includes_disabled_courts_and_images(admin_environment)
 # Task #94: List only pending requests by default and reject arbitrary status filter values.
 def test_court_request_list_defaults_to_pending_and_validates_filter(admin_environment):
     client, _ = admin_environment
-    login(client, DEMO_ADMIN)
+    login(client, ADMIN)
 
     response = client.get("/api/admin/court-requests")
     invalid_response = client.get("/api/admin/court-requests?status=anything")
@@ -97,7 +95,7 @@ def test_court_request_list_defaults_to_pending_and_validates_filter(admin_envir
 # Task #94: Include prior decisions when the Admin requests all court requests.
 def test_court_request_list_can_filter_all_statuses(admin_environment):
     client, _ = admin_environment
-    login(client, DEMO_ADMIN)
+    login(client, ADMIN)
     request_id = client.get("/api/admin/court-requests").get_json()[0]["requestId"]
     assert client.post(
         f"/api/admin/court-requests/{request_id}/review",
@@ -113,7 +111,7 @@ def test_court_request_list_can_filter_all_statuses(admin_environment):
 # Task #94: Approve a request atomically, create its active court and copy request images.
 def test_approving_request_creates_court_and_copies_images(admin_environment):
     client, database_path = admin_environment
-    login(client, DEMO_ADMIN)
+    login(client, ADMIN)
     request_data = client.get("/api/admin/court-requests").get_json()[0]
 
     response = client.post(
@@ -124,29 +122,31 @@ def test_approving_request_creates_court_and_copies_images(admin_environment):
     assert response.status_code == 200
     result = response.get_json()
     assert result["status"] == "APPROVED"
-    assert result["reviewedBy"] == 4
-    with sqlite3.connect(database_path) as connection:
-        court = connection.execute(
-            "SELECT ManagerID, CourtName, Status FROM Court WHERE CourtID = ?",
-            (result["courtId"],),
-        ).fetchone()
-        request_status = connection.execute(
-            "SELECT Status, ReviewedBy FROM Court_Request WHERE RequestID = ?",
-            (request_data["requestId"],),
-        ).fetchone()
-        copied_images = connection.execute(
-            "SELECT Url, SortOrder FROM Court_Image WHERE CourtID = ?",
-            (result["courtId"],),
-        ).fetchall()
+    assert result["reviewedBy"] == ADMIN_ID
+    court = query(
+        database_path,
+        "SELECT ManagerID, CourtName, Status FROM Court WHERE CourtID = ?",
+        (result["courtId"],),
+    )[0]
+    request_status = query(
+        database_path,
+        "SELECT Status, ReviewedBy FROM Court_Request WHERE RequestID = ?",
+        (request_data["requestId"],),
+    )[0]
+    copied_images = query(
+        database_path,
+        "SELECT Url, SortOrder FROM Court_Image WHERE CourtID = ?",
+        (result["courtId"],),
+    )
     assert court == (request_data["managerId"], request_data["courtName"], "ACTIVE")
-    assert request_status == ("APPROVED", 4)
+    assert request_status == ("APPROVED", ADMIN_ID)
     assert copied_images == [(request_data["images"][0]["url"], 0)]
 
 
 # Task #94: Require a rejection reason and prevent a reviewed request from being processed twice.
 def test_rejection_requires_reason_and_review_is_single_use(admin_environment):
     client, database_path = admin_environment
-    login(client, DEMO_ADMIN)
+    login(client, ADMIN)
     request_id = client.get("/api/admin/court-requests").get_json()[0]["requestId"]
 
     missing_reason = client.post(
@@ -168,17 +168,17 @@ def test_rejection_requires_reason_and_review_is_single_use(admin_environment):
     assert rejected.get_json()["status"] == "REJECTED"
     assert repeated.status_code == 409
     assert repeated.get_json()["code"] == "REQUEST_ALREADY_REVIEWED"
-    with sqlite3.connect(database_path) as connection:
-        notification = connection.execute(
-            """
-            SELECT Title, Message, Type FROM Notification
-            WHERE UserID = (
-                SELECT ManagerID FROM Court_Request WHERE RequestID = ?
-            )
-            ORDER BY NotificationID DESC LIMIT 1
-            """,
-            (request_id,),
-        ).fetchone()
+    notification = query(
+        database_path,
+        """
+        SELECT Title, Message, Type FROM Notification
+        WHERE UserID = (
+            SELECT ManagerID FROM Court_Request WHERE RequestID = ?
+        )
+        ORDER BY NotificationID DESC LIMIT 1
+        """,
+        (request_id,),
+    )[0]
     assert notification[2] == "COURT_REQUEST_RESULT"
     assert "Thông tin chưa đầy đủ" in notification[1]
 
@@ -186,7 +186,7 @@ def test_rejection_requires_reason_and_review_is_single_use(admin_environment):
 # Task #94: Report a clear not-found error for review requests that do not exist.
 def test_review_nonexistent_request_returns_not_found(admin_environment):
     client, _ = admin_environment
-    login(client, DEMO_ADMIN)
+    login(client, ADMIN)
 
     response = client.post(
         "/api/admin/court-requests/9999/review",
@@ -200,9 +200,9 @@ def test_review_nonexistent_request_returns_not_found(admin_environment):
 # Task #94: Prevent disabling a court that has a confirmed future booking.
 def test_disabling_court_with_upcoming_booking_returns_conflict(admin_environment):
     client, _ = admin_environment
-    login(client, DEMO_ADMIN)
+    login(client, ADMIN)
 
-    response = client.patch("/api/admin/courts/1/status", json={"status": "DISABLED"})
+    response = client.patch(f"/api/admin/courts/{COURT_A}/status", json={"status": "DISABLED"})
 
     assert response.status_code == 409
     assert response.get_json()["code"] == "COURT_HAS_UPCOMING_BOOKINGS"
@@ -211,49 +211,24 @@ def test_disabling_court_with_upcoming_booking_returns_conflict(admin_environmen
 # Task #94: Change status for an unoccupied court and validate status input.
 def test_admin_can_disable_and_reactivate_unoccupied_court(admin_environment):
     client, _ = admin_environment
-    login(client, DEMO_ADMIN)
+    login(client, ADMIN)
 
-    disabled = client.patch("/api/admin/courts/12/status", json={"status": "DISABLED"})
-    invalid = client.patch("/api/admin/courts/12/status", json={"status": "UNKNOWN"})
-    active = client.patch("/api/admin/courts/12/status", json={"status": "ACTIVE"})
+    disabled = client.patch(f"/api/admin/courts/{COURT_B}/status", json={"status": "DISABLED"})
+    invalid = client.patch(f"/api/admin/courts/{COURT_B}/status", json={"status": "UNKNOWN"})
+    active = client.patch(f"/api/admin/courts/{COURT_B}/status", json={"status": "ACTIVE"})
 
     assert disabled.status_code == 200
-    assert disabled.get_json() == {"courtId": 12, "status": "DISABLED"}
+    assert disabled.get_json() == {"courtId": COURT_B, "status": "DISABLED"}
     assert invalid.status_code == 400
     assert invalid.get_json()["code"] == "INVALID_STATUS"
     assert active.status_code == 200
     assert active.get_json()["status"] == "ACTIVE"
 
 
-# Task #94: Make Admin demo requests safe to seed again without duplicating their rows or images.
-def test_admin_request_seeds_are_idempotent(admin_environment):
-    _, database_path = admin_environment
-
-    initialize_database(database_path)
-    initialize_database(database_path)
-
-    with sqlite3.connect(database_path) as connection:
-        requests_count = connection.execute(
-            """
-            SELECT COUNT(*) FROM Court_Request
-            WHERE CourtName LIKE 'SmashGo Demo Court Request %'
-            """
-        ).fetchone()[0]
-        images_count = connection.execute(
-            """
-            SELECT COUNT(*) FROM Court_Request_Image
-            JOIN Court_Request USING (RequestID)
-            WHERE CourtName LIKE 'SmashGo Demo Court Request %'
-            """
-        ).fetchone()[0]
-    assert requests_count == 2
-    assert images_count == 2
-
-
-# Task #94: Verify seeded requests include the fields Admin needs to make a decision.
-def test_seeded_request_details_are_complete(admin_environment):
+# Task #94: Verify each pending request carries the fields an Admin needs to decide.
+def test_request_details_are_complete(admin_environment):
     client, _ = admin_environment
-    login(client, DEMO_ADMIN)
+    login(client, ADMIN)
 
     response = client.get("/api/admin/court-requests")
 

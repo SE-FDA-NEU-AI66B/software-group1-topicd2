@@ -3,6 +3,7 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+import clock
 from booking_service import BookingError, OCCUPYING_STATUSES, parse_minutes
 from database import get_db_connection
 
@@ -60,7 +61,7 @@ def list_active_courts(
         parameters.extend((location_pattern, location_pattern))
 
     if clean_date is not None:
-        now = datetime.now()
+        now = clock.now()
         requested_start = datetime.combine(clean_date, datetime.min.time()) + timedelta(
             minutes=start_minutes
         )
@@ -209,7 +210,7 @@ def get_court_availability(
     except (TypeError, ValueError):
         raise BookingError("INVALID_AVAILABILITY_DATE") from None
 
-    now = datetime.now()
+    now = clock.now()
     now_text = now.strftime("%Y-%m-%d %H:%M")
     with closing(get_db_connection(database_path)) as connection:
         court = connection.execute(
