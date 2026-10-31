@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 
 import pytest
-
 from support import (
     COURT_A,
     COURT_B,

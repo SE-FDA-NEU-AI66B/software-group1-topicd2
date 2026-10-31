@@ -10,11 +10,6 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 import pytest
-from werkzeug.security import generate_password_hash
-
-import bank_gateway
-import clock
-from app import create_app
 from support import (
     ADMIN,
     COURT_A,
@@ -27,6 +22,11 @@ from support import (
     USER,
     USER_ID,
 )
+from werkzeug.security import generate_password_hash
+
+import bank_gateway
+import clock
+from app import create_app
 
 SCHEMA_PATH = Path(__file__).resolve().parent.parent / "schema.sql"
 

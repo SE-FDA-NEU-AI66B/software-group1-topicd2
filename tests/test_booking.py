@@ -3,8 +3,6 @@ import threading
 from datetime import timedelta
 
 import pytest
-
-from booking_service import BookingError, create_booking
 from support import (
     ADMIN,
     COURT_A,
@@ -19,6 +17,8 @@ from support import (
     add_booking,
     login,
 )
+
+from booking_service import BookingError, create_booking
 
 
 def book(client, **overrides):

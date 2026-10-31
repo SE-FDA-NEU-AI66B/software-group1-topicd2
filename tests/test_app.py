@@ -1,8 +1,9 @@
 import sqlite3
 
+from support import TOMORROW
+
 from app import create_app
 from init_db import initialize_database
-from support import TOMORROW
 
 
 def test_courts_route_renders_database_records(tmp_path):

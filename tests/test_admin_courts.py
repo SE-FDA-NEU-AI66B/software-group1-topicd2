@@ -1,5 +1,4 @@
 import pytest
-
 from support import (
     ADMIN,
     ADMIN_ID,

@@ -1,5 +1,4 @@
 import pytest
-
 from support import COURT_A, TOMORROW, add_booking, execute
 
 
