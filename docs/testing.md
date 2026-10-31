@@ -12,7 +12,7 @@
 
 **Product Owner:** @dqchien
 
-**Scrum Master (Sprint 4):** TODO
+**Scrum Master (Sprint 4):** @quynhquynh-blip
 
 **Repository:** https://github.com/SE-FDA-NEU-AI66B/software-group1-topicd2
 
