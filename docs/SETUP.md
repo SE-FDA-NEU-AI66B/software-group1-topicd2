@@ -140,7 +140,45 @@ Từ thư mục gốc của dự án, chạy:
 [http://127.0.0.1:5000/courts](http://127.0.0.1:5000/courts). Trang danh sách
 sân sẽ hiển thị các sân mẫu. Nhấn `Ctrl+C` trong terminal để dừng ứng dụng.
 
-## 5. Xử lý lỗi thường gặp
+## 5. Chạy kiểm thử
+
+Test không cần chạy ứng dụng, không cần `.env` và không dùng cơ sở dữ liệu
+trong `instance/`. Mỗi test tự tạo một tệp SQLite tạm từ `schema.sql`, cố định
+thời gian hiện tại và dùng cổng thanh toán giả, nên kết quả không phụ thuộc
+ngày chạy.
+
+Cài thư viện dùng cho test (gồm `pytest`), một lần sau bước 2:
+
+**Windows (PowerShell):**
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+```
+
+**macOS/Linux:**
+
+```sh
+./.venv/bin/python -m pip install -r requirements-dev.txt
+```
+
+Chạy toàn bộ test từ thư mục gốc:
+
+**Windows (PowerShell):**
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -v
+```
+
+**macOS/Linux:**
+
+```sh
+./.venv/bin/python -m pytest -v
+```
+
+Nếu đã kích hoạt `.venv`, chỉ cần gõ `pytest` hoặc `pytest -v`. Khi thành công,
+dòng cuối báo `... passed` và không có `failed`.
+
+## 6. Xử lý lỗi thường gặp
 
 - **`git`, `py`, hoặc `python3` không được nhận diện:** Cài Git/Python, kiểm tra
   đã bật Python Launcher trên Windows, sau đó mở terminal mới. Nếu `py -3`
@@ -182,3 +220,5 @@ sân sẽ hiển thị các sân mẫu. Nhấn `Ctrl+C` trong terminal để d�
   đến cấu hình hoặc dữ liệu, xác nhận đang ở thư mục gốc, đã tạo `.env`, cài
   thư viện và khởi tạo cơ sở dữ liệu theo các bước trên. Nếu lỗi vẫn còn, lưu
   toàn bộ thông báo lỗi cùng hệ điều hành và phiên bản Python để nhóm hỗ trợ.
+- **`No module named pytest`:** Chưa cài thư viện test. Chạy lệnh cài
+  `requirements-dev.txt` ở bước 5.
