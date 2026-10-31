@@ -171,3 +171,93 @@ Deliver the P0 SmashGo experience from court discovery through booking and payme
 | @quynhquynh-blip | Yes      | Yes    | Yes   |
 | @dqchien         | Yes      | Yes    | Yes   |
 | @Buithaoaineu    | Yes      | Yes    | Yes   |
+
+---
+
+## Sprint 4 - 29 Oct 2026 to the Milestone 4 deadline
+
+### Sprint goal
+
+Prove that the P0 stories work: give every P0 story (US-01 to US-05, US-11, US-12) traceable test cases with normal, error and boundary cases, make `pytest` pass on a clean clone without a server, a real database or the real date, and write `docs/testing.md` for Milestone 4.
+
+### Mandatory Chore Issues
+
+| Issue                                    | Assignee              | Closed? |
+| ---------------------------------------- | --------------------- | ------- |
+| [Chore] Refine backlog for Sprint 4 #113 | @dqchien (PO)         | Yes     |
+| [Chore] Sprint 4 wrap-up #112            | @quynhquynh-blip (SM) | No      |
+
+### Committed
+
+| Issue | Story                                                                    | Est. hours | Owner            |
+| ----- | ------------------------------------------------------------------------ | ---------- | ---------------- |
+| #109  | [Task] pytest infrastructure: runs on a clean machine + SETUP.md         | 1          | @quynhquynh-blip |
+| #110  | [Task] Test US-04/US-05: create booking (BR1, BR2, BR6, double booking)  | 2          | @Buithaoaineu    |
+| #111  | [Task] Test US-04: 10-minute hold, bank linking, payment, OTP (BR3, BR7) | 2          | @Buithaoaineu    |
+| #112  | [Chore] Sprint 4 wrap-up                                                 | 1          | @quynhquynh-blip |
+| #113  | [Chore] Refine backlog for Sprint 4                                      | 1          | @dqchien         |
+| #114  | [Task] Write docs/testing.md (4 sections) and export the M4 PDF          | 3          | @dqchien         |
+| #115  | [Task] Test US-01, US-02, US-03: court list, court detail, free slots    | 2          | @quynhquynh-blip |
+| #116  | [Task] Test US-11, US-12: Admin enables/disables courts, reviews requests | 2          | @dqchien         |
+
+**Total committed: 14 points** (1 point = 1 estimated hour, as in Sprint 3)
+
+### Result
+
+Status on 31 Oct 2026. Update each row when its pull request is merged; merge this wrap-up last.
+
+| Issue | Est. hours | Status    | If not done, why                                   |
+| ----- | ---------- | --------- | -------------------------------------------------- |
+| #109  | 1          | In review | PR open: conftest fixtures, fixed clock, fake gateway, SETUP.md |
+| #110  | 2          | Open      | Not started in the repository yet                  |
+| #111  | 2          | Open      | Not started in the repository yet                  |
+| #112  | 1          | In review | This wrap-up; closes when merged                   |
+| #113  | 1          | Done      | Closed; backlog and planning board ready           |
+| #114  | 3          | Done      | Closed; linked PR #117 merged                      |
+| #115  | 2          | In review | PR open (built on #109): TC-01 to TC-11            |
+| #116  | 2          | Open      | Not started in the repository yet                  |
+
+- **Goal**: Every P0 story has traceable tests (normal, error, boundary) that pass on a clean clone, documented in `docs/testing.md`.
+- **Committed**: 14 points
+- **Completed**: 4 points on 31 Oct 2026 (#113, #114); 8 more points are in review or open
+- **Velocity**: 4 points so far (Sprint 3: 17 points). Recompute as completed points when the sprint closes.
+- **Not finished**: #109, #110, #111, #112, #115, #116 (on 31 Oct 2026)
+- **SM Sprint 4**: @quynhquynh-blip
+
+### Repository checklist (Milestone 4)
+
+Checked on 31 Oct 2026; tick the rest before the deadline.
+
+- [ ] At least 4 PRs merged in Sprint 4, each reviewed by someone other than its author (1 so far: #117, reviewed by @quynhquynh-blip)
+- [ ] At least 5 issues closed in Sprint 4 (2 so far: #113, #114)
+- [ ] Every member has at least 1 merged PR in Sprint 4 (@dqchien: #117; @quynhquynh-blip and @Buithaoaineu: pending)
+- [ ] Every member has done at least 1 review in Sprint 4 (@quynhquynh-blip: #117; @dqchien and @Buithaoaineu: pending)
+- [ ] Every member has closed at least 1 issue in Sprint 4 (@dqchien: #113, #114; others pending)
+- [x] Every member has at least 1 test in `tests/` (all three have commits in `tests/`)
+- [x] `docs/SETUP.md` is on `main` (the test-run section arrives with #109)
+- [ ] Board screenshot taken on the submission day (page 2 of the PDF)
+- [ ] Every member cloned into a new folder and ran `pytest` before the deadline
+
+### Sprint Review
+
+- What we demonstrated: To be filled in at the Sprint Review.
+- Feedback received: To be filled in at the Sprint Review.
+- Backlog changes as a result: To be filled in at the Sprint Review.
+
+### Retrospective
+
+| Keep doing | Stop doing | Start doing |
+| ---------- | ---------- | ----------- |
+| To be filled in at the retro | | |
+
+**One concrete action for next sprint (with an owner):**
+
+- To be agreed at the retro.
+
+### Attendance
+
+| Member           | Planning | Review | Retro |
+| ---------------- | -------- | ------ | ----- |
+| @quynhquynh-blip |          |        |       |
+| @dqchien         |          |        |       |
+| @Buithaoaineu    |          |        |       |
