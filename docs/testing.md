@@ -45,7 +45,10 @@ Reserved IDs: TC-01 to TC-04. Needs at least 3 cases: 1 normal, 1 error; if the 
 
 | ID | Story | Input | Expected | Kind |
 | --- | --- | --- | --- | --- |
-| TC-?? | | | | |
+| TC-01 | US-01 | `GET /api/courts?date=<tomorrow>&startTime=20:00&endTime=21:00`; court A booked 20:00-22:00, one DISABLED and one MAINTENANCE court | 200, only court B listed; booked, DISABLED and MAINTENANCE courts left out | normal |
+| TC-02 | US-01 | Filter missing `date`, `startTime` or `endTime`; time not on a 30-minute step (19:15, 20:10); invalid date | 400 `INVALID_COURT_FILTER` | error |
+| TC-03 | US-01 | Filter window 19:00-20:00 (60 minutes) | 200, both free courts listed | boundary (on the limit) |
+| TC-04 | US-01 | Filter window 19:00-19:30 (30 minutes) | 400 `INVALID_COURT_FILTER` | boundary (just below) |
 
 Rules: none. Codes: 400 INVALID_COURT_FILTER
 
@@ -55,7 +58,9 @@ Reserved IDs: TC-05 to TC-07. Needs at least 3 cases: 1 normal, 1 error; if the 
 
 | ID | Story | Input | Expected | Kind |
 | --- | --- | --- | --- | --- |
-| TC-?? | | | | |
+| TC-05 | US-02 | `GET /api/courts/1` (ACTIVE court with two images stored out of order) | 200 with price 100000, address, description, opening hours, images ordered by `sortOrder` (0, 1) | normal |
+| TC-06 | US-02 | `GET /api/courts/9999` | 404 `COURT_NOT_FOUND` | error |
+| TC-07 | US-02 | `GET /api/courts/1` after court 1 is set to DISABLED or MAINTENANCE | 404 `COURT_NOT_FOUND` | error |
 
 Rules: none. Codes: 404 COURT_NOT_FOUND
 
@@ -65,7 +70,10 @@ Reserved IDs: TC-08 to TC-11. Needs at least 3 cases: 1 normal, 1 error; if the 
 
 | ID | Story | Input | Expected | Kind |
 | --- | --- | --- | --- | --- |
-| TC-?? | | | | |
+| TC-08 | US-03 | `GET /api/courts/1/availability?date=<tomorrow>` (open 06:00-22:00, no bookings) | 200; first slot 06:00; every slot lasts 60 minutes; slots start 30 minutes apart; all `AVAILABLE` | normal |
+| TC-09 | US-03 | Same request with a booking 20:00-22:00 and a `Court_Block` 10:00-12:00 | Slots overlapping them (09:30-11:30, 19:30-21:00) are `BOOKED`, `available: false`; 12:00 and 19:00 stay `AVAILABLE`; 18:30 is `UNAVAILABLE` (BR2 short gap) | normal |
+| TC-10 | US-03 | `date` missing, empty, `not-a-date` or `2030-02-30` | 400 `INVALID_AVAILABILITY_DATE` | error |
+| TC-11 | US-03 | Court A closes 22:00, court B closes 21:00 | Last slot ends exactly at CloseTime (21:00-22:00, 20:00-21:00) is offered; a slot starting 30 minutes later (21:30, 20:30) is not | boundary (on the limit / just above) |
 
 Rules: BR2. Codes: 400 INVALID_AVAILABILITY_DATE; 404 COURT_NOT_FOUND
 
