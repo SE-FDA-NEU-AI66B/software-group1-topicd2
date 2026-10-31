@@ -1,67 +1,75 @@
-import sqlite3
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 
 import pytest
 
-from app import create_app
-from booking_service import BookingError, cancel_booking, list_my_bookings
-from init_db import initialize_database
+from support import (
+    COURT_A,
+    COURT_B,
+    FIXED_NOW,
+    IN_TWO_DAYS,
+    MOCK_OTP,
+    OTHER_USER,
+    USER_ID,
+    VERIFIED_ACCOUNT_ID,
+    add_booking,
+    add_payment,
+    login,
+    query,
+)
 
-IN_TWO_DAYS = (date.today() + timedelta(days=2)).isoformat()
-DEMO_USER = ("user@smashgo.local", "UserTest123!")
-OTHER_USER = ("user2@smashgo.local", "User2Test123!")
+IN_THREE_DAYS = (FIXED_NOW.date() + timedelta(days=3)).isoformat()
+CONFIRMED_STARTS_AT = datetime.fromisoformat(f"{IN_THREE_DAYS} 18:00")
 
 
 @pytest.fixture
-def database_path(tmp_path):
-    path = tmp_path / "smashgo.sqlite3"
-    initialize_database(path)
-    return path
+def history(database_path):
+    """The user's bookings in four states, keyed by status."""
+    def days_ago(days):
+        return (FIXED_NOW.date() - timedelta(days=days)).isoformat()
 
-
-@pytest.fixture
-def client(database_path):
-    return create_app({"TESTING": True, "DATABASE_PATH": str(database_path)}).test_client()
-
-
-def login(client, account=DEMO_USER):
-    email, secret = account
-    assert client.post("/login", data={"email": email, "password": secret}).status_code == 302
-
-
-def query(database_path, sql, params=()):
-    with sqlite3.connect(database_path) as connection:
-        return connection.execute(sql, params).fetchall()
-
-
-def user_id(database_path, email):
-    return query(database_path, "SELECT UserID FROM Users WHERE Email = ?", (email,))[0][0]
-
-
-def seeded_booking_id(database_path, status):
-    return query(
+    confirmed = add_booking(
+        database_path, COURT_B, IN_THREE_DAYS, "18:00", "20:00", "CONFIRMED", USER_ID, 160000
+    )
+    add_payment(database_path, confirmed, 160000)
+    completed = add_booking(database_path, COURT_A, days_ago(7), "19:00", "21:00", "COMPLETED", USER_ID)
+    add_payment(database_path, completed, 200000)
+    cancelled = add_booking(database_path, COURT_A, days_ago(2), "07:00", "08:00", "CANCELLED", USER_ID, 100000)
+    add_payment(database_path, cancelled, 100000, "REFUNDED", 100000)
+    expired = add_booking(
         database_path,
-        "SELECT BookingID FROM Booking JOIN Users USING (UserID) WHERE Email = ? AND Status = ?",
-        (DEMO_USER[0], status),
-    )[0][0]
+        COURT_B,
+        days_ago(1),
+        "17:00",
+        "18:00",
+        "EXPIRED",
+        USER_ID,
+        80000,
+        hold_expires_at=f"{days_ago(2)} 12:10:00",
+    )
+    return {"CONFIRMED": confirmed, "COMPLETED": completed, "CANCELLED": cancelled, "EXPIRED": expired}
 
 
-def test_list_shows_only_own_bookings_in_every_seeded_state(client):
+def hold_booking(client):
+    response = client.post(
+        "/api/bookings",
+        json={"courtId": COURT_A, "bookingDate": IN_TWO_DAYS, "startTime": "08:00", "endTime": "10:00"},
+    )
+    assert response.status_code == 201
+    return response.get_json()["bookingId"]
+
+
+def test_list_shows_only_own_bookings_in_every_state(client, database_path, history):
+    add_booking(database_path, COURT_A, IN_TWO_DAYS, "12:00", "14:00")  # another user's booking
     login(client)
 
     response = client.get("/api/bookings/mine")
 
     assert response.status_code == 200
     bookings = response.get_json()
-    assert sorted(booking["status"] for booking in bookings) == [
-        "CANCELLED",
-        "COMPLETED",
-        "CONFIRMED",
-        "EXPIRED",
-    ]
+    assert sorted(booking["status"] for booking in bookings) == ["CANCELLED", "COMPLETED", "CONFIRMED", "EXPIRED"]
     by_status = {booking["status"]: booking for booking in bookings}
     assert by_status["CONFIRMED"]["canCancel"] is True
-    assert by_status["CONFIRMED"]["refundIfCancelledNow"] == by_status["CONFIRMED"]["paidAmount"]
+    assert by_status["CONFIRMED"]["refundIfCancelledNow"] == 160000
     assert by_status["COMPLETED"]["canCancel"] is False
     assert by_status["CANCELLED"]["refundAmount"] == by_status["CANCELLED"]["paidAmount"]
     assert by_status["EXPIRED"]["paymentStatus"] is None
@@ -70,7 +78,7 @@ def test_list_shows_only_own_bookings_in_every_seeded_state(client):
     )
 
 
-def test_status_filter(client):
+def test_status_filter(client, history):
     login(client)
     confirmed = client.get("/api/bookings/mine?status=CONFIRMED").get_json()
     assert [booking["status"] for booking in confirmed] == ["CONFIRMED"]
@@ -80,19 +88,16 @@ def test_status_filter(client):
     assert invalid.get_json()["code"] == "INVALID_INPUT"
 
 
-def test_pending_booking_is_listed_with_hold_and_expires_later(client, database_path):
+def test_pending_booking_is_listed_with_hold_and_expires_later(client, frozen_clock):
     login(client)
-    booking_id = client.post(
-        "/api/bookings",
-        json={"courtId": 1, "bookingDate": IN_TWO_DAYS, "startTime": "08:00", "endTime": "10:00"},
-    ).get_json()["bookingId"]
+    booking_id = hold_booking(client)
 
     pending = next(b for b in client.get("/api/bookings/mine").get_json() if b["bookingId"] == booking_id)
     assert pending["status"] == "PENDING"
-    assert pending["holdExpiresAt"]
+    assert pending["holdExpiresAt"] == "2030-01-07 09:10:00"
 
-    later = datetime.now() + timedelta(minutes=11)
-    listed = list_my_bookings(database_path, user_id(database_path, DEMO_USER[0]), now=later)
+    frozen_clock.advance(minutes=10)
+    listed = client.get("/api/bookings/mine").get_json()
     assert next(b for b in listed if b["bookingId"] == booking_id)["status"] == "EXPIRED"
 
 
@@ -103,15 +108,11 @@ def test_list_requires_login(client):
 
 def test_cancel_more_than_four_hours_before_refunds_in_full(client, database_path):
     login(client)
-    booking_id = client.post(
-        "/api/bookings",
-        json={"courtId": 1, "bookingDate": IN_TWO_DAYS, "startTime": "08:00", "endTime": "10:00"},
-    ).get_json()["bookingId"]
-    account_id = client.get("/api/bank-accounts").get_json()[0]["bankAccountId"]
-    client.post(f"/api/bookings/{booking_id}/payment/otp", json={"bankAccountId": account_id})
+    booking_id = hold_booking(client)
+    client.post(f"/api/bookings/{booking_id}/payment/otp", json={"bankAccountId": VERIFIED_ACCOUNT_ID})
     paid = client.post(
         f"/api/bookings/{booking_id}/payment",
-        json={"bankAccountId": account_id, "paymentMethod": "BANK_TRANSFER", "otp": "123456"},
+        json={"bankAccountId": VERIFIED_ACCOUNT_ID, "paymentMethod": "BANK_TRANSFER", "otp": MOCK_OTP},
     )
     assert paid.status_code == 200
     assert query(database_path, "SELECT COUNT(*) FROM Notification WHERE BookingID = ?", (booking_id,)) == [(1,)]
@@ -122,7 +123,7 @@ def test_cancel_more_than_four_hours_before_refunds_in_full(client, database_pat
     assert response.get_json() == {
         "bookingId": booking_id,
         "status": "CANCELLED",
-        "refundAmount": 180000,
+        "refundAmount": 200000,
         "paymentStatus": "REFUNDED",
     }
     assert query(
@@ -131,46 +132,28 @@ def test_cancel_more_than_four_hours_before_refunds_in_full(client, database_pat
     assert query(database_path, "SELECT COUNT(*) FROM Notification WHERE BookingID = ?", (booking_id,)) == [(0,)]
 
 
-def test_cancel_within_four_hours_keeps_half_the_deposit(database_path):
-    booking_id = seeded_booking_id(database_path, "CONFIRMED")
-    date_text, start_text, paid = query(
-        database_path,
-        "SELECT BookingDate, StartTime, Amount FROM Booking JOIN Payment USING (BookingID) WHERE BookingID = ?",
-        (booking_id,),
-    )[0]
-    starts_at = datetime.strptime(f"{date_text} {start_text}", "%Y-%m-%d %H:%M")
+@pytest.mark.parametrize(
+    ("before_start", "refund", "payment_status"),
+    [
+        (timedelta(hours=4, minutes=1), 160000, "REFUNDED"),
+        (timedelta(hours=4), 80000, "PARTIALLY_REFUNDED"),
+        (timedelta(hours=3), 80000, "PARTIALLY_REFUNDED"),
+    ],
+)
+def test_refund_depends_on_four_hour_notice(client, frozen_clock, history, before_start, refund, payment_status):
+    login(client)
+    frozen_clock.set(CONFIRMED_STARTS_AT - before_start)
 
-    result = cancel_booking(
-        database_path,
-        user_id(database_path, DEMO_USER[0]),
-        booking_id,
-        now=starts_at - timedelta(hours=3),
-    )
+    response = client.delete(f"/api/bookings/{history['CONFIRMED']}")
 
-    assert result["refundAmount"] == paid / 2
-    assert result["paymentStatus"] == "PARTIALLY_REFUNDED"
-
-
-def test_exactly_four_hours_before_is_late_cancellation(database_path):
-    booking_id = seeded_booking_id(database_path, "CONFIRMED")
-    date_text, start_text = query(
-        database_path, "SELECT BookingDate, StartTime FROM Booking WHERE BookingID = ?", (booking_id,)
-    )[0]
-    starts_at = datetime.strptime(f"{date_text} {start_text}", "%Y-%m-%d %H:%M")
-
-    result = cancel_booking(
-        database_path, user_id(database_path, DEMO_USER[0]), booking_id, now=starts_at - timedelta(hours=4)
-    )
-
-    assert result["paymentStatus"] == "PARTIALLY_REFUNDED"
+    assert response.status_code == 200
+    assert response.get_json()["refundAmount"] == refund
+    assert response.get_json()["paymentStatus"] == payment_status
 
 
 def test_cancel_unpaid_booking_has_no_refund(client):
     login(client)
-    booking_id = client.post(
-        "/api/bookings",
-        json={"courtId": 1, "bookingDate": IN_TWO_DAYS, "startTime": "08:00", "endTime": "10:00"},
-    ).get_json()["bookingId"]
+    booking_id = hold_booking(client)
 
     response = client.delete(f"/api/bookings/{booking_id}")
 
@@ -178,39 +161,33 @@ def test_cancel_unpaid_booking_has_no_refund(client):
     assert response.get_json()["refundAmount"] == 0
     assert response.get_json()["paymentStatus"] is None
     # The released slot can be booked again.
-    again = client.post(
-        "/api/bookings",
-        json={"courtId": 1, "bookingDate": IN_TWO_DAYS, "startTime": "08:00", "endTime": "10:00"},
-    )
-    assert again.status_code == 201
+    hold_booking(client)
 
 
 @pytest.mark.parametrize("status", ["CANCELLED", "COMPLETED", "EXPIRED"])
-def test_finished_bookings_are_not_cancellable(client, database_path, status):
+def test_finished_bookings_are_not_cancellable(client, history, status):
     login(client)
 
-    response = client.delete(f"/api/bookings/{seeded_booking_id(database_path, status)}")
+    response = client.delete(f"/api/bookings/{history[status]}")
 
     assert response.status_code == 409
     assert response.get_json()["code"] == "BOOKING_NOT_CANCELLABLE"
 
 
-def test_cannot_cancel_after_start(database_path):
-    booking_id = seeded_booking_id(database_path, "CONFIRMED")
-    with pytest.raises(BookingError) as rejected:
-        cancel_booking(
-            database_path,
-            user_id(database_path, DEMO_USER[0]),
-            booking_id,
-            now=datetime.now() + timedelta(days=10),
-        )
-    assert rejected.value.code == "BOOKING_NOT_CANCELLABLE"
+def test_cannot_cancel_after_start(client, frozen_clock, history):
+    login(client)
+    frozen_clock.set(CONFIRMED_STARTS_AT)
+
+    response = client.delete(f"/api/bookings/{history['CONFIRMED']}")
+
+    assert response.status_code == 409
+    assert response.get_json()["code"] == "BOOKING_NOT_CANCELLABLE"
 
 
-def test_only_owner_can_cancel(client, database_path):
+def test_only_owner_can_cancel(client, history):
     login(client, OTHER_USER)
 
-    response = client.delete(f"/api/bookings/{seeded_booking_id(database_path, 'CONFIRMED')}")
+    response = client.delete(f"/api/bookings/{history['CONFIRMED']}")
 
     assert response.status_code == 403
     assert response.get_json()["code"] == "NOT_BOOKING_OWNER"
@@ -228,4 +205,3 @@ def test_my_bookings_page_has_all_four_states(client):
         assert f'data-state="{state}"' in page
     assert "hơn 4 giờ" in page
     assert 'id="cancel-dialog"' in page
-
