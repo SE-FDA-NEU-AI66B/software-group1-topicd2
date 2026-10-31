@@ -1,9 +1,10 @@
 import csv
 import sqlite3
 from contextlib import closing
-from datetime import date, timedelta
+from datetime import timedelta
 from pathlib import Path
 
+import clock
 from database import PROJECT_ROOT, get_database_path
 from werkzeug.security import generate_password_hash
 
@@ -201,7 +202,7 @@ def seed_demo_booking(connection: sqlite3.Connection) -> None:
     court_id, price_per_hour = connection.execute(
         "SELECT CourtID, PricePerHour FROM Court WHERE Status = 'ACTIVE' ORDER BY CourtID LIMIT 1"
     ).fetchone()
-    booking_date = (date.today() + timedelta(days=1)).isoformat()
+    booking_date = (clock.today() + timedelta(days=1)).isoformat()
     total_amount = price_per_hour * 2
     connection.execute(
         """
@@ -265,7 +266,7 @@ def seed_booking_history(connection: sqlite3.Connection) -> None:
 
     for court_index, day_offset, start, end, status, payment_status in HISTORY_BOOKINGS:
         court_id, price_per_hour = courts[court_index]
-        booking_date = date.today() + timedelta(days=day_offset)
+        booking_date = clock.today() + timedelta(days=day_offset)
         hours = (int(end[:2]) - int(start[:2])) + (int(end[3:]) - int(start[3:])) / 60
         amount = round(price_per_hour * hours)
         cursor = connection.execute(

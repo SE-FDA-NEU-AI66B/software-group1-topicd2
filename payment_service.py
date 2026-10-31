@@ -7,6 +7,7 @@ from typing import Any
 from werkzeug.security import check_password_hash, generate_password_hash
 
 import bank_gateway
+import clock
 from booking_service import DATETIME_FORMAT, BookingError
 from database import get_db_connection
 
@@ -139,7 +140,7 @@ def link_bank_account(
     ):
         raise BookingError("INVALID_BANK_ACCOUNT_INPUT")
 
-    now = now or datetime.now()
+    now = now or clock.now()
     with closing(get_db_connection(database_path)) as connection, connection:
         account = connection.execute(
             """
@@ -184,7 +185,7 @@ def verify_bank_account(
     otp: Any,
     now: datetime | None = None,
 ) -> dict[str, Any]:
-    now = now or datetime.now()
+    now = now or clock.now()
     with closing(get_db_connection(database_path)) as connection, connection:
         account = connection.execute(
             "SELECT UserID, IsVerified, VerifiedAt FROM BankAccount WHERE BankAccountID = ?",
@@ -264,7 +265,7 @@ def request_payment_otp(
     now: datetime | None = None,
 ) -> dict[str, Any]:
     """Send the OTP that authorises paying a held booking from a verified account."""
-    now = now or datetime.now()
+    now = now or clock.now()
     with closing(get_db_connection(database_path)) as connection, connection:
         _payable_booking(connection, user_id, booking_id, now)
         account = _verified_account(connection, user_id, bank_account_id)
@@ -289,7 +290,7 @@ def pay_booking(
     now: datetime | None = None,
 ) -> dict[str, Any]:
     """Pay a held booking once the payment OTP is confirmed (BR3, BR5, BR7)."""
-    now = now or datetime.now()
+    now = now or clock.now()
     with closing(get_db_connection(database_path)) as connection:
         connection.isolation_level = None
         # Serialize with other writers so a booking cannot be paid twice.

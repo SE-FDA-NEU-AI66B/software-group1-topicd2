@@ -5,6 +5,7 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+import clock
 from database import get_db_connection
 
 HOLD_MINUTES = 10
@@ -178,7 +179,7 @@ def create_booking(
     clean_court_id, clean_date, start_minutes, end_minutes = _parse_request(
         court_id, booking_date, start_time, end_time
     )
-    now = now or datetime.now()
+    now = now or clock.now()
 
     with closing(get_db_connection(database_path)) as connection:
         connection.isolation_level = None
@@ -260,7 +261,7 @@ def list_my_bookings(
 ) -> list[dict[str, Any]]:
     if status is not None and status not in BOOKING_STATUSES:
         raise BookingError("INVALID_STATUS_FILTER")
-    now = now or datetime.now()
+    now = now or clock.now()
 
     with closing(get_db_connection(database_path)) as connection, connection:
         _release_expired_holds(connection, now)
@@ -315,7 +316,7 @@ def cancel_booking(
     now: datetime | None = None,
 ) -> dict[str, Any]:
     """Cancel the user's own booking and apply the BR4 refund policy."""
-    now = now or datetime.now()
+    now = now or clock.now()
     reason = cancel_reason.strip()[:255] if isinstance(cancel_reason, str) else ""
 
     with closing(get_db_connection(database_path)) as connection:

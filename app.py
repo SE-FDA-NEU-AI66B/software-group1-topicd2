@@ -1,9 +1,9 @@
 import os
 import secrets
-from datetime import date
 
 from flask import Flask, redirect, render_template, request, session, url_for
 
+import clock
 from booking_service import BookingError
 from court_service import list_active_courts
 from database import get_database_path
@@ -74,7 +74,7 @@ def create_app(test_config: dict | None = None) -> Flask:
             courts=court_rows,
             filters=filters,
             filter_error=filter_error,
-            today=date.today().isoformat(),
+            today=clock.today().isoformat(),
         )
 
     return app

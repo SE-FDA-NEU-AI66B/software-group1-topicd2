@@ -1,8 +1,8 @@
 from contextlib import closing
-from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+import clock
 from booking_service import BookingError
 from database import get_db_connection
 
@@ -14,7 +14,7 @@ OCCUPYING_BOOKING_STATUSES = ("PENDING", "CONFIRMED", "CHECKED_IN")
 
 # Task #94: Return every court, including disabled and maintenance courts, for the Admin view.
 def list_admin_courts(database_path: str | Path) -> list[dict[str, Any]]:
-    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    now = clock.now().strftime("%Y-%m-%d %H:%M")
     with closing(get_db_connection(database_path)) as connection:
         courts = connection.execute(
             """
@@ -156,7 +156,7 @@ def review_court_request(
     if clean_decision == "REJECTED" and not clean_reason:
         raise BookingError("INVALID_DECISION")
 
-    reviewed_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    reviewed_at = clock.now().strftime("%Y-%m-%d %H:%M:%S")
     with closing(get_db_connection(database_path)) as connection:
         connection.isolation_level = None
         connection.execute("BEGIN IMMEDIATE")
@@ -266,7 +266,7 @@ def set_court_status(
     if clean_status not in ADMIN_COURT_STATUSES:
         raise BookingError("INVALID_STATUS")
 
-    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    now = clock.now().strftime("%Y-%m-%d %H:%M")
     with closing(get_db_connection(database_path)) as connection:
         connection.isolation_level = None
         connection.execute("BEGIN IMMEDIATE")

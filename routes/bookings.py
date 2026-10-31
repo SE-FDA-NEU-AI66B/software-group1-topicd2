@@ -1,5 +1,5 @@
 from contextlib import closing
-from datetime import date, datetime
+from datetime import datetime
 
 from flask import (
     Blueprint,
@@ -13,6 +13,7 @@ from flask import (
 )
 
 import bank_gateway
+import clock
 from booking_service import (
     DATETIME_FORMAT,
     BookingError,
@@ -103,7 +104,7 @@ def _payment_step(current_user, booking_id: str):
     seconds_left = 0
     if booking and booking["UserID"] == current_user["user_id"] and booking["Status"] == "PENDING":
         hold_expires_at = datetime.strptime(booking["HoldExpiresAt"], DATETIME_FORMAT)
-        seconds_left = max(0, int((hold_expires_at - datetime.now()).total_seconds()))
+        seconds_left = max(0, int((hold_expires_at - clock.now()).total_seconds()))
 
     if not booking or booking["UserID"] != current_user["user_id"] or seconds_left == 0:
         return render_template("pages/payment_unavailable.html")
@@ -146,7 +147,7 @@ def book():
         "pages/book.html",
         courts=courts,
         selection=selection,
-        today=date.today().isoformat(),
+        today=clock.today().isoformat(),
         restored=request.args.get("restored") == "1" and current_user is not None,
     )
 
