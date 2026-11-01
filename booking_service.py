@@ -67,7 +67,6 @@ def _parse_request(court_id: Any, booking_date: Any, start_time: Any, end_time: 
         or start_minutes is None
         or end_minutes is None
         or start_minutes % SLOT_STEP_MINUTES
-        or end_minutes % SLOT_STEP_MINUTES
     ):
         raise BookingError("INVALID_INPUT")
     return clean_court_id, clean_date, start_minutes, end_minutes
