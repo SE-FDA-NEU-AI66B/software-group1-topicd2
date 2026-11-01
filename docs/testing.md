@@ -116,7 +116,11 @@ Reserved IDs: TC-27 to TC-31. Needs at least 3 cases: 1 normal, 1 error; if the 
 
 | ID | Story | Input | Expected | Kind |
 | --- | --- | --- | --- | --- |
-| TC-?? | | | | |
+| TC-27 | US-11 | Admin disables court B, a User tries to book it, then Admin reactivates it | 200 DISABLED; hidden from `/courts`; booking returns 404 `COURT_NOT_FOUND`; reactivation returns 200 ACTIVE and it is listed again | normal |
+| TC-28 | US-11 | Disable court A with a future `CONFIRMED` booking | 409 `COURT_HAS_UPCOMING_BOOKINGS`; status remains ACTIVE and Admin list reports one upcoming booking | error |
+| TC-29 | US-11 | Disable court with future `CANCELLED`/`EXPIRED` bookings or a past `CONFIRMED` booking | 200 DISABLED for each case | boundary |
+| TC-30 | US-11 | Disable courts with a future `PENDING` booking whose hold is unexpired / expired | Unexpired hold: 409 `COURT_HAS_UPCOMING_BOOKINGS`; expired hold: 200 DISABLED | boundary |
+| TC-31 | US-11 | PATCH with invalid status, unknown court, guest, User or Manager | 400 `INVALID_STATUS`; 404 `COURT_NOT_FOUND`; 401 `UNAUTHENTICATED`; 403 `ADMIN_REQUIRED` | error |
 
 Rules: none. Codes: 400 INVALID_STATUS; 401 UNAUTHENTICATED; 403 ADMIN_REQUIRED; 404 COURT_NOT_FOUND; 409 COURT_HAS_UPCOMING_BOOKINGS
 
@@ -126,7 +130,11 @@ Reserved IDs: TC-32 to TC-36. Needs at least 3 cases: 1 normal, 1 error; if the 
 
 | ID | Story | Input | Expected | Kind |
 | --- | --- | --- | --- | --- |
-| TC-?? | | | | |
+| TC-32 | US-12 | Approve a pending request with two images | 200 APPROVED; creates ACTIVE court owned by request Manager and copies both images | normal |
+| TC-33 | US-12 | Reject without reason, then reject with a reason | Missing reason: 400 `INVALID_DECISION`; reasoned rejection: status REJECTED, no court created | error / normal |
+| TC-34 | US-12 | Approve a request, then review it again | Second review returns 409 `REQUEST_ALREADY_REVIEWED`; no duplicate court is created | error |
+| TC-35 | US-12 | Invalid decision, missing request, or guest/User/Manager reviewing | 400 `INVALID_DECISION`; 404 `REQUEST_NOT_FOUND`; 401 `UNAUTHENTICATED`; 403 `ADMIN_REQUIRED` | error |
+| TC-36 | US-12 | GET requests by default, with `status=ALL`, and with an unsupported status | Default returns PENDING only; `ALL` returns prior decisions; bad filter returns 400 `INVALID_STATUS_FILTER` | normal / error |
 
 Rules: none. Codes: 400 INVALID_STATUS_FILTER, INVALID_DECISION; 401 UNAUTHENTICATED; 403 ADMIN_REQUIRED; 404 REQUEST_NOT_FOUND; 409 REQUEST_ALREADY_REVIEWED
 
@@ -165,7 +173,16 @@ Command: `python -m pytest -v`
 
 ## 4. What the tests found
 
-- Bug or rule broken on purpose: TODO
-- Red test output (if no bug was found): TODO
-- Fix: TODO
-- Guarding test: TODO (TC-xx)
+- Rule broken on purpose: temporarily removed the upcoming-booking guard from court deactivation and the rejection-reason validation.
+- Red test output captured from `python -m pytest -q -rx tests/test_admin_courts.py -k "tc28 or tc33"`:
+
+  ```text
+  FF                                                                       [100%]
+  E       assert 200 == 400
+  E       assert 200 == 409
+  2 failed, 13 deselected in 1.37s
+  ```
+
+  TC-33 received 200 instead of 400 without a rejection reason; TC-28 received 200 instead of 409 with a confirmed future booking.
+- Fix: restored both checks. The implemented HTTP status codes and error codes match `docs/design.md`; no design/implementation discrepancy was found.
+- Guarding tests: TC-28 and TC-30 cover upcoming bookings and pending holds; TC-33 covers the rejection reason.
