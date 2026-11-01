@@ -250,18 +250,32 @@ def test_tc08_slots_are_one_hour_on_thirty_minute_steps(client):
     assert all(slot["status"] == "AVAILABLE" and slot["available"] for slot in slots)
 
 
-# TC-09: A booked slot and a slot inside a Court_Block are not available.
+# TC-09: Overlaps with bookings and blocks are BOOKED; BR2 gaps apply only to bookings.
 def test_tc09_booked_and_blocked_slots_are_not_available(client, database_path):
     add_booking(database_path, COURT_A, TOMORROW, "20:00", "22:00", "CONFIRMED")
     add_court_block(database_path, COURT_A, TOMORROW, "10:00", "12:00")
 
     slots = slots_by_start(availability(client))
 
-    for start in ("09:30", "10:00", "11:00", "11:30", "19:30", "20:00", "21:00"):
+    for start in (
+        "09:30",
+        "10:00",
+        "10:30",
+        "11:00",
+        "11:30",
+        "19:30",
+        "20:00",
+        "20:30",
+        "21:00",
+    ):
         assert slots[start]["status"] == "BOOKED", start
         assert slots[start]["available"] is False
     assert slots["12:00"]["status"] == "AVAILABLE"
+    assert slots["12:30"]["status"] == "AVAILABLE"
+    assert slots["12:30"]["available"] is True
     assert slots["19:00"]["status"] == "AVAILABLE"
+    assert slots["18:30"]["status"] == "UNAVAILABLE"
+    assert slots["18:30"]["available"] is False
 
 
 # TC-10: A missing or invalid date gives 400 INVALID_AVAILABILITY_DATE.
@@ -285,6 +299,14 @@ def test_tc11_last_slot_ends_exactly_at_close_time(client, court_id, last_start,
     assert last_start in slots
     assert past_close_start not in slots
     assert max(slot["endTime"] for slot in slots.values()) == {COURT_A: "22:00", COURT_B: "21:00"}[court_id]
+
+
+# TC-53: Requesting availability for a court that does not exist returns 404.
+def test_tc53_availability_for_unknown_court_returns_not_found(client):
+    response = client.get(f"/api/courts/9999/availability?date={TOMORROW}")
+
+    assert response.status_code == 404
+    assert response.get_json()["code"] == "COURT_NOT_FOUND"
 
 
 # TC-09: Task #95: Load dated availability with available, booked and unavailable states.
