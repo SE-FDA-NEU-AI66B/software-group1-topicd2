@@ -19,6 +19,7 @@ Sports field booking platform for players, helping to find a field, choose a tim
 - Sprint 1: @quynhquynh-blip
 - Sprint 2: @Buithaoaineu
 - Sprint 3: @dqchien
+- Sprint 4: @quynhquynh-blip
 
 **Board:** https://github.com/orgs/SE-FDA-NEU-AI66B/projects/24
 
