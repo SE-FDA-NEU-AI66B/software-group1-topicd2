@@ -30,7 +30,7 @@
 
 **Project board on the submission day:**
 
-<img src="" alt="Project board on the submission day" width="500">
+<img src="../images/Final Sprint 4.PNG" alt="Project board on the submission day" width="500">
 
 ---
 
