@@ -129,6 +129,16 @@ def test_expired_otp_is_rejected(client, frozen_clock):
     assert response.get_json()["code"] == "VERIFICATION_EXPIRED_OR_LOCKED"
 
 
+# TC-54: Verifying a bank account that does not exist returns 404.
+def test_tc54_verifying_missing_bank_account_returns_not_found(client):
+    login(client)
+
+    response = client.post("/api/bank-accounts/9999/verify", json={"otp": MOCK_OTP})
+
+    assert response.status_code == 404
+    assert response.get_json()["code"] == "BANK_ACCOUNT_NOT_FOUND"
+
+
 def test_otp_is_accepted_just_before_expiry(client, frozen_clock):
     login(client)
     account_id = link_account(client)
@@ -151,6 +161,7 @@ def test_verified_account_cannot_be_linked_twice(client):
     assert again.get_json()["code"] == "BANK_ACCOUNT_EXISTS"
 
 
+# TC-55: Verifying another user's bank account returns 403 NOT_ACCOUNT_OWNER.
 def test_cannot_verify_another_users_account(client):
     login(client)
     account_id = link_account(client)

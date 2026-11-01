@@ -267,7 +267,8 @@ def get_court_availability(
         ]
         too_short_gap = any(
             0 < (start - taken_end if taken_end <= start else taken_start - end) < 60
-            for taken_start, taken_end, _ in occupied
+            for taken_start, taken_end, source in occupied
+            if source == "BOOKING"
         )
         starts_at = datetime.combine(clean_date, datetime.min.time()) + timedelta(
             minutes=start

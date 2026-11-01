@@ -67,6 +67,7 @@ def _parse_request(court_id: Any, booking_date: Any, start_time: Any, end_time: 
         or start_minutes is None
         or end_minutes is None
         or start_minutes % SLOT_STEP_MINUTES
+        or end_minutes % SLOT_STEP_MINUTES
     ):
         raise BookingError("INVALID_INPUT")
     return clean_court_id, clean_date, start_minutes, end_minutes
@@ -104,11 +105,11 @@ def _check_booking_rules(court, booking_date, start_minutes, end_minutes, now):
 def _check_slot(connection, court, booking_date, start_minutes, end_minutes):
     occupied = connection.execute(
         f"""
-        SELECT StartTime, EndTime FROM Booking
+        SELECT StartTime, EndTime, 'BOOKING' AS Source FROM Booking
         WHERE CourtID = ? AND BookingDate = ?
           AND Status IN ({", ".join("?" for _ in OCCUPYING_STATUSES)})
         UNION ALL
-        SELECT StartTime, EndTime FROM Court_Block
+        SELECT StartTime, EndTime, 'BLOCK' AS Source FROM Court_Block
         WHERE CourtID = ? AND BlockDate = ?
         ORDER BY StartTime
         """,
@@ -121,8 +122,11 @@ def _check_slot(connection, court, booking_date, start_minutes, end_minutes):
         ),
     ).fetchall()
 
-    intervals = [(parse_minutes(row["StartTime"]), parse_minutes(row["EndTime"])) for row in occupied]
-    for taken_start, taken_end in intervals:
+    intervals = [
+        (parse_minutes(row["StartTime"]), parse_minutes(row["EndTime"]), row["Source"])
+        for row in occupied
+    ]
+    for taken_start, taken_end, _ in intervals:
         if start_minutes < taken_end and taken_start < end_minutes:
             raise BookingError(
                 "SLOT_UNAVAILABLE",
@@ -135,7 +139,9 @@ def _check_slot(connection, court, booking_date, start_minutes, end_minutes):
 
     # BR2: back-to-back bookings must touch; a gap shorter than the minimum
     # booking length could never be booked by anyone else.
-    for taken_start, taken_end in intervals:
+    for taken_start, taken_end, source in intervals:
+        if source != "BOOKING":
+            continue
         gap = start_minutes - taken_end if taken_end <= start_minutes else taken_start - end_minutes
         if 0 < gap < MIN_DURATION_MINUTES:
             raise BookingError(

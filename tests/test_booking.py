@@ -16,6 +16,7 @@ from support import (
     USER,
     USER_ID,
     add_booking,
+    add_court_block,
     login,
 )
 
@@ -41,11 +42,11 @@ def test_tc12_create_booking_holds_slot_for_ten_minutes(client):
     assert booking["holdExpiresAt"] == (FIXED_NOW + timedelta(minutes=10)).strftime("%Y-%m-%d %H:%M:%S")
 
 
-# TC-13: A 59-minute booking violates the one-hour minimum.
-def test_tc13_booking_of_59_minutes_is_rejected_by_minimum_duration(client):
+# TC-13: A 30-minute booking violates the one-hour minimum.
+def test_tc13_booking_of_30_minutes_is_rejected_by_minimum_duration(client):
     login(client)
 
-    response = book(client, startTime="08:00", endTime="08:59")
+    response = book(client, startTime="08:00", endTime="08:30")
 
     assert response.status_code == 422
     assert response.get_json()["code"] == "BOOKING_RULE_VIOLATION"
@@ -60,11 +61,11 @@ def test_tc14_booking_of_60_minutes_is_allowed(client):
     assert response.status_code == 201
 
 
-# TC-15: A duration just above the one-hour minimum is allowed.
-def test_tc15_booking_of_61_minutes_is_allowed(client):
+# TC-15: A 90-minute booking just above the one-hour minimum is allowed.
+def test_tc15_booking_of_90_minutes_is_allowed(client):
     login(client)
 
-    response = book(client, startTime="08:00", endTime="09:01")
+    response = book(client, startTime="08:00", endTime="09:30")
 
     assert response.status_code == 201
 
@@ -98,6 +99,28 @@ def test_tc18_booking_with_60_minute_gap_is_allowed(client, database_path):
     response = book(client, bookingDate=TOMORROW, startTime="18:00", endTime="19:00")
 
     assert response.status_code == 201
+
+
+# TC-56: Court blocks reject overlap but do not impose BR2 gaps before or after the block.
+def test_tc56_booking_can_be_near_a_court_block(client, database_path):
+    add_court_block(database_path, COURT_A, TOMORROW, "10:00", "12:00")
+    login(client)
+
+    before_block = book(
+        client,
+        bookingDate=TOMORROW,
+        startTime="08:00",
+        endTime="09:30",
+    )
+    after_block = book(
+        client,
+        bookingDate=TOMORROW,
+        startTime="12:30",
+        endTime="13:30",
+    )
+
+    assert before_block.status_code == 201
+    assert after_block.status_code == 201
 
 
 # TC-19: Unexpired pending holds occupy their slot; expired and cancelled bookings release it.
@@ -195,6 +218,18 @@ def test_tc21_active_booking_limit_and_inactive_statuses(client, database_path):
         ),
         (
             USER,
+            {"courtId": COURT_A, "bookingDate": IN_TWO_DAYS, "startTime": "08:00", "endTime": "08:59"},
+            400,
+            "INVALID_INPUT",
+        ),
+        (
+            USER,
+            {"courtId": COURT_A, "bookingDate": IN_TWO_DAYS, "startTime": "08:00", "endTime": "09:01"},
+            400,
+            "INVALID_INPUT",
+        ),
+        (
+            USER,
             {"courtId": "abc", "bookingDate": IN_TWO_DAYS, "startTime": "08:00", "endTime": "10:00"},
             400,
             "INVALID_INPUT",
@@ -218,6 +253,8 @@ def test_tc21_active_booking_limit_and_inactive_statuses(client, database_path):
         "invalid-date",
         "off-step-start",
         "invalid-end-time",
+        "end-before-step",
+        "end-after-step",
         "invalid-court-id",
         "unknown-court",
         "non-player",
