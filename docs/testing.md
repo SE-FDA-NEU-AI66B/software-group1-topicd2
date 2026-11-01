@@ -117,6 +117,27 @@ Reserved IDs: TC-32 to TC-36. Needs at least 3 cases: 1 normal, 1 error; if the 
 
 Rules: none. Codes: 400 INVALID_STATUS_FILTER, INVALID_DECISION; 401 UNAUTHENTICATED; 403 ADMIN_REQUIRED; 404 REQUEST_NOT_FOUND; 409 REQUEST_ALREADY_REVIEWED
 
+### US-04 - Bank Linking, Payment and OTP (Task #111)
+
+These payment cases use IDs after the ranges already reserved above. The project has no scheduled background worker; expired holds are marked `EXPIRED` when booking operations or the booking-list endpoint run, which TC-40 verifies.
+
+| ID | Story | Input | Expected | Kind |
+| --- | --- | --- | --- | --- |
+| TC-37 | US-04 | Pay an unexpired booking using a verified account and correct OTP; then try to pay again | First payment confirms booking, creates one `SUCCESS` payment and a reminder scheduled 240 minutes before start; second payment returns 409 `HOLD_EXPIRED_OR_ALREADY_PAID` | normal / error |
+| TC-38 | US-04 | Pay 9 minutes 59 seconds after the booking hold starts | 200; booking becomes `CONFIRMED` | boundary (just below) |
+| TC-39 | US-04 | Pay 10 minutes and 1 second after the hold starts, then list bookings and retry the slot as another user | 409 `HOLD_EXPIRED_OR_ALREADY_PAID`; booking becomes `EXPIRED`; another user can book the released slot | boundary (just above) |
+| TC-40 | US-04 | List bookings after a pending hold expires while another booking is `CONFIRMED` | Pending booking becomes `EXPIRED`; confirmed booking stays `CONFIRMED` | normal |
+| TC-41 | US-04 | Pay with a bank account that has not been verified | 422 `BANK_ACCOUNT_NOT_VERIFIED`; booking remains `PENDING` | error |
+| TC-42 | US-04 | Submit payment OTP 4 minutes 59 seconds after issuance | 200; booking becomes `CONFIRMED` | boundary (just below) |
+| TC-43 | US-04 | Submit payment OTP 5 minutes 1 second after issuance | 409 `VERIFICATION_EXPIRED_OR_LOCKED`; booking remains `PENDING` | boundary (just above) |
+| TC-44 | US-04 | Submit two wrong payment OTPs, then the correct OTP | Wrong attempts return 400 `INVALID_OTP`; correct OTP pays the booking | error / normal |
+| TC-45 | US-04 | Submit three wrong payment OTPs, then the correct OTP to the locked verification | Third and subsequent attempts return 409 `VERIFICATION_EXPIRED_OR_LOCKED` | error |
+| TC-46 | US-04 | Pay without login; pay another user's booking; request a missing booking | 401 `UNAUTHENTICATED`; 403 `NOT_BOOKING_OWNER`; 404 `BOOKING_NOT_FOUND` | error |
+| TC-47 | US-04 | Link a bank account and inspect link/list responses | Only the last four account digits are returned; full account number, OTP and OTP hash are not exposed | normal |
+| TC-48 | US-04 | Link an already verified bank account again | 409 `BANK_ACCOUNT_EXISTS` | error |
+| TC-49 | US-04 | Verify the first linked account, then link and verify another account | The first verified account remains the only primary account | normal |
+| TC-50 | US-04 | Payment gateway returns a failed charge | 502 `PAYMENT_FAILED`; booking remains `PENDING` and no payment row is created | error |
+
 ## 3. Automated tests
 
 Command: `python -m pytest -v`

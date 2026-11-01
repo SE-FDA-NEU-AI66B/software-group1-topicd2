@@ -47,7 +47,8 @@ def booking_status(database_path, booking_id):
     return query(database_path, "SELECT Status FROM Booking WHERE BookingID = ?", (booking_id,))[0][0]
 
 
-def test_link_returns_only_last_four_digits(client, fake_gateway):
+# TC-47: Bank account responses reveal only the last four digits, never the OTP or its hash.
+def test_link_returns_only_last_four_digits(client, database_path, fake_gateway):
     login(client)
 
     response = client.post(
@@ -74,6 +75,15 @@ def test_link_returns_only_last_four_digits(client, fake_gateway):
     } in listed.get_json()
     assert "123456789012" not in listed.get_data(as_text=True)
     assert "0123456789" not in listed.get_data(as_text=True)
+    otp_hash = query(
+        database_path,
+        "SELECT OTPHash FROM BankAccountVerification WHERE BankAccountID = ?",
+        (body["bankAccountId"],),
+    )[0][0]
+    assert otp_hash not in response.get_data(as_text=True)
+    assert otp_hash not in listed.get_data(as_text=True)
+    assert MOCK_OTP not in response.get_data(as_text=True)
+    assert MOCK_OTP not in listed.get_data(as_text=True)
 
 
 def test_invalid_account_input_is_rejected(client):
@@ -129,6 +139,7 @@ def test_otp_is_accepted_just_before_expiry(client, frozen_clock):
     assert response.status_code == 200
 
 
+# TC-48: Linking an already verified bank account again is rejected.
 def test_verified_account_cannot_be_linked_twice(client):
     login(client)
     link_and_verify(client)
@@ -152,6 +163,7 @@ def test_cannot_verify_another_users_account(client):
     assert response.get_json()["code"] == "NOT_ACCOUNT_OWNER"
 
 
+# TC-37: A valid payment confirms the booking, records one payment, schedules a reminder, and cannot be repeated.
 def test_payment_confirms_booking_and_schedules_reminder(client, database_path, fake_gateway):
     login(client)
     booking_id = hold_booking(client)
@@ -175,7 +187,8 @@ def test_payment_confirms_booking_and_schedules_reminder(client, database_path, 
     assert paid_again.get_json()["code"] == "HOLD_EXPIRED_OR_ALREADY_PAID"
 
 
-def test_unverified_account_cannot_pay(client):
+# TC-41: An unverified account cannot pay, and the booking remains pending.
+def test_unverified_account_cannot_pay(client, database_path):
     login(client)
     booking_id = hold_booking(client)
     account_id = link_account(client)
@@ -184,8 +197,10 @@ def test_unverified_account_cannot_pay(client):
 
     assert response.status_code == 422
     assert response.get_json()["code"] == "BANK_ACCOUNT_NOT_VERIFIED"
+    assert booking_status(database_path, booking_id) == "PENDING"
 
 
+# TC-50: A failed charge leaves the booking pending without a payment row.
 def test_gateway_failure_keeps_booking_pending(client, database_path, fake_gateway):
     login(client)
     booking_id = hold_booking(client)
@@ -207,6 +222,7 @@ def test_gateway_failure_keeps_booking_pending(client, database_path, fake_gatew
     assert retry.get_json()["code"] == "VERIFICATION_EXPIRED_OR_LOCKED"
 
 
+# TC-44: Two wrong OTP attempts still permit payment with the correct OTP.
 def test_payment_requires_otp_sent_to_the_account(client, database_path, fake_gateway):
     login(client)
     booking_id = hold_booking(client)
@@ -231,6 +247,13 @@ def test_payment_requires_otp_sent_to_the_account(client, database_path, fake_ga
     assert "thanh toán" in wrong.get_json()["message"]
     assert booking_status(database_path, booking_id) == "PENDING"
 
+    wrong_again = client.post(
+        f"/api/bookings/{booking_id}/payment",
+        json={"bankAccountId": primary["bankAccountId"], "otp": "000000"},
+    )
+    assert wrong_again.status_code == 400
+    assert wrong_again.get_json()["code"] == "INVALID_OTP"
+
     right = client.post(
         f"/api/bookings/{booking_id}/payment",
         json={"bankAccountId": primary["bankAccountId"], "otp": MOCK_OTP},
@@ -238,6 +261,7 @@ def test_payment_requires_otp_sent_to_the_account(client, database_path, fake_ga
     assert right.status_code == 200
 
 
+# TC-45: Three wrong OTP attempts lock the payment verification.
 def test_payment_otp_locks_after_three_wrong_attempts(client):
     login(client)
     booking_id = hold_booking(client)
@@ -251,7 +275,12 @@ def test_payment_otp_locks_after_three_wrong_attempts(client):
     ]
     assert codes == ["INVALID_OTP", "INVALID_OTP", "VERIFICATION_EXPIRED_OR_LOCKED"]
 
-    assert pay(client, booking_id, VERIFIED_ACCOUNT_ID).status_code == 200
+    still_locked = client.post(
+        f"/api/bookings/{booking_id}/payment",
+        json={"bankAccountId": VERIFIED_ACCOUNT_ID, "otp": MOCK_OTP},
+    )
+    assert still_locked.status_code == 409
+    assert still_locked.get_json()["code"] == "VERIFICATION_EXPIRED_OR_LOCKED"
 
 
 def test_payment_otp_requires_verified_account(client):
@@ -265,6 +294,7 @@ def test_payment_otp_requires_verified_account(client):
     assert response.get_json()["code"] == "BANK_ACCOUNT_NOT_VERIFIED"
 
 
+# TC-49: The first verified bank account remains the only primary account.
 def test_first_linked_account_stays_primary(client):
     login(client)
     seeded_primary = client.get("/api/bank-accounts").get_json()[0]
@@ -279,31 +309,57 @@ def test_first_linked_account_stays_primary(client):
     assert accounts[-1]["bankAccountId"] == new_account_id
 
 
-def test_expired_hold_cannot_be_paid(client, frozen_clock):
+# TC-39: Just after the ten-minute hold expires, payment is rejected and the slot is released.
+def test_expired_hold_cannot_be_paid(client, frozen_clock, database_path):
     login(client)
     booking_id = hold_booking(client)
+    sent = client.post(
+        f"/api/bookings/{booking_id}/payment/otp",
+        json={"bankAccountId": VERIFIED_ACCOUNT_ID},
+    )
+    assert sent.status_code == 200
 
-    frozen_clock.advance(minutes=10)
+    frozen_clock.advance(minutes=10, seconds=1)
     response = client.post(f"/api/bookings/{booking_id}/payment", json={"bankAccountId": VERIFIED_ACCOUNT_ID})
 
     assert response.status_code == 409
     assert response.get_json()["code"] == "HOLD_EXPIRED_OR_ALREADY_PAID"
     assert client.get(f"/book?bookingId={booking_id}").get_data(as_text=True).count("không còn chờ thanh toán") == 1
+    bookings = client.get("/api/bookings/mine").get_json()
+    assert next(booking for booking in bookings if booking["bookingId"] == booking_id)["status"] == "EXPIRED"
+
+    client.get("/logout")
+    login(client, OTHER_USER)
+    replacement = hold_booking(client)
+    assert replacement != booking_id
 
 
-def test_hold_can_still_be_paid_one_second_before_expiry(client, frozen_clock):
+# TC-38: A booking can still be paid one second before its ten-minute hold expires.
+def test_hold_can_still_be_paid_one_second_before_expiry(client, frozen_clock, database_path):
     login(client)
     booking_id = hold_booking(client)
 
     frozen_clock.advance(minutes=9, seconds=59)
 
-    assert pay(client, booking_id, VERIFIED_ACCOUNT_ID).status_code == 200
+    response = pay(client, booking_id, VERIFIED_ACCOUNT_ID)
+
+    assert response.status_code == 200
+    assert booking_status(database_path, booking_id) == "CONFIRMED"
 
 
+# TC-46: Payment requires authentication and booking ownership; a missing booking returns 404.
 def test_only_owner_can_pay(client):
     login(client)
     booking_id = hold_booking(client)
     client.get("/logout")
+
+    unauthenticated = client.post(
+        f"/api/bookings/{booking_id}/payment",
+        json={"bankAccountId": VERIFIED_ACCOUNT_ID, "otp": MOCK_OTP},
+    )
+    assert unauthenticated.status_code == 401
+    assert unauthenticated.get_json()["code"] == "UNAUTHENTICATED"
+
     login(client, OTHER_USER)
     account_id = link_and_verify(client)
 
@@ -311,7 +367,53 @@ def test_only_owner_can_pay(client):
 
     assert response.status_code == 403
     assert response.get_json()["code"] == "NOT_BOOKING_OWNER"
-    assert client.post("/api/bookings/9999/payment", json={"bankAccountId": account_id}).status_code == 404
+    missing = client.post(
+        "/api/bookings/9999/payment",
+        json={"bankAccountId": account_id, "otp": MOCK_OTP},
+    )
+    assert missing.status_code == 404
+    assert missing.get_json()["code"] == "BOOKING_NOT_FOUND"
+
+
+# TC-42: A payment OTP is valid 4 minutes and 59 seconds after it is issued.
+def test_payment_otp_is_valid_at_4_minutes_59_seconds(client, frozen_clock, database_path):
+    login(client)
+    booking_id = hold_booking(client)
+    sent = client.post(
+        f"/api/bookings/{booking_id}/payment/otp",
+        json={"bankAccountId": VERIFIED_ACCOUNT_ID},
+    )
+    assert sent.status_code == 200
+    frozen_clock.advance(minutes=4, seconds=59)
+
+    response = client.post(
+        f"/api/bookings/{booking_id}/payment",
+        json={"bankAccountId": VERIFIED_ACCOUNT_ID, "otp": MOCK_OTP},
+    )
+
+    assert response.status_code == 200
+    assert booking_status(database_path, booking_id) == "CONFIRMED"
+
+
+# TC-43: A payment OTP has expired 5 minutes and 1 second after it is issued.
+def test_payment_otp_expires_after_five_minutes(client, frozen_clock, database_path):
+    login(client)
+    booking_id = hold_booking(client)
+    sent = client.post(
+        f"/api/bookings/{booking_id}/payment/otp",
+        json={"bankAccountId": VERIFIED_ACCOUNT_ID},
+    )
+    assert sent.status_code == 200
+    frozen_clock.advance(minutes=5, seconds=1)
+
+    response = client.post(
+        f"/api/bookings/{booking_id}/payment",
+        json={"bankAccountId": VERIFIED_ACCOUNT_ID, "otp": MOCK_OTP},
+    )
+
+    assert response.status_code == 409
+    assert response.get_json()["code"] == "VERIFICATION_EXPIRED_OR_LOCKED"
+    assert booking_status(database_path, booking_id) == "PENDING"
 
 
 def test_payment_step_page(client):

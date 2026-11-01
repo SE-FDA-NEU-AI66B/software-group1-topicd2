@@ -87,9 +87,19 @@ def test_status_filter(client, history):
     assert invalid.get_json()["code"] == "INVALID_INPUT"
 
 
-def test_pending_booking_is_listed_with_hold_and_expires_later(client, frozen_clock):
+# TC-40: Listing bookings expires overdue holds but leaves confirmed bookings unchanged.
+def test_pending_booking_is_listed_with_hold_and_expires_later(client, database_path, frozen_clock):
     login(client)
     booking_id = hold_booking(client)
+    confirmed_id = add_booking(
+        database_path,
+        court_id=COURT_B,
+        booking_date=IN_TWO_DAYS,
+        start="08:00",
+        end="10:00",
+        status="CONFIRMED",
+        user_id=USER_ID,
+    )
 
     pending = next(b for b in client.get("/api/bookings/mine").get_json() if b["bookingId"] == booking_id)
     assert pending["status"] == "PENDING"
@@ -98,6 +108,7 @@ def test_pending_booking_is_listed_with_hold_and_expires_later(client, frozen_cl
     frozen_clock.advance(minutes=10)
     listed = client.get("/api/bookings/mine").get_json()
     assert next(b for b in listed if b["bookingId"] == booking_id)["status"] == "EXPIRED"
+    assert next(b for b in listed if b["bookingId"] == confirmed_id)["status"] == "CONFIRMED"
 
 
 def test_list_requires_login(client):
