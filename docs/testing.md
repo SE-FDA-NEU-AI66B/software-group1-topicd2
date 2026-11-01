@@ -83,7 +83,17 @@ Reserved IDs: TC-12 to TC-22. Needs at least 3 cases: 1 normal, 1 error; if the 
 
 | ID | Story | Input | Expected | Kind |
 | --- | --- | --- | --- | --- |
-| TC-?? | | | | |
+| TC-12 | US-04 | `POST /api/bookings` for an available court and slot | 201, status `PENDING`, `HoldExpiresAt` is 10 minutes after the fixed clock | normal |
+| TC-13 | US-04 | Start 08:00, end 08:59 (59 minutes) | 422 `BOOKING_RULE_VIOLATION` | boundary (just below) |
+| TC-14 | US-04 | Start 08:00, end 09:00 (60 minutes) | 201 | boundary (on the limit) |
+| TC-15 | US-04 | Start 08:00, end 09:01 (61 minutes) | 201 | boundary (just above) |
+| TC-16 | US-04 | Existing booking 20:00-21:00; request 19:00-20:00 (0-minute gap) | 201 | boundary (on the limit) |
+| TC-17 | US-04 | Existing booking 20:00-21:00; request 18:30-19:30 (30-minute gap) | 422 `BOOKING_RULE_VIOLATION` | boundary (just below) |
+| TC-18 | US-04 | Existing booking 20:00-21:00; request 18:00-19:00 (60-minute gap) | 201 | boundary (on the limit) |
+| TC-19 | US-04 | Request an occupied slot held by unexpired `PENDING`, `EXPIRED`, or `CANCELLED` booking | Pending hold: 409 `SLOT_UNAVAILABLE`; expired/cancelled: 201 | normal / error |
+| TC-20 | US-04 | User's first and second active bookings | Both return 201 | normal |
+| TC-21 | US-04 | User already has 2 active bookings, then tries a third; mark previous bookings `CANCELLED` and `EXPIRED` and retry | Third active booking: 409 `ACTIVE_BOOKING_LIMIT`; inactive bookings do not count and retry returns 201 | error / normal |
+| TC-22 | US-04 | Guest request; missing fields; malformed date/time/court ID; start off 30-minute step; unknown court; non-player role | 401 `UNAUTHENTICATED`; 400 `INVALID_INPUT`; 404 `COURT_NOT_FOUND`; 403 `FORBIDDEN` | error |
 
 Rules: BR1, BR2, BR3, BR6, BR7. Codes: 400 INVALID_INPUT, INVALID_OTP; 401 UNAUTHENTICATED; 403 NOT_BOOKING_OWNER, NOT_ACCOUNT_OWNER; 404 COURT_NOT_FOUND, BOOKING_NOT_FOUND, BANK_ACCOUNT_NOT_FOUND; 409 SLOT_UNAVAILABLE, ACTIVE_BOOKING_LIMIT, HOLD_EXPIRED_OR_ALREADY_PAID, VERIFICATION_EXPIRED_OR_LOCKED, BANK_ACCOUNT_EXISTS; 422 BOOKING_RULE_VIOLATION, BANK_ACCOUNT_NOT_VERIFIED; 502 PAYMENT_FAILED
 
@@ -93,7 +103,10 @@ Reserved IDs: TC-23 to TC-26. Needs at least 3 cases: 1 normal, 1 error; if the 
 
 | ID | Story | Input | Expected | Kind |
 | --- | --- | --- | --- | --- |
-| TC-?? | | | | |
+| TC-23 | US-05 | Existing booking 20:00-22:00; request 19:30-20:30 (partial overlap) | 409 `SLOT_UNAVAILABLE` | error |
+| TC-24 | US-05 | Existing booking 20:00-22:00; request 19:00-20:00 (adjacent, no overlap) | 201 | normal |
+| TC-25 | US-05 | Two concurrent requests from separate connections for the same court and slot, using `BEGIN IMMEDIATE` | Exactly one succeeds; the other returns `409 SLOT_UNAVAILABLE` | normal / error |
+| TC-26 | US-05 | Repository insert with `EndTime <= StartTime` | SQLite `CHECK` constraint raises `IntegrityError` | error |
 
 Rules: BR1. Codes: 409 SLOT_UNAVAILABLE
 
