@@ -7,12 +7,14 @@ import clock
 from booking_service import BookingError
 from court_service import list_active_courts
 from database import get_database_path
+from request_logging import init_request_logging
 from routes import (
     admin_api_bp,
     auth_bp,
     bank_accounts_bp,
     bookings_bp,
     court_pages_bp,
+    health_bp,
     pages_bp,
 )
 
@@ -28,6 +30,10 @@ def create_app(test_config: dict | None = None) -> Flask:
     )
     if test_config:
         app.config.update(test_config)
+
+    # Task #127: one log line per request on stdout, and GET /health.
+    init_request_logging(app)
+    app.register_blueprint(health_bp)
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(pages_bp)
