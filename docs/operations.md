@@ -56,7 +56,7 @@ The pipeline is [`.github/workflows/ci.yml`](../.github/workflows/ci.yml). It ru
 **Branch protection on `main`:** screenshot added with #130.
 
 <!-- Replace this line with the screenshot from #130, for example:
-<img src="../images/branch-protection.PNG" alt="Branch protection settings for main" width="600"> -->
+<img src="images/m5/branch-protection.png" alt="Branch protection settings for main" width="600"> -->
 
 ## 3. Monitoring
 
