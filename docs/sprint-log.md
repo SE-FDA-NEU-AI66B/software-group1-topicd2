@@ -261,3 +261,75 @@ Checked on 31 Oct 2026; tick the rest before the deadline.
 | @quynhquynh-blip |          |        |       |
 | @dqchien         |          |        |       |
 | @Buithaoaineu    |          |        |       |
+
+---
+
+## Sprint 5 - 7 Nov 2026 to the Milestone 5 deadline
+
+### Sprint goal
+
+Put SmashGo online at one public `https://` URL that a stranger can open on a phone or a laptop and use every P0 story (US-01 to US-05, US-11, US-12) by clicking only. A merge into `main` reaches the URL only after CI is green. `/health` reports the state of the app and the database, and `docs/operations.md` explains how we release, roll back, monitor and maintain the app. The version at the URL is tagged `v1.0` and shown at the final demo in week 15.
+
+### Mandatory Chore Issues
+
+| Issue                                   | Assignee            | Closed? |
+| --------------------------------------- | ------------------- | ------- |
+| [Chore] Refine backlog Sprint 5 #125    | @dqchien (PO)       | No      |
+| [Chore] Sprint 5 wrap-up #131           | @Buithaoaineu (SM)  | No      |
+
+### Planning board
+
+![Sprint 5 planning board](../images/Sprint%205%20Planning.PNG)
+
+### Committed
+
+| Issue | Story                                                                        | Est. hours | Owner            |
+| ----- | ---------------------------------------------------------------------------- | ---------- | ---------------- |
+| #125  | [Chore] Refine backlog Sprint 5                                              | 1          | @dqchien         |
+| #126  | [Task] Deploy the app to Render with gunicorn, deploy only when CI is green  | 2          | @dqchien         |
+| #127  | [Task] Add the `/health` endpoint and request logging                        | 2          | @quynhquynh-blip |
+| #128  | [Task] Apply the M3 feedback to the interface (before / after)               | 2          | @Buithaoaineu    |
+| #129  | [Task] Write `docs/operations.md` (7 sections)                               | 2          | @quynhquynh-blip |
+| #130  | [Task] Branch protection, CI badge and the README first screen               | 2          | @dqchien         |
+| #131  | [Chore] Sprint 5 wrap-up                                                     | 1          | @Buithaoaineu    |
+
+**Total committed: 12 points** (1 point = 1 estimated hour, as in Sprints 3 and 4)
+
+Order of work: #126 (deploy) and #127 (`/health`) first, because #129 and #130 need the real URL, a CI run and the logs. The release `v1.0` and the final demo are done by the whole team without a pull request, so they are not on the board.
+
+### M3 feedback to fix (input for #128)
+
+| #  | Feedback from M3 | Screen | Priority | Fixed in |
+| -- | ---------------- | ------ | -------- | -------- |
+| 1 | The court checkbox cannot be ticked on a desktop browser | `/book` | Must | #128 |
+| 2 | The end-time list goes to 23:00, but the time grid above only shows up to 22:00 | `/book` | Must | #128 |
+| 3 | The price is written 90,000 on the court list and 90.000 inside; use one format everywhere | `/courts`, `/courts/{courtId}`, `/book` | Must | #128 |
+| 4 | The payment page shows too many forms and buttons at once | `/book` (payment) | Must | #128 |
+| 5 | Payment should be step by step: the next step appears only when the previous one is done | `/book` (payment) | Must | #128 |
+| 6 | The *Court details* and *Book* buttons sit in the status column | `/courts` | Must | #128 |
+| 7 | The text is too small | All screens | Must | #128 |
+| 8 | The Admin screen shows the raw value `active` in English while the rest of the page is Vietnamese | `/admin/courts` | Must | #128 |
+| 9 | The layout leaves too much empty space | All screens | Should | #128 if time allows |
+| 10 | A user cannot select several time slots in one booking | `/book` | Later | Not in Sprint 5: US-04 books one slot; listed as a known risk in `docs/operations.md` |
+
+Priority: **Must** = fixed in Sprint 5 (bugs and inconsistencies the demo will show before / after); **Should** = if time allows; **Later** = changes the scope of a P0 story, so it is not a UI fix.
+
+### Result
+
+To be filled in by the SM in #131 when the sprint closes.
+
+| Issue | Est. hours | Status | If not done, why |
+| ----- | ---------- | ------ | ---------------- |
+| #125  | 1          | Open   |                  |
+| #126  | 2          | Open   |                  |
+| #127  | 2          | Open   |                  |
+| #128  | 2          | Open   |                  |
+| #129  | 2          | Open   |                  |
+| #130  | 2          | Open   |                  |
+| #131  | 1          | Open   |                  |
+
+- **Goal**: One public URL running `v1.0`, deployed from `main` only after CI is green, with `/health` and `docs/operations.md`.
+- **Committed**: 12 points
+- **Completed**: To be filled in at the wrap-up
+- **Velocity**: To be filled in at the wrap-up
+- **SM Sprint 5**: @Buithaoaineu
