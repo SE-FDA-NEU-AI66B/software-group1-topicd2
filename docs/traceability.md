@@ -14,6 +14,7 @@ update this file should not be approved.
 | `/book?bookingId=` | Payment step: 10-minute countdown, link bank account, OTP, pay (`/api/bank-accounts`, `POST /api/bookings/{id}/payment`) | U | P0 | F2 | US-04 (#92) | — | In progress |
 | `/my-bookings` | List own bookings with status (loading, empty, error, data); pay a pending one; cancel with BR4 refund (`GET /api/bookings/mine`, `DELETE /api/bookings/{id}`) | U | P0 (view); P1 (cancel) | F3 | US-06, US-08 (#93) | — | In progress |
 | `/admin/courts` | Review court requests and activate/deactivate courts (`GET /api/admin/court-requests`, `POST /api/admin/court-requests/{id}/review`, `GET /api/admin/courts`, `PATCH /api/admin/courts/{id}/status`) | A | P0 | F4 | US-11, US-12 (#94) | #102 | Done |
+| `/health` | Health check for Render and monitoring: 200 `{"status":"ok","database":"ok"}` when the database can be read, 503 `{"status":"error","database":"unavailable"}` when it cannot. Every request is also logged to stdout (method, path, status, ms) | G | Ops | — | #127 | — | Done |
 
 **Access codes:** G = guest (not logged in) · U = authenticated user · A = admin
 
