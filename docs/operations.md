@@ -53,10 +53,9 @@ The pipeline is [`.github/workflows/ci.yml`](../.github/workflows/ci.yml). It ru
 
 **Latest green run on `main`:** https://github.com/SE-FDA-NEU-AI66B/software-group1-topicd2/actions/runs/42464337620 (commit `3738c38`, 8 Nov 2026). Update this link at the wrap-up.
 
-**Branch protection on `main`:** screenshot added with #130.
+**Branch protection on `main`.** `main` is protected by the organisation ruleset `main-protection` (Active), which the team can view but not edit: a pull request is required, with at least 1 approval, and force-push and deletion of `main` are blocked. The ruleset does not require a green status check, and the team has no admin rights to add one (see section 4).
 
-<!-- Replace this line with the screenshot from #130, for example:
-<img src="images/m5/branch-protection.png" alt="Branch protection settings for main" width="600"> -->
+<img src="images/m5/branch-protection.png" alt="Organisation ruleset main-protection, Active, on main" width="600">
 
 ## 3. Monitoring
 
@@ -94,6 +93,7 @@ An unhandled error writes an `ERROR` line with the full stack trace, and a faile
 | Bank and OTP are simulated | code | `bank_gateway.py` never moves real money; it cannot be used in production as it is | accepted: real payments are outside the course scope |
 | Single worker with SQLite | infrastructure | Many users writing at once wait for each other; a long request delays others | accepted: one writer is what SQLite supports; the load of a class demo is small |
 | No automatic alerts | infrastructure | A failure is only seen when someone looks at the logs or `/health` | accepted: free alerting tools are not set up; weekly manual check in section 5 |
+| Green CI is not required to merge | infrastructure | The organisation ruleset on `main` requires a pull request and 1 approval but no status check, so a pull request with red CI could still be merged | accepted: the team has no admin rights on the organisation ruleset; we merge only pull requests with a green check, and Render deploys only after the checks pass |
 
 ## 5. Maintenance plan
 
