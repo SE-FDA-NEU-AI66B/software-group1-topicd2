@@ -4,6 +4,7 @@ from .auth import auth_bp
 from .bank_accounts import bank_accounts_bp
 from .bookings import bookings_bp
 from .courts import court_pages_bp
+from .health import health_bp
 from .pages import pages_bp
 
 # Task #94: Export the Admin API blueprint so the application can register it.
@@ -14,5 +15,6 @@ __all__ = (
     "bank_accounts_bp",
     "bookings_bp",
     "court_pages_bp",
+    "health_bp",
     "pages_bp",
 )

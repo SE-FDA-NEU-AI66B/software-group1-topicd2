@@ -34,6 +34,10 @@ def test_deploys_only_after_ci_is_green():
     assert "branch: main" in RENDER_YAML
 
 
+def test_render_checks_the_health_endpoint():
+    assert "healthCheckPath: /health" in RENDER_YAML
+
+
 def test_production_runs_without_debug_and_with_generated_secret():
     assert 'key: FLASK_DEBUG\n        value: "false"' in RENDER_YAML
     assert "key: SECRET_KEY\n        generateValue: true" in RENDER_YAML
