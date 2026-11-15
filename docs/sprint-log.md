@@ -92,6 +92,82 @@ Build the core booking foundation for SmashGo, including defining user stories, 
 
 ---
 
+## Sprint 2 - 23 Sep 2026 to 5 Oct 2026
+
+### Sprint goal
+
+Complete the Milestone 2 technical design and walking skeleton: document the architecture, data model and API; extend the requirements for the Manager and Admin roles; and provide a seeded database, setup guide and working route that reads from the database.
+
+### Mandatory Chore Issues
+
+| Issue | Assignee | Closed? |
+| ----- | -------- | ------- |
+| [Chore] Refine backlog for Sprint 2 #55 | @dqchien (PO) | Yes |
+| [Chore] Sprint 2 wrap-up #57 | @Buithaoaineu (SM) | Yes |
+
+### Committed
+
+Sprint 2 estimates were not recorded in this log.
+
+| Issue | Story | Owner |
+| ----- | ----- | ----- |
+| #45 | [Task] Add the Manager persona | @dqchien |
+| #46 | [Task] Add bank linking to the business rules | @dqchien |
+| #47 | [Task] Write user stories for the Admin role | @Buithaoaineu |
+| #48 | [Task] Add the court-reporting user story | @Buithaoaineu |
+| #49 | [Task] Write user stories for the Manager role | @Buithaoaineu |
+| #50 | [Task] Design the Manager screen | @quynhquynh-blip |
+| #51 | [Task] Design the login screen | @quynhquynh-blip |
+| #52 | [Task] Create a scenario for the new persona | @quynhquynh-blip |
+| #55 | [Chore] Refine backlog for Sprint 2 | @dqchien |
+| #57 | [Chore] Sprint 2 wrap-up | @Buithaoaineu |
+| #58 | [Task] Document the architecture and create the design document | @dqchien |
+| #60 | [Task] Design the data model and ERD | @dqchien |
+| #61 | [Task] Design the API | @quynhquynh-blip |
+| #65 | [Task] Build the database-backed walking skeleton | @quynhquynh-blip |
+| #66 | [Task] Write and test the setup guide on a clean machine | @quynhquynh-blip |
+| #67 | [Task] Complete the remaining design document sections | @Buithaoaineu |
+
+### Result
+
+| Issue | Status | If not done, why |
+| ----- | ------ | ---------------- |
+| #45 | Done | Closed |
+| #46 | Done | Closed |
+| #47 | Done | Closed |
+| #48 | Done | Closed |
+| #49 | Done | Closed |
+| #50 | Done | Closed |
+| #51 | Done | Closed |
+| #52 | Done | Closed |
+| #55 | Done | Closed |
+| #57 | Done | Closed |
+| #58 | Done | Closed |
+| #60 | Done | Closed |
+| #61 | Done | Closed |
+| #65 | Done | Closed |
+| #66 | Done | Closed |
+| #67 | Done | Closed |
+
+- **Goal**: Deliver the Milestone 2 design document and working walking skeleton.
+- **Committed**: 16 issues
+- **Completed**: 16 of 16 issues
+- **Velocity**: Not applicable; estimates were not recorded.
+- **Not finished**: None among the committed issues.
+- **SM Sprint 2**: @Buithaoaineu
+
+### Sprint Review
+
+- What we delivered: the six-section `docs/design.md`, including the architecture, ERD, API, walking-skeleton details, ADRs and changes from M1; expanded Manager and Admin requirements; a seeded database-backed route; and `docs/SETUP.md`.
+- Feedback received: Not recorded in the repository.
+- Backlog changes as a result: Sprint 3 focused on delivering the P0 user experience in the UI.
+
+### Retrospective
+
+Retrospective notes and an action item were not recorded in the repository.
+
+---
+
 ## Sprint 3 - 12 Oct 2026 to 20 Oct 2026
 
 ### Sprint goal
