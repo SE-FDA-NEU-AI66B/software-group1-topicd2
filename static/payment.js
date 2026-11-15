@@ -1,3 +1,10 @@
+// Payment step of /book?bookingId=: a three-step flow like a bank transfer.
+//   1. Account: the saved account is chosen by default; a first-time user (or
+//      "+ Thêm tài khoản") types a new one.
+//   2. OTP: the bank sends an OTP to the account and the user types it.
+//   3. Confirm: the user reviews the payment and confirms it.
+// A new account is linked in step 1 and paid with the OTP sent when it was
+// linked, so the user enters one OTP; paying also saves it for next time.
 (() => {
   const root = document.getElementById("payment");
   if (!root) return;
@@ -7,20 +14,31 @@
   const countdown = document.getElementById("hold-countdown");
   const errorBox = document.getElementById("payment-error");
   const noticeBox = document.getElementById("payment-notice");
-  const accountsLoading = document.getElementById("accounts-loading");
-  const accountsEmpty = document.getElementById("accounts-empty");
-  const accountList = document.getElementById("account-list");
-  const showLinkButton = document.getElementById("show-link-form");
-  const hideLinkButton = document.getElementById("hide-link-form");
-  const linkForm = document.getElementById("link-form");
-  const otpForm = document.getElementById("otp-form");
-  const payActions = document.getElementById("pay-actions");
-  const payButton = document.getElementById("pay-button");
-  const payOtpForm = document.getElementById("pay-otp-form");
 
-  let pendingAccountId = null;
-  let hasVerifiedAccount = false;
+  const steps = {
+    account: document.getElementById("step-account"),
+    otp: document.getElementById("step-otp"),
+    confirm: document.getElementById("step-confirm"),
+  };
+  const stepOrder = ["account", "otp", "confirm"];
+
+  const accountsLoading = document.getElementById("accounts-loading");
+  const savedAccounts = document.getElementById("saved-accounts");
+  const accountList = document.getElementById("account-list");
+  const newAccount = document.getElementById("new-account");
+  const useSavedButton = document.getElementById("use-saved-account");
+  const accountNext = document.getElementById("account-next");
+  const otpSent = document.getElementById("otp-sent");
+  const otpInput = document.getElementById("otp");
+  const reviewAccount = document.getElementById("review-account");
+  const confirmButton = document.getElementById("confirm-pay");
+
+  let accounts = [];
+  let addingAccount = false;
+  // The account being paid with: { bankAccountId, label, isNew, details }.
+  let payment = null;
   let expired = false;
+  let paid = false;
 
   function showError(message) {
     noticeBox.hidden = true;
@@ -35,31 +53,29 @@
     noticeBox.hidden = false;
   }
 
-  function selectedAccountId() {
-    const checked = accountList.querySelector("input[name=bankAccountId]:checked");
-    return checked ? Number(checked.value) : null;
-  }
-
-  function refreshPayButton() {
-    payButton.disabled = expired || selectedAccountId() === null;
+  function clearMessages() {
+    errorBox.hidden = true;
+    noticeBox.hidden = true;
   }
 
   function setBusy(button, busy, label) {
-    button.disabled = busy;
-    if (label) button.textContent = label;
+    button.disabled = busy || expired;
+    button.textContent = label;
   }
 
-  // Once a verified account exists the link form stays hidden; the "+" button opens it.
-  function showLinkSection(open) {
-    linkForm.hidden = !open;
-    otpForm.hidden = true;
-    showLinkButton.hidden = !hasVerifiedAccount || open;
-    hideLinkButton.hidden = !hasVerifiedAccount;
+  function goTo(name) {
+    const current = stepOrder.indexOf(name);
+    stepOrder.forEach((step, index) => {
+      steps[step].hidden = step !== name;
+      const label = document.getElementById(`step-label-${step}`);
+      label.classList.toggle("is-done", index < current);
+      if (step === name) label.setAttribute("aria-current", "step");
+      else label.removeAttribute("aria-current");
+    });
   }
 
-  function closePaymentOtp() {
-    payOtpForm.hidden = true;
-    payActions.hidden = false;
+  function accountLabel(bankName, last4) {
+    return `${bankName} •••• ${last4}`;
   }
 
   function expireHold(showMessage = true) {
@@ -85,10 +101,40 @@
     window.setTimeout(tick, 1000);
   }
 
-  function renderAccounts(accounts) {
-    const previous = selectedAccountId();
+  // Returns true when the hold is gone and the page has been locked.
+  function handleHoldError(error) {
+    if (error.code !== "HOLD_EXPIRED_OR_ALREADY_PAID") return false;
+    showError(error.message);
+    expireHold(false);
+    return true;
+  }
+
+  // ---- Step 1: account ----
+
+  function selectedAccount() {
+    const checked = accountList.querySelector("input[name=bankAccountId]:checked");
+    return checked ? accounts.find((account) => account.bankAccountId === Number(checked.value)) : null;
+  }
+
+  // Show the saved accounts, or the form when there are none or the user is adding one.
+  function showAccountChoice() {
+    const hasSaved = accounts.length > 0;
+    const typing = !hasSaved || addingAccount;
+    savedAccounts.hidden = typing;
+    newAccount.hidden = !typing;
+    useSavedButton.hidden = !hasSaved;
+    document.getElementById("new-account-title").textContent = hasSaved
+      ? "Thêm tài khoản khác"
+      : "Nhập tài khoản ngân hàng";
+    newAccount.querySelectorAll("input, select").forEach((field) => {
+      field.disabled = !typing || expired;
+    });
+    accountNext.disabled = expired;
+  }
+
+  function renderAccounts(selectId) {
+    const previous = selectId ?? selectedAccount()?.bankAccountId ?? null;
     accountList.replaceChildren();
-    accountsEmpty.hidden = accounts.length > 0;
     for (const account of accounts) {
       const label = document.createElement("label");
       label.className = "account-option";
@@ -96,30 +142,30 @@
       input.type = "radio";
       input.name = "bankAccountId";
       input.value = account.bankAccountId;
-      input.disabled = !account.isVerified;
-      // Default to the account linked first (the primary account).
+      // The saved primary account (the first one linked) is the default.
       input.checked = previous !== null ? account.bankAccountId === previous : account.isPrimary;
       const text = document.createElement("span");
-      text.textContent = `${account.bankName} •••• ${account.accountNumberLast4}`;
+      text.textContent = accountLabel(account.bankName, account.accountNumberLast4);
       const status = document.createElement("small");
-      if (account.isPrimary) {
-        status.className = "primary-badge";
-        status.textContent = "Tài khoản chính";
-      } else {
-        status.textContent = account.isVerified ? "Đã xác minh" : "Chưa xác minh, liên kết lại để nhận OTP";
-      }
+      status.textContent = account.isPrimary ? "Tài khoản chính" : "Đã lưu";
+      if (account.isPrimary) status.className = "primary-badge";
       label.append(input, text, status);
       accountList.append(label);
     }
-    hasVerifiedAccount = accounts.some((account) => account.isVerified);
-    showLinkSection(!hasVerifiedAccount);
-    refreshPayButton();
+    if (!selectedAccount() && accountList.querySelector("input")) {
+      accountList.querySelector("input").checked = true;
+    }
+    showAccountChoice();
   }
 
-  async function loadAccounts() {
+  async function loadAccounts(selectId) {
     accountsLoading.hidden = false;
+    accountNext.disabled = true;
     try {
-      renderAccounts(await apiRequest("GET", "/api/bank-accounts"));
+      // Only verified accounts are saved; a half-linked one is simply typed again.
+      accounts = (await apiRequest("GET", "/api/bank-accounts")).filter((account) => account.isVerified);
+      if (selectId !== undefined) addingAccount = false;
+      renderAccounts(selectId);
     } catch (error) {
       showError(error.message);
     } finally {
@@ -127,127 +173,153 @@
     }
   }
 
-  async function sendPaymentOtp() {
-    const bankAccountId = selectedAccountId();
-    if (bankAccountId === null) return;
-    const result = await apiRequest("POST", `/api/bookings/${bookingId}/payment/otp`, { bankAccountId });
-    document.getElementById("pay-otp-hint").textContent =
-      `Mã OTP đã được gửi tới tài khoản ${result.bankName} •••• ${result.accountNumberLast4}. Mã có hiệu lực 5 phút.`;
-    payActions.hidden = true;
-    payOtpForm.hidden = false;
-    payOtpForm.otp.value = "";
-    payOtpForm.otp.focus();
+  function otpSentMessage(label) {
+    return `Ngân hàng đã gửi mã OTP tới số điện thoại đăng ký của tài khoản ${label}. Mã có hiệu lực 5 phút.`;
   }
 
-  function handlePaymentError(error) {
-    showError(error.message);
-    if (error.code === "HOLD_EXPIRED_OR_ALREADY_PAID") {
-      expireHold(false);
-      return true;
+  async function sendOtp() {
+    if (payment.isNew) {
+      // Linking again sends a new OTP to an account that is not verified yet.
+      const linked = await apiRequest("POST", "/api/bank-accounts", payment.details);
+      payment.bankAccountId = linked.bankAccountId;
+    } else {
+      await apiRequest("POST", `/api/bookings/${bookingId}/payment/otp`, {
+        bankAccountId: payment.bankAccountId,
+      });
     }
-    return false;
+    otpSent.textContent = otpSentMessage(payment.label);
   }
 
-  accountList.addEventListener("change", () => {
-    closePaymentOtp();
-    refreshPayButton();
+  function openOtpStep() {
+    otpInput.value = "";
+    goTo("otp");
+    otpInput.focus();
+  }
+
+  steps.account.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearMessages();
+    if (newAccount.hidden) {
+      const account = selectedAccount();
+      if (!account) {
+        showError("Hãy chọn một tài khoản để thanh toán.");
+        return;
+      }
+      payment = {
+        bankAccountId: account.bankAccountId,
+        label: accountLabel(account.bankName, account.accountNumberLast4),
+        isNew: false,
+      };
+    } else {
+      const form = steps.account;
+      if (![form.bankName, form.accountNumber, form.accountHolderName].every((field) => field.reportValidity())) {
+        return;
+      }
+      const details = {
+        bankName: form.bankName.value,
+        accountNumber: form.accountNumber.value,
+        accountHolderName: form.accountHolderName.value,
+      };
+      const last4 = details.accountNumber.replace(/\s+/g, "").slice(-4);
+      payment = { bankAccountId: null, label: accountLabel(details.bankName, last4), isNew: true, details };
+    }
+
+    setBusy(accountNext, true, "Đang gửi mã OTP...");
+    try {
+      await sendOtp();
+      openOtpStep();
+    } catch (error) {
+      if (!handleHoldError(error)) showError(error.message);
+    } finally {
+      setBusy(accountNext, false, "Tiếp tục");
+    }
   });
 
-  showLinkButton.addEventListener("click", () => {
-    showLinkSection(true);
+  accountList.addEventListener("change", clearMessages);
+
+  document.getElementById("show-new-account").addEventListener("click", () => {
+    clearMessages();
+    addingAccount = true;
+    showAccountChoice();
     document.getElementById("account-number").focus();
   });
 
-  hideLinkButton.addEventListener("click", () => showLinkSection(false));
+  useSavedButton.addEventListener("click", () => {
+    clearMessages();
+    addingAccount = false;
+    showAccountChoice();
+  });
 
-  linkForm.addEventListener("submit", async (event) => {
+  // ---- Step 2: OTP ----
+
+  steps.otp.addEventListener("submit", (event) => {
     event.preventDefault();
-    if (!linkForm.reportValidity()) return;
-    const button = linkForm.querySelector("button[type=submit]");
-    setBusy(button, true, "Đang gửi mã...");
-    try {
-      const account = await apiRequest("POST", "/api/bank-accounts", {
-        bankName: linkForm.bankName.value,
-        accountNumber: linkForm.accountNumber.value,
-        accountHolderName: linkForm.accountHolderName.value,
-      });
-      pendingAccountId = account.bankAccountId;
-      linkForm.hidden = true;
-      otpForm.hidden = false;
-      document.getElementById("otp-hint").textContent =
-        `Mã OTP đã được gửi cho tài khoản ${account.bankName} •••• ${account.accountNumberLast4}. Mã có hiệu lực 5 phút.`;
-      otpForm.otp.value = "";
-      otpForm.otp.focus();
-    } catch (error) {
-      showError(error.message);
-    } finally {
-      setBusy(button, expired, "Gửi mã OTP");
-    }
+    clearMessages();
+    if (!otpInput.reportValidity()) return;
+    reviewAccount.textContent = payment.label;
+    goTo("confirm");
+    confirmButton.focus();
   });
 
-  otpForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    if (!otpForm.reportValidity()) return;
-    const button = otpForm.querySelector("button");
-    setBusy(button, true, "Đang xác minh...");
-    try {
-      await apiRequest("POST", `/api/bank-accounts/${pendingAccountId}/verify`, {
-        otp: otpForm.otp.value,
-      });
-      linkForm.reset();
-      showNotice("Tài khoản đã được xác minh và thêm vào danh sách.");
-      await loadAccounts();
-    } catch (error) {
-      showError(error.message);
-      if (error.code === "VERIFICATION_EXPIRED_OR_LOCKED") {
-        loadAccounts().then(() => showLinkSection(true));
-      }
-    } finally {
-      setBusy(button, expired, "Xác minh");
-    }
+  document.getElementById("otp-back").addEventListener("click", () => {
+    clearMessages();
+    goTo("account");
   });
 
-  payButton.addEventListener("click", async () => {
-    setBusy(payButton, true, "Đang gửi mã...");
+  document.getElementById("otp-resend").addEventListener("click", async (event) => {
+    const button = event.currentTarget;
+    button.disabled = true;
     try {
-      await sendPaymentOtp();
-    } catch (error) {
-      if (handlePaymentError(error)) return;
-    }
-    setBusy(payButton, false, "Thanh toán");
-    refreshPayButton();
-  });
-
-  document.getElementById("resend-pay-otp").addEventListener("click", async () => {
-    try {
-      await sendPaymentOtp();
+      await sendOtp();
+      otpInput.value = "";
       showNotice("Đã gửi mã OTP mới.");
+      otpInput.focus();
     } catch (error) {
-      handlePaymentError(error);
+      if (!handleHoldError(error)) showError(error.message);
+    } finally {
+      button.disabled = expired;
     }
   });
 
-  payOtpForm.addEventListener("submit", async (event) => {
+  // ---- Step 3: confirm ----
+
+  document.getElementById("confirm-back").addEventListener("click", () => {
+    clearMessages();
+    goTo("otp");
+    otpInput.focus();
+  });
+
+  steps.confirm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (!payOtpForm.reportValidity()) return;
-    const button = payOtpForm.querySelector("button[type=submit]");
-    setBusy(button, true, "Đang thanh toán...");
+    clearMessages();
+    setBusy(confirmButton, true, "Đang thanh toán...");
     try {
       await apiRequest("POST", `/api/bookings/${bookingId}/payment`, {
-        bankAccountId: selectedAccountId(),
+        bankAccountId: payment.bankAccountId,
         paymentMethod: "BANK_TRANSFER",
-        otp: payOtpForm.otp.value,
+        otp: otpInput.value,
       });
+      paid = true;
       window.location.assign(root.dataset.successUrl);
-      return;
     } catch (error) {
-      if (handlePaymentError(error)) return;
-      // A failed charge uses up the OTP; the user starts again from "Thanh toán".
-      if (error.code === "PAYMENT_FAILED") closePaymentOtp();
+      if (handleHoldError(error)) return;
+      if (error.code === "INVALID_OTP" || error.code === "VERIFICATION_EXPIRED_OR_LOCKED") {
+        // Wrong, expired or locked OTP: type it again or ask for a new one.
+        openOtpStep();
+      } else if (error.code === "PAYMENT_FAILED") {
+        // The bank declined and the OTP is used up. A new account is saved by
+        // now, so it appears in the saved list; start again from step 1.
+        goTo("account");
+        await loadAccounts(payment.bankAccountId);
+      }
+      showError(error.message);
+    } finally {
+      // After a successful payment the button stays disabled while the page leaves.
+      if (!paid) setBusy(confirmButton, false, "Xác nhận thanh toán");
     }
-    setBusy(button, false, "Xác nhận thanh toán");
   });
 
+  goTo("account");
   tick();
   loadAccounts();
 })();

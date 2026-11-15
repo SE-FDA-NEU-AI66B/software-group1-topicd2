@@ -7,6 +7,8 @@
 {% endblock %}
 
 {% block content %}
+{% set amount = "{:,.0f}".format(booking['DepositAmount']).replace(",", ".") ~ "đ" %}
+{% set play_time = booking['StartTime'] ~ "–" ~ booking['EndTime'] ~ ", " ~ booking['BookingDate'] %}
 <main class="book-shell">
   <section class="book-card" id="payment"
            data-booking-id="{{ booking['BookingID'] }}"
@@ -22,68 +24,83 @@
 
     <dl class="book-summary payment-summary">
       <div><dt>Sân</dt><dd>{{ booking['CourtName'] }}</dd></div>
-      <div><dt>Thời gian</dt><dd>{{ booking['StartTime'] }}–{{ booking['EndTime'] }}, {{ booking['BookingDate'] }}</dd></div>
-      <div><dt>Số tiền</dt><dd>{{ "{:,.0f}".format(booking['DepositAmount']).replace(",", ".") }}đ</dd></div>
+      <div><dt>Thời gian</dt><dd>{{ play_time }}</dd></div>
+      <div><dt>Số tiền</dt><dd>{{ amount }}</dd></div>
     </dl>
+
+    <ol class="payment-steps" aria-label="Các bước thanh toán">
+      <li id="step-label-account" aria-current="step"><span>1</span> Tài khoản</li>
+      <li id="step-label-otp"><span>2</span> Mã OTP</li>
+      <li id="step-label-confirm"><span>3</span> Xác nhận</li>
+    </ol>
 
     <p class="book-error" id="payment-error" role="alert" hidden></p>
     <p class="book-notice" id="payment-notice" role="status" hidden></p>
 
-    <section class="payment-section" aria-labelledby="accounts-title">
-      <h2 id="accounts-title">Tài khoản thanh toán</h2>
+    <!-- Step 1: choose a saved account, or enter one (first payment or "+ Thêm tài khoản"). -->
+    <form class="book-form payment-step" id="step-account" novalidate>
+      <h2>Bước 1: Tài khoản thanh toán</h2>
       <div id="accounts-loading">{% include "partials/state_loading.html" %}</div>
-      <p class="book-hint" id="accounts-empty" hidden>Bạn chưa liên kết tài khoản nào. Hãy liên kết tài khoản bên dưới.</p>
-      <div class="account-list" id="account-list" role="radiogroup" aria-labelledby="accounts-title"></div>
-      <button type="button" class="link-button" id="show-link-form" aria-label="Liên kết tài khoản mới" hidden>+ Thêm tài khoản</button>
-    </section>
 
-    <form class="book-form payment-section" id="link-form" hidden>
-      <div class="section-heading">
-        <h2>Liên kết tài khoản mới</h2>
-        <button type="button" class="link-button" id="hide-link-form" hidden>Đóng</button>
+      <div id="saved-accounts" hidden>
+        <p class="book-hint">Hệ thống đã chọn sẵn tài khoản bạn đã lưu. Bạn có thể chọn tài khoản khác trong danh sách.</p>
+        <div class="account-list" id="account-list" role="radiogroup" aria-label="Tài khoản đã lưu"></div>
+        <button type="button" class="link-button" id="show-new-account">+ Thêm tài khoản</button>
       </div>
-      <label for="bank-name">
-        Ngân hàng
-        <select id="bank-name" name="bankName" required>
-          {% for bank in banks %}
-          <option value="{{ bank }}">{{ bank }}</option>
-          {% endfor %}
-        </select>
-      </label>
-      <label for="account-number">
-        Số tài khoản
-        <input id="account-number" name="accountNumber" inputmode="numeric" pattern="[0-9 ]{6,23}" autocomplete="off" required>
-      </label>
-      <label for="account-holder">
-        Tên chủ tài khoản
-        <input id="account-holder" name="accountHolderName" autocomplete="name" required>
-      </label>
-      <button type="submit">Gửi mã OTP</button>
+
+      <div class="new-account" id="new-account" role="group" aria-labelledby="new-account-title" hidden>
+        <div class="section-heading">
+          <h3 id="new-account-title">Nhập tài khoản ngân hàng</h3>
+          <button type="button" class="link-button" id="use-saved-account" hidden>Dùng tài khoản đã lưu</button>
+        </div>
+        <p class="book-hint" id="new-account-hint">Tài khoản sẽ được lưu sau khi bạn xác nhận OTP, lần sau không cần nhập lại.</p>
+        <label for="bank-name">
+          Ngân hàng
+          <select id="bank-name" name="bankName" required>
+            {% for bank in banks %}
+            <option value="{{ bank }}">{{ bank }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label for="account-number">
+          Số tài khoản
+          <input id="account-number" name="accountNumber" inputmode="numeric" pattern="[0-9 ]{6,23}" autocomplete="off" required>
+        </label>
+        <label for="account-holder">
+          Tên chủ tài khoản
+          <input id="account-holder" name="accountHolderName" autocomplete="name" required>
+        </label>
+      </div>
+
+      <button type="submit" id="account-next" disabled>Tiếp tục</button>
     </form>
 
-    <form class="book-form payment-section" id="otp-form" hidden>
-      <h2>Nhập mã OTP</h2>
-      <p class="book-hint" id="otp-hint"></p>
+    <!-- Step 2: the bank has sent an OTP; the user types it. -->
+    <form class="book-form payment-step" id="step-otp" novalidate hidden>
+      <h2>Bước 2: Nhập mã OTP</h2>
+      <p class="book-notice otp-sent" id="otp-sent" role="status"></p>
       <label for="otp">
         Mã OTP
         <input id="otp" name="otp" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required>
       </label>
-      <button type="submit">Xác minh</button>
+      <button type="submit">Tiếp tục</button>
+      <div class="step-links">
+        <button type="button" class="link-button" id="otp-back">← Đổi tài khoản</button>
+        <button type="button" class="link-button" id="otp-resend">Gửi lại mã</button>
+      </div>
     </form>
 
-    <div class="book-form" id="pay-actions">
-      <button type="button" id="pay-button" disabled>Thanh toán</button>
-    </div>
-
-    <form class="book-form payment-section" id="pay-otp-form" hidden>
-      <h2>Xác nhận thanh toán</h2>
-      <p class="book-hint" id="pay-otp-hint"></p>
-      <label for="pay-otp">
-        Mã OTP
-        <input id="pay-otp" name="otp" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required>
-      </label>
-      <button type="submit">Xác nhận thanh toán</button>
-      <button type="button" class="link-button" id="resend-pay-otp">Gửi lại mã</button>
+    <!-- Step 3: review, then confirm the payment. -->
+    <form class="book-form payment-step" id="step-confirm" novalidate hidden>
+      <h2>Bước 3: Xác nhận thanh toán</h2>
+      <dl class="payment-review">
+        <div><dt>Sân</dt><dd>{{ booking['CourtName'] }}</dd></div>
+        <div><dt>Thời gian</dt><dd>{{ play_time }}</dd></div>
+        <div><dt>Tài khoản trích tiền</dt><dd id="review-account"></dd></div>
+        <div class="payment-review-total"><dt>Số tiền thanh toán</dt><dd>{{ amount }}</dd></div>
+      </dl>
+      <button type="submit" id="confirm-pay">Xác nhận thanh toán</button>
+      <button type="button" class="link-button" id="confirm-back">← Quay lại nhập OTP</button>
     </form>
   </section>
 </main>
