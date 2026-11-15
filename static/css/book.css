@@ -229,8 +229,71 @@ button.schedule-slot { cursor: pointer; }
   font-weight: 700;
 }
 
+/* Payment: one step at a time (account → OTP → confirm). */
+.payment-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.payment-steps li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 3px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.payment-steps li span {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--line);
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.payment-steps li[aria-current="step"] { border-color: var(--green); color: var(--ink); }
+.payment-steps li[aria-current="step"] span { background: var(--green); color: var(--white); }
+.payment-steps li.is-done { border-color: #9cc5b0; color: #276849; }
+.payment-steps li.is-done span { background: #d7eadf; color: #276849; }
+
+.payment-step h2 { margin: 0; font-family: "Manrope", sans-serif; font-size: 17px; }
+.new-account { display: grid; gap: 16px; }
+.new-account h3 { margin: 0; font-family: "Manrope", sans-serif; font-size: 15px; }
+#saved-accounts { display: grid; gap: 10px; }
+.payment-step[hidden],
+#saved-accounts[hidden],
+.new-account[hidden] { display: none; }
+.payment-step .otp-sent { margin: 0; }
+.step-links { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+.payment-review { display: grid; margin: 0; border: 1px solid var(--line); }
+.payment-review div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+.payment-review div:last-child { border-bottom: 0; }
+.payment-review dt { color: var(--muted); }
+.payment-review dd { margin: 0; font-weight: 700; text-align: right; }
+.payment-review-total { background: var(--paper); }
+.payment-review-total dd { color: var(--green); font-family: "Manrope", sans-serif; font-size: 20px; }
+
 @media (max-width: 700px) {
   .book-shell { margin: 32px auto; }
+  .payment-steps li { flex-direction: column; align-items: flex-start; gap: 4px; font-size: 12px; }
   .book-card { padding: 22px; }
   .book-times,
   .book-summary { grid-template-columns: 1fr; }

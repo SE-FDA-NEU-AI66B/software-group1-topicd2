@@ -242,17 +242,35 @@ def _payable_booking(connection, user_id: int, booking_id: int, now: datetime):
     return booking
 
 
+def _own_account(connection, user_id: int, bank_account_id: Any):
+    if not isinstance(bank_account_id, int) or isinstance(bank_account_id, bool):
+        return None
+    return connection.execute(
+        """
+        SELECT BankName, AccountNumber, IsVerified FROM BankAccount
+        WHERE BankAccountID = ? AND UserID = ?
+        """,
+        (bank_account_id, user_id),
+    ).fetchone()
+
+
 def _verified_account(connection, user_id: int, bank_account_id: Any):
-    account = None
-    if isinstance(bank_account_id, int) and not isinstance(bank_account_id, bool):
-        account = connection.execute(
-            """
-            SELECT BankName, AccountNumber, IsVerified FROM BankAccount
-            WHERE BankAccountID = ? AND UserID = ?
-            """,
-            (bank_account_id, user_id),
-        ).fetchone()
+    account = _own_account(connection, user_id, bank_account_id)
     if account is None or not account["IsVerified"]:
+        raise BookingError("BANK_ACCOUNT_NOT_VERIFIED")
+    return account
+
+
+def _payment_account(connection, user_id: int, bank_account_id: Any, otp: Any):
+    """Return the account a payment is charged to.
+
+    A verified account pays with the payment OTP sent to it. An account linked
+    during this payment and not verified yet pays with the OTP sent when it was
+    linked (BR7): the payment step then asks for one OTP only, and accepting it
+    verifies the account as well as authorising the payment.
+    """
+    account = _own_account(connection, user_id, bank_account_id)
+    if account is None or (not account["IsVerified"] and otp is None):
         raise BookingError("BANK_ACCOUNT_NOT_VERIFIED")
     return account
 
@@ -289,7 +307,11 @@ def pay_booking(
     otp: Any,
     now: datetime | None = None,
 ) -> dict[str, Any]:
-    """Pay a held booking once the payment OTP is confirmed (BR3, BR5, BR7)."""
+    """Pay a held booking once the payment OTP is confirmed (BR3, BR5, BR7).
+
+    For an account linked during this payment, `otp` is the OTP sent when it
+    was linked; see `_payment_account`.
+    """
     now = now or clock.now()
     with closing(get_db_connection(database_path)) as connection:
         connection.isolation_level = None
@@ -297,14 +319,21 @@ def pay_booking(
         connection.execute("BEGIN IMMEDIATE")
         try:
             booking = _payable_booking(connection, user_id, booking_id, now)
-            account = _verified_account(connection, user_id, bank_account_id)
-            _consume_otp(
+            account = _payment_account(connection, user_id, bank_account_id, otp)
+            verified_at = _consume_otp(
                 connection,
                 bank_account_id,
                 otp,
                 now,
                 ("PAYMENT_OTP_INVALID", "PAYMENT_OTP_EXPIRED_OR_LOCKED"),
             )
+            if not account["IsVerified"]:
+                # The account is saved as verified even if the bank then declines
+                # the charge, so the next attempt can use it as a saved account.
+                connection.execute(
+                    "UPDATE BankAccount SET IsVerified = 1, VerifiedAt = ? WHERE BankAccountID = ?",
+                    (verified_at, bank_account_id),
+                )
 
             transaction_code = bank_gateway.charge(
                 account["BankName"], account["AccountNumber"], booking["DepositAmount"]

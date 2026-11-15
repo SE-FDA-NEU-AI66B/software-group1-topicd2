@@ -427,6 +427,76 @@ def test_payment_otp_expires_after_five_minutes(client, frozen_clock, database_p
     assert booking_status(database_path, booking_id) == "PENDING"
 
 
+# A first-time payer types a new account and enters one OTP: the OTP sent when
+# the account was linked both verifies (saves) the account and authorises the payment.
+def test_new_account_pays_with_the_link_otp_and_is_saved(client, database_path, fake_gateway):
+    login(client, OTHER_USER)
+    assert client.get("/api/bank-accounts").get_json() == []
+    booking_id = hold_booking(client)
+    account_id = link_account(client, "Techcombank", "1903 4567 8901")
+
+    response = client.post(
+        f"/api/bookings/{booking_id}/payment",
+        json={"bankAccountId": account_id, "paymentMethod": "BANK_TRANSFER", "otp": MOCK_OTP},
+    )
+
+    assert response.status_code == 200
+    assert response.get_json()["status"] == "CONFIRMED"
+    assert fake_gateway.sent_otps == [("Techcombank", "190345678901")]
+    assert fake_gateway.charges == [("Techcombank", "190345678901", 200000)]
+    assert client.get("/api/bank-accounts").get_json() == [
+        {
+            "bankAccountId": account_id,
+            "bankName": "Techcombank",
+            "accountNumberLast4": "8901",
+            "isVerified": True,
+            "isPrimary": True,
+        }
+    ]
+
+    # Next time the saved account pays with a payment OTP; nothing is typed again.
+    next_booking = hold_booking(client, "12:00", "14:00")
+    assert pay(client, next_booking, account_id).status_code == 200
+
+
+def test_new_account_wrong_otp_is_not_saved(client, database_path, fake_gateway):
+    login(client, OTHER_USER)
+    booking_id = hold_booking(client)
+    account_id = link_account(client)
+
+    wrong = client.post(
+        f"/api/bookings/{booking_id}/payment",
+        json={"bankAccountId": account_id, "paymentMethod": "BANK_TRANSFER", "otp": "000000"},
+    )
+
+    assert wrong.status_code == 400
+    assert wrong.get_json()["code"] == "INVALID_OTP"
+    assert query(database_path, "SELECT IsVerified FROM BankAccount WHERE BankAccountID = ?", (account_id,)) == [(0,)]
+    assert booking_status(database_path, booking_id) == "PENDING"
+    assert fake_gateway.charges == []
+
+
+def test_new_account_is_saved_even_when_the_bank_declines(client, database_path, fake_gateway):
+    login(client, OTHER_USER)
+    booking_id = hold_booking(client)
+    account_id = link_account(client)
+    fake_gateway.fail_charges = True
+
+    response = client.post(
+        f"/api/bookings/{booking_id}/payment",
+        json={"bankAccountId": account_id, "paymentMethod": "BANK_TRANSFER", "otp": MOCK_OTP},
+    )
+
+    assert response.status_code == 502
+    assert response.get_json()["code"] == "PAYMENT_FAILED"
+    assert booking_status(database_path, booking_id) == "PENDING"
+    assert client.get("/api/bank-accounts").get_json()[0]["isVerified"] is True
+
+    # The retry uses the account as a saved one, with a new payment OTP.
+    fake_gateway.fail_charges = False
+    assert pay(client, booking_id, account_id).status_code == 200
+
+
 def test_payment_step_page(client):
     assert client.get("/book?bookingId=1").status_code == 302
 
@@ -438,3 +508,8 @@ def test_payment_step_page(client):
     assert 'data-seconds-left="600"' in page
     assert "200.000đ" in page
     assert "Vietcombank" in page
+    # One step at a time: account, then OTP, then confirm.
+    assert 'id="step-account"' in page
+    assert 'id="step-otp" novalidate hidden' in page
+    assert 'id="step-confirm" novalidate hidden' in page
+    assert "Xác nhận thanh toán" in page

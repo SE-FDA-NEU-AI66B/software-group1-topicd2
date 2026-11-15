@@ -80,10 +80,14 @@ GET / or /courts
   -> POST /api/bookings
        -> create a 10-minute PENDING hold
   -> GET /book?bookingId={bookingId}
-       -> link bank account if needed, then verify the account with OTP
-       -> request a payment OTP for the selected verified account
-       -> enter the payment OTP
-       -> POST /api/bookings/{bookingId}/payment
+       -> step 1, account: the saved (primary) account is selected by default;
+          a first-time User, or "+ Thêm tài khoản", types a new account
+          (saved account: POST /api/bookings/{bookingId}/payment/otp;
+           new account: POST /api/bank-accounts, which sends the OTP)
+       -> step 2, OTP: enter the OTP the bank sent
+       -> step 3, confirm: review court, time, account and amount, then
+          POST /api/bookings/{bookingId}/payment
+          (a new account is verified and saved by this same OTP)
   -> GET /my-bookings
 ```
 
@@ -221,3 +225,23 @@ court. The booking screen displays that message in its alert region. The P0
 screens were also checked at a 375px viewport.
 
 <img src="images/m5/booking-conflict-error.png" alt="Booking form showing the server rejection and next steps for an occupied slot" width="600">
+
+## 6. Payment split into steps
+
+- **What changed:** The payment page used to show the account list, the
+  link form, the link OTP, the Pay button and the payment OTP together. It now
+  shows one step at a time, in the order of a bank transfer: (1) account,
+  (2) OTP, (3) confirm. A User who has a saved account gets it selected by
+  default and does not type it again; "+ Thêm tài khoản" opens the form for
+  another account. A first-time User types the account once and enters one
+  OTP: that OTP verifies and saves the account and authorises the payment.
+  A wrong or expired OTP returns to step 2; a declined charge returns to
+  step 1 with the account already saved.
+- **Evidence:** `templates/pages/payment.html`, `static/payment.js`,
+  `static/css/book.css`; `_payment_account` in `payment_service.py`;
+  `tests/test_payment.py`: `test_new_account_pays_with_the_link_otp_and_is_saved`,
+  `test_new_account_wrong_otp_is_not_saved`,
+  `test_new_account_is_saved_even_when_the_bank_declines`,
+  `test_payment_step_page`.
+- **Effect on this document:** the US-04 flow in section 2 lists the three
+  steps.
