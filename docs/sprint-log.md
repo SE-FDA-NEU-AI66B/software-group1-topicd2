@@ -204,24 +204,24 @@ Prove that the P0 stories work: give every P0 story (US-01 to US-05, US-11, US-1
 
 ### Result
 
-Status on 31 Oct 2026. Update each row when its pull request is merged; merge this wrap-up last.
+Status at the close of the sprint (1 Nov 2026).
 
-| Issue | Est. hours | Status    | If not done, why                                   |
-| ----- | ---------- | --------- | -------------------------------------------------- |
-| #109  | 1          | In review | PR open: conftest fixtures, fixed clock, fake gateway, SETUP.md |
-| #110  | 2          | Open      | Not started in the repository yet                  |
-| #111  | 2          | Open      | Not started in the repository yet                  |
-| #112  | 1          | In review | This wrap-up; closes when merged                   |
-| #113  | 1          | Done      | Closed; backlog and planning board ready           |
-| #114  | 3          | Done      | Closed; linked PR #117 merged                      |
-| #115  | 2          | In review | PR open (built on #109): TC-01 to TC-11            |
-| #116  | 2          | Open      | Not started in the repository yet                  |
+| Issue | Est. hours | Status | If not done, why |
+| ----- | ---------- | ------ | ---------------- |
+| #109  | 1          | Done   | Closed 31 Oct; PR #118 merged |
+| #110  | 2          | Done   | Closed 1 Nov; PR #121 merged |
+| #111  | 2          | Done   | Closed 1 Nov; PR #122 merged |
+| #112  | 1          | Done   | Closed 1 Nov; PR #120 merged |
+| #113  | 1          | Done   | Closed 29 Oct |
+| #114  | 3          | Done   | Closed 31 Oct; PR #117 merged |
+| #115  | 2          | Done   | Closed 31 Oct; PR #119 merged |
+| #116  | 2          | Done   | Closed 1 Nov; PR #123 merged |
 
 - **Goal**: Every P0 story has traceable tests (normal, error, boundary) that pass on a clean clone, documented in `docs/testing.md`.
 - **Committed**: 14 points
-- **Completed**: 4 points on 31 Oct 2026 (#113, #114); 8 more points are in review or open
-- **Velocity**: 4 points so far (Sprint 3: 17 points). Recompute as completed points when the sprint closes.
-- **Not finished**: #109, #110, #111, #112, #115, #116 (on 31 Oct 2026)
+- **Completed**: 14 points (8 of 8 issues)
+- **Velocity**: 14 points (Sprint 3: 17 points)
+- **Not finished**: None
 - **SM Sprint 4**: @quynhquynh-blip
 
 ### Repository checklist (Milestone 4)
@@ -274,8 +274,8 @@ Put SmashGo online at one public `https://` URL that a stranger can open on a ph
 
 | Issue                                   | Assignee            | Closed? |
 | --------------------------------------- | ------------------- | ------- |
-| [Chore] Refine backlog Sprint 5 #125    | @dqchien (PO)       | No      |
-| [Chore] Sprint 5 wrap-up #131           | @Buithaoaineu (SM)  | No      |
+| [Chore] Refine backlog Sprint 5 #125    | @dqchien (PO)       | Yes     |
+| [Chore] Sprint 5 wrap-up #131           | @Buithaoaineu (SM)  | Yes, when this wrap-up is merged |
 
 ### Planning board
 
@@ -316,20 +316,41 @@ Priority: **Must** = fixed in Sprint 5 (bugs and inconsistencies the demo will s
 
 ### Result
 
-To be filled in by the SM in #131 when the sprint closes.
+Status at the close of the sprint (16 Nov 2026).
 
 | Issue | Est. hours | Status | If not done, why |
 | ----- | ---------- | ------ | ---------------- |
-| #125  | 1          | Open   |                  |
-| #126  | 2          | Open   |                  |
-| #127  | 2          | Open   |                  |
-| #128  | 2          | Open   |                  |
-| #129  | 2          | Open   |                  |
-| #130  | 2          | Open   |                  |
-| #131  | 1          | Open   |                  |
+| #125  | 1          | Done   | PR #132 merged |
+| #126  | 2          | Done   | PR #133 merged; Render deploys only after checks pass |
+| #127  | 2          | Done   | PR #135 merged; `/health` returns 200 / 503 |
+| #128  | 2          | Done   | PRs #139, #140, #141, #142 merged; before / after screenshots in `docs/images/m5/` |
+| #129  | 2          | Done   | PRs #136, #137 merged |
+| #130  | 2          | Done   | PR #138 merged; ruleset `main-protection` active |
+| #131  | 1          | Done   | This wrap-up |
 
 - **Goal**: One public URL running `v1.0`, deployed from `main` only after CI is green, with `/health` and `docs/operations.md`.
 - **Committed**: 12 points
-- **Completed**: To be filled in at the wrap-up
-- **Velocity**: To be filled in at the wrap-up
+- **Completed**: 12 points (7 of 7 issues)
+- **Velocity**: 12 points (Sprint 4: 14 points)
+- **Not finished**: None. M3 feedback #10 (several slots in one booking) was planned as *Later* and is a known risk in `docs/operations.md`.
+- **Merged pull requests in Sprint 5**: 11 (#132-#142), each with a green check and an approval from another member
 - **SM Sprint 5**: @Buithaoaineu
+
+### Sprint Review
+
+- What we demonstrated: the live URL https://smashgo-zfdv.onrender.com on a phone and a laptop, every P0 story by clicking, `/health`, the before / after UI fixes from M3, and the CI run that gates the deploy.
+- Release: `v1.0` tagged on the commit running at the URL.
+
+---
+
+## All five sprints
+
+| Sprint | Dates | Goal (short) | Committed | Completed | Velocity | SM |
+| ------ | ----- | ------------ | --------- | --------- | -------- | -- |
+| 1 | 10 Sep - 22 Sep 2026 | Requirements: vision, personas, user stories | 30 | 30 | not applicable (first sprint) | @quynhquynh-blip |
+| 2 | 23 Sep - 5 Oct 2026 | Design and walking skeleton | not estimated (17 issues) | 17 of 17 issues | not applicable (no points) | @Buithaoaineu |
+| 3 | 12 Oct - 20 Oct 2026 | UI for every P0 story | 17 | 17 | 17 | @dqchien |
+| 4 | 29 Oct - 1 Nov 2026 | Tests for every P0 story | 14 | 14 | 14 | @quynhquynh-blip |
+| 5 | 7 Nov - 16 Nov 2026 | Deploy, CI gate, operations, `v1.0` | 12 | 12 | 12 | @Buithaoaineu |
+
+From Sprint 3 onward, 1 point = 1 estimated hour.
