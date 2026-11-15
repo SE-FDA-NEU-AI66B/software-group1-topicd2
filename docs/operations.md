@@ -57,7 +57,7 @@ The pipeline is [`.github/workflows/ci.yml`](../.github/workflows/ci.yml). It ru
 
 **Duration.** The last 10 runs on `main` took 40 to 53 seconds, about 45 seconds on average.
 
-**Latest green run on `main`:** https://github.com/SE-FDA-NEU-AI66B/software-group1-topicd2/actions/runs/42464337620 (commit `3738c38`, 8 Nov 2026). Update this link at the wrap-up.
+**Latest green run on `main` as of 15 Nov 2026:** https://github.com/SE-FDA-NEU-AI66B/software-group1-topicd2/actions/runs/43732921356 (commit `aa83a79`, 15 Nov 2026).
 
 **Branch protection on `main`.** `main` is protected by the organisation ruleset `main-protection` (Active), which the team can view but not edit: a pull request is required, with at least 1 approval, and force-push and deletion of `main` are blocked. The ruleset does not require a green status check, and the team has no admin rights to add one (see section 4).
 

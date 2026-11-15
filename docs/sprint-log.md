@@ -6,6 +6,25 @@ evidence that the process was real.
 
 ---
 
+## Sprint summary
+
+The unit follows the estimate recorded for each sprint: Sprint 1 uses story
+points; Sprints 3-5 use estimated hours. Sprint 2 results were not recorded in
+this file and have not been reconstructed.
+
+| Sprint | Committed | Completed | Velocity |
+| ------ | --------- | --------- | -------- |
+| Sprint 1 | 30 points | 30 points | Not applicable (as recorded) |
+| Sprint 2 | Not recorded | Not recorded | Not recorded |
+| Sprint 3 | 19 hours | 19 hours | 19 hours |
+| Sprint 4 | 14 hours | 14 hours | 14 hours |
+| Sprint 5 | 12 hours | 11 hours (6/7 issues; #131 pending merge) | 11 hours so far |
+
+Sprint 5 velocity is provisional until the wrap-up PR is merged. Sprint 2's
+missing figures need the original planning record before they can be filled in.
+
+---
+
 ## Sprint 1 - 10 Sep 2026 to 22 Sep 2026
 
 <!-- Sprint 1: weeks 5-6 | Sprint 2: 7-8 | Sprint 3: 9-10 | Sprint 4: 11-12 | Sprint 5: 13-14 -->
@@ -121,7 +140,7 @@ Deliver the P0 SmashGo experience from court discovery through booking and payme
 | #95   | [UI] Court discovery and /availability                          | 2          | @Buithaoaineu    |
 | #96   | [Docs] Write docs/ui.md                                         | 2          | @Buithaoaineu    |
 
-**Total committed: 17 Points**
+**Total committed: 19 estimated hours**
 
 ### Result
 
@@ -131,22 +150,22 @@ Deliver the P0 SmashGo experience from court discovery through booking and payme
 | #87   | 1          | Done   | Closed; linked PR #97 merged                   |
 | #88   | 1          | Done   | Closed; backlog acceptance checklist completed |
 | #89   | 1          | Done   | Closed; sprint acceptance checklist completed  |
-| #90   | 1          | Done   | Closed; linked PR #98 merged                   |
+| #90   | 2          | Done   | Closed; linked PR #98 merged                   |
 | #91   | 3          | Done   | Closed; linked PR #99 merged                   |
 | #92   | 3          | Done   | Closed; linked PR #100 merged                  |
-| #93   | 2          | Done   | Closed; linked PR #101 merged                  |
+| #93   | 1          | Done   | Closed; linked PR #101 merged                  |
 | #94   | 2          | Done   | Closed; linked PR #102 merged                  |
 | #95   | 2          | Done   | Closed; linked PR #103 merged                  |
 | #96   | 2          | Done   | Closed; linked PR #104 merged                  |
 
 - **Goal**: Deliver the P0 SmashGo experience from court discovery through booking and payment, including authentication, booking management, Admin court controls, and aligned UI documentation.
-- **Committed**: 17 points
-- **Completed**: 17 points (11 of 11 issues)
-- **Velocity**: not applicable
+- **Committed**: 19 estimated hours
+- **Completed**: 19 estimated hours (11 of 11 issues)
+- **Velocity**: 19 estimated hours
 - **Not finished**: 0
 - **SM Sprint 3**: @dqchien
 
-**Completed: 18 of 19 estimated hours. Velocity this sprint: not applicable**
+**Completed: 19 of 19 estimated hours. Velocity this sprint: 19 hours**
 
 ### Sprint Review
 
@@ -204,24 +223,24 @@ Prove that the P0 stories work: give every P0 story (US-01 to US-05, US-11, US-1
 
 ### Result
 
-Status on 31 Oct 2026. Update each row when its pull request is merged; merge this wrap-up last.
+Status on 15 Nov 2026. All Sprint 4 issues are closed.
 
-| Issue | Est. hours | Status    | If not done, why                                   |
-| ----- | ---------- | --------- | -------------------------------------------------- |
-| #109  | 1          | In review | PR open: conftest fixtures, fixed clock, fake gateway, SETUP.md |
-| #110  | 2          | Open      | Not started in the repository yet                  |
-| #111  | 2          | Open      | Not started in the repository yet                  |
-| #112  | 1          | In review | This wrap-up; closes when merged                   |
-| #113  | 1          | Done      | Closed; backlog and planning board ready           |
-| #114  | 3          | Done      | Closed; linked PR #117 merged                      |
-| #115  | 2          | In review | PR open (built on #109): TC-01 to TC-11            |
-| #116  | 2          | Open      | Not started in the repository yet                  |
+| Issue | Est. hours | Status | If not done, why |
+| ----- | ---------- | ------ | ---------------- |
+| #109  | 1          | Done   | Closed; test fixtures and SETUP.md merged         |
+| #110  | 2          | Done   | Closed; booking tests merged                      |
+| #111  | 2          | Done   | Closed; payment and OTP tests merged              |
+| #112  | 1          | Done   | Closed; Sprint 4 wrap-up merged                   |
+| #113  | 1          | Done   | Closed; backlog and planning board ready          |
+| #114  | 3          | Done   | Closed; linked PR #117 merged                     |
+| #115  | 2          | Done   | Closed; court discovery tests merged              |
+| #116  | 2          | Done   | Closed; Admin tests merged                        |
 
 - **Goal**: Every P0 story has traceable tests (normal, error, boundary) that pass on a clean clone, documented in `docs/testing.md`.
 - **Committed**: 14 points
-- **Completed**: 4 points on 31 Oct 2026 (#113, #114); 8 more points are in review or open
-- **Velocity**: 4 points so far (Sprint 3: 17 points). Recompute as completed points when the sprint closes.
-- **Not finished**: #109, #110, #111, #112, #115, #116 (on 31 Oct 2026)
+- **Completed**: 14 estimated hours (8 of 8 issues)
+- **Velocity**: 14 estimated hours
+- **Not finished**: None
 - **SM Sprint 4**: @quynhquynh-blip
 
 ### Repository checklist (Milestone 4)
@@ -316,20 +335,70 @@ Priority: **Must** = fixed in Sprint 5 (bugs and inconsistencies the demo will s
 
 ### Result
 
-To be filled in by the SM in #131 when the sprint closes.
+Status on 15 Nov 2026. The Sprint 5 task issues are closed; this wrap-up issue
+is pending review and closes when this change is merged.
 
 | Issue | Est. hours | Status | If not done, why |
 | ----- | ---------- | ------ | ---------------- |
-| #125  | 1          | Open   |                  |
-| #126  | 2          | Open   |                  |
-| #127  | 2          | Open   |                  |
-| #128  | 2          | Open   |                  |
-| #129  | 2          | Open   |                  |
-| #130  | 2          | Open   |                  |
-| #131  | 1          | Open   |                  |
+| #125  | 1          | Done   | Closed; backlog and plan recorded in PR #132 |
+| #126  | 2          | Done   | Closed; deployment and public URL documented in PRs #133, #137 |
+| #127  | 2          | Done   | Closed; `/health` and request logging merged in PR #135 |
+| #128  | 2          | Done   | Closed; M3 interface feedback fixed in PR #139 |
+| #129  | 2          | Done   | Closed; operations guide merged in PR #136 |
+| #130  | 2          | Done   | Closed; branch protection and README update merged in PR #138 |
+| #131  | 1          | In progress | This wrap-up; closes when this change is merged |
 
 - **Goal**: One public URL running `v1.0`, deployed from `main` only after CI is green, with `/health` and `docs/operations.md`.
 - **Committed**: 12 points
-- **Completed**: To be filled in at the wrap-up
-- **Velocity**: To be filled in at the wrap-up
+- **Completed**: 11 of 12 estimated hours (6 of 7 issues; #131 is this wrap-up)
+- **Velocity**: 11 estimated hours so far; recompute after #131 merges
+- **Not finished**: #131, pending review and merge
 - **SM Sprint 5**: @Buithaoaineu
+
+### Repository checklist (Sprint 5)
+
+Checked on 15 Nov 2026. These seven merged PRs each had passing status checks
+and an approval from another team member:
+
+| PR | Author | Reviewer | Checks |
+| -- | ------ | -------- | ------ |
+| #132 | @dqchien | @quynhquynh-blip | Passed |
+| #133 | @dqchien | @quynhquynh-blip | Passed |
+| #135 | @quynhquynh-blip | @Buithaoaineu | Passed |
+| #136 | @quynhquynh-blip | @Buithaoaineu | Passed |
+| #137 | @dqchien | @quynhquynh-blip | Passed |
+| #138 | @dqchien | @quynhquynh-blip | Passed |
+| #139 | @Buithaoaineu | @dqchien | Passed |
+
+PR #134 was also merged, but is not counted: it was an unrelated cleanup and
+its recorded checks include a failure.
+
+| Requirement | Evidence |
+| ----------- | -------- |
+| At least 4 merged PRs with green checks and another member's review | #132, #133, #135, #136, #137, #138, #139 |
+| Every member has at least 1 merged PR | @dqchien: #132; @quynhquynh-blip: #135; @Buithaoaineu: #139 |
+| Every member has completed at least 1 review | @dqchien: #139; @quynhquynh-blip: #132; @Buithaoaineu: #135 |
+| Every member has at least 1 closed issue | @dqchien: #125; @quynhquynh-blip: #127; @Buithaoaineu: #128 |
+
+The public URL, `/health` and operations guide are recorded. The `v1.0` tag and
+final demo were not found in the repository as of 15 Nov 2026; confirm these
+before declaring the Sprint 5 goal fully met.
+
+### Sprint Review
+
+- What we demonstrated: the public SmashGo URL, `/health`, deployment after green CI, the operations guide, and the M3 interface fixes.
+- Feedback received: No additional Sprint 5 review feedback is recorded in the repository.
+- Backlog changes as a result: Keep multi-slot booking out of scope as recorded in `docs/operations.md`; continue the deferred P1 Manager stories.
+
+### Retrospective
+
+These observations are based on the repository record; confirm them with the
+team at the retrospective.
+
+| Keep doing | Stop doing | Start doing |
+| ---------- | ---------- | ----------- |
+| Peer review and green CI before merging, as shown by the qualifying Sprint 5 PRs | Leaving sprint result fields blank until wrap-up | Update the sprint log and release evidence as issues close |
+
+**One concrete action for next sprint (with an owner):**
+
+- Update the sprint log and release evidence during the sprint as work closes (Owner: @Buithaoaineu).
