@@ -29,8 +29,9 @@ def list_courts(client, **filters):
     return client.get("/api/courts", query_string=filters)
 
 
-def availability(client, court_id=COURT_A, booking_date=TOMORROW):
-    return client.get(f"/api/courts/{court_id}/availability", query_string={"date": booking_date})
+def availability(client, court_id=COURT_A, booking_date=TOMORROW, slot_duration=60):
+    query = {"date": booking_date, "slotDuration": slot_duration}
+    return client.get(f"/api/courts/{court_id}/availability", query_string=query)
 
 
 def slots_by_start(response):
@@ -259,6 +260,20 @@ def test_tc08_slots_are_one_hour_on_thirty_minute_steps(client):
     assert all(slot["status"] == "AVAILABLE" and slot["available"] for slot in slots)
 
 
+def test_half_hour_segments_cover_the_opening_hours(client):
+    response = availability(client, slot_duration=30)
+
+    assert response.status_code == 200
+    slots = response.get_json()["slots"]
+    assert slots[0]["startTime"] == "06:00"
+    assert slots[-1]["startTime"] == "21:30"
+    assert all(
+        (datetime.strptime(slot["endTime"], "%H:%M")
+         - datetime.strptime(slot["startTime"], "%H:%M")).seconds == 1800
+        for slot in slots
+    )
+
+
 # TC-09: Overlaps with bookings and blocks are BOOKED; BR2 gaps apply only to bookings.
 def test_tc09_booked_and_blocked_slots_are_not_available(client, database_path):
     add_booking(database_path, COURT_A, TOMORROW, "20:00", "22:00", "CONFIRMED")
@@ -285,6 +300,23 @@ def test_tc09_booked_and_blocked_slots_are_not_available(client, database_path):
     assert slots["19:00"]["status"] == "AVAILABLE"
     assert slots["18:30"]["status"] == "UNAVAILABLE"
     assert slots["18:30"]["available"] is False
+
+
+def test_half_hour_segments_allow_clickable_ranges_but_mark_occupied_intervals(
+    client, database_path
+):
+    add_booking(database_path, COURT_A, TOMORROW, "20:00", "22:00", "CONFIRMED")
+    add_court_block(database_path, COURT_A, TOMORROW, "10:00", "12:00")
+
+    slots = slots_by_start(availability(client, slot_duration=30))
+
+    assert slots["09:30"]["available"] is True
+    assert slots["10:00"]["status"] == "BOOKED"
+    assert slots["11:30"]["status"] == "BOOKED"
+    assert slots["12:00"]["available"] is True
+    assert slots["19:30"]["available"] is True
+    assert slots["20:00"]["status"] == "BOOKED"
+    assert slots["21:30"]["status"] == "BOOKED"
 
 
 # TC-10: A missing or invalid date gives 400 INVALID_AVAILABILITY_DATE.
@@ -347,6 +379,11 @@ def test_availability_api_marks_short_gap_unavailable(booked_client):
     ("url", "status", "code"),
     [
         ("/api/courts/1/availability?date=not-a-date", 400, "INVALID_AVAILABILITY_DATE"),
+        (
+            f"/api/courts/{COURT_A}/availability?date={TOMORROW}&slotDuration=15",
+            400,
+            "INVALID_AVAILABILITY_DURATION",
+        ),
         (f"/api/courts/9999/availability?date={TOMORROW}", 404, "COURT_NOT_FOUND"),
     ],
 )

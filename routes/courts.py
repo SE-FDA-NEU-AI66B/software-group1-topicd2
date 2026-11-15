@@ -18,11 +18,13 @@ def availability_error(error: BookingError):
     status = {
         "COURT_NOT_FOUND": 404,
         "INVALID_AVAILABILITY_DATE": 400,
+        "INVALID_AVAILABILITY_DURATION": 400,
         "INVALID_COURT_FILTER": 400,
     }[error.reason]
     message = {
         "COURT_NOT_FOUND": "Không tìm thấy sân đang hoạt động.",
         "INVALID_AVAILABILITY_DATE": "Ngày xem lịch không hợp lệ.",
+        "INVALID_AVAILABILITY_DURATION": "Độ dài khung giờ không hợp lệ.",
         "INVALID_COURT_FILTER": (
             "Bộ lọc ngày và giờ không hợp lệ; khung giờ cần tối thiểu một giờ."
         ),
@@ -83,9 +85,15 @@ def court_detail(court_id: int):
 @court_pages_bp.get("/api/courts/<int:court_id>/availability")
 def api_court_availability(court_id: int):
     try:
+        slot_duration = int(request.args.get("slotDuration", "60"))
         result = get_court_availability(
-            current_app.config["DATABASE_PATH"], court_id, request.args.get("date", "")
+            current_app.config["DATABASE_PATH"],
+            court_id,
+            request.args.get("date", ""),
+            slot_duration,
         )
+    except ValueError:
+        return availability_error(BookingError("INVALID_AVAILABILITY_DURATION"))
     except BookingError as error:
         return availability_error(error)
     return jsonify(result)
