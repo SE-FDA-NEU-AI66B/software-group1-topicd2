@@ -216,9 +216,18 @@ def test_court_detail_displays_price_location_condition_and_images(client):
     assert response.status_code == 200
     assert "Sân Cầu Giấy A" in page
     assert "12 Trần Thái Tông, Cầu Giấy, Hà Nội" in page
-    assert "100,000" in page
+    assert "100.000đ / giờ" in page
     assert "Thảm xanh, đèn LED" in page
     assert "https://example.com/court-a-1.jpg" in page
+
+
+def test_court_listing_formats_prices_in_vietnamese(client):
+    response = client.get("/courts")
+    page = response.get_data(as_text=True)
+
+    assert response.status_code == 200
+    assert "100.000" in page
+    assert "100,000đ" not in page
 
 
 # TC-07 (page): Task #95: Do not expose disabled courts on public detail pages.

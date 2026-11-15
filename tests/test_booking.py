@@ -282,7 +282,12 @@ def test_tc23_partial_overlap_is_rejected_with_clear_message(client, database_pa
     assert response.status_code == 409
     error = response.get_json()
     assert error["code"] == "SLOT_UNAVAILABLE"
-    assert "20:00–22:00" in error["message"]
+    assert "Sân Cầu Giấy A" in error["message"]
+    assert "đã có lịch trong khung 20:00–22:00" in error["message"]
+    assert "Hãy chọn khung giờ khác hoặc sân khác" in error["message"]
+
+    book_page = client.get("/book").get_data(as_text=True)
+    assert 'id="book-error" role="alert"' in book_page
 
 
 # TC-24: A new booking may start exactly when an existing booking ends.
