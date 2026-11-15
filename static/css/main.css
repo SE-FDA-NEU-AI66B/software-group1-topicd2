@@ -19,7 +19,7 @@
 .state-card > p,
 .state-loading,
 .state-empty,
-.state-error { color: var(--muted); font-size: 14px; line-height: 1.6; }
+.state-error { color: var(--muted); font-size: 16px; line-height: 1.6; }
 
 .state-card > p { margin-bottom: 18px; }
 .state-card .primary-link { margin-top: 8px; }
@@ -33,7 +33,7 @@
   border-radius: 3px;
   background: var(--green);
   color: var(--white);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   text-decoration: none;
 }
@@ -52,7 +52,7 @@
 
 .state-error { color: #8d3e27; }
 .state-error a { display: inline-block; margin-top: 8px; color: #276849; font-weight: 700; }
-.court-book-link { display: block; margin-top: 6px; color: #276849; font-size: 12px; font-weight: 700; }
+.court-book-link { display: block; margin-top: 6px; color: #276849; font-size: 14px; font-weight: 700; }
 
 @keyframes state-spin { to { transform: rotate(360deg); } }
 

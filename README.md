@@ -28,8 +28,8 @@ Every story starts from the first page of the live app and needs only clicks.
 | Story | What you can do | Start here |
 | ----- | --------------- | ---------- |
 | US-01 | View available badminton courts | First page, **Danh sách sân** (`/courts`) |
-| US-02 | View court details: price, photos, location, condition | `/courts` → **Chi tiết sân** on a court card |
-| US-03 | View free time slots of a court | Court details page → pick a date |
+| US-02 | View court details: price, photos, location, condition | `/courts` → **Đặt sân →** on a court: the court card at the top of the booking page |
+| US-03 | View free time slots of a court | Booking page → pick a date |
 | US-04 | Book one free slot, link a bank account and pay | `/courts` → **Đặt sân →** (log in as User; OTP `123456`) |
 | US-05 | The system refuses a double booking | Book **SmashGo Cầu Giấy 1**, tomorrow, 20:00-22:00: the slot is already taken by User 2, so the booking is refused with an explanation |
 | US-11 | Admin activates or deactivates a court | Log in as Admin → **Quản lý sân** (`/admin/courts`) |

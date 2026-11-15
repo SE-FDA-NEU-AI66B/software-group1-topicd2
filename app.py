@@ -3,8 +3,6 @@ import secrets
 
 from flask import Flask, redirect, render_template, request, session, url_for
 
-import clock
-from booking_service import BookingError
 from court_service import list_active_courts
 from database import get_database_path
 from request_logging import init_request_logging
@@ -54,34 +52,10 @@ def create_app(test_config: dict | None = None) -> Flask:
 
     @app.get("/courts")
     def courts():
-        filters = {
-            "date": request.args.get("date", "").strip(),
-            "start_time": request.args.get("startTime", "").strip(),
-            "end_time": request.args.get("endTime", "").strip(),
-            "location": request.args.get("location", "").strip(),
-        }
-        filter_error = None
-        try:
-            court_rows = list_active_courts(
-                app.config["DATABASE_PATH"],
-                filters["date"],
-                filters["start_time"],
-                filters["end_time"],
-                filters["location"],
-            )
-        except BookingError:
-            court_rows = []
-            filter_error = (
-                "Để lọc theo giờ, hãy chọn ngày, giờ bắt đầu và giờ kết thúc hợp lệ "
-                "(tối thiểu 1 giờ, theo bước 30 phút)."
-            )
-        return render_template(
-            "courts.html",
-            courts=court_rows,
-            filters=filters,
-            filter_error=filter_error,
-            today=clock.today().isoformat(),
-        )
+        # The page searches by area only; the date and time are chosen on /book.
+        location = request.args.get("location", "").strip()
+        court_rows = list_active_courts(app.config["DATABASE_PATH"], location=location)
+        return render_template("courts.html", courts=court_rows, location=location)
 
     return app
 

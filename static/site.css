@@ -38,7 +38,7 @@ body {
   gap: 10px;
   color: inherit;
   font-family: "Manrope", sans-serif;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
   text-decoration: none;
 }
@@ -61,7 +61,7 @@ body {
 .brand-mark span + span { height: 17px; background: var(--orange); }
 
 .topbar-note, .live-indicator, .eyebrow, .section-index, th, .count-label, .footer {
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 700;
 }
 
@@ -93,7 +93,7 @@ h1 {
 }
 
 h1 span { color: #398264; }
-.intro-copy { margin: 0; color: var(--muted); font-size: 14px; }
+.intro-copy { margin: 0; color: var(--muted); font-size: 16px; }
 .count-block { display: flex; align-items: center; gap: 12px; padding-bottom: 7px; }
 .count-number { color: var(--orange); font-family: "Manrope", sans-serif; font-size: 48px; font-weight: 800; line-height: 1; }
 .count-label { color: var(--muted); line-height: 1.55; }
@@ -101,44 +101,63 @@ h1 span { color: #398264; }
 .directory { padding: 28px 0 38px; }
 .directory-heading { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 18px; }
 .section-index { margin-bottom: 7px; color: #638273; }
-h2 { margin: 0; font-family: "Manrope", sans-serif; font-size: 22px; font-weight: 800; }
-.result-count { padding-bottom: 3px; color: var(--muted); font-size: 12px; }
+h2 { margin: 0; font-family: "Manrope", sans-serif; font-size: 24px; font-weight: 800; }
+.result-count { padding-bottom: 3px; color: var(--muted); font-size: 14px; }
 .table-wrap { overflow-x: auto; border: 1px solid var(--line); background: var(--white); }
 table { width: 100%; min-width: 780px; border-collapse: collapse; text-align: left; }
-th { height: 42px; padding: 0 15px; background: #eaf0e9; color: #697970; font-size: 9px; letter-spacing: .08em; }
-td { height: 59px; padding: 8px 15px; border-top: 1px solid #edf1ec; font-size: 12px; }
+th { height: 42px; padding: 0 15px; background: #eaf0e9; color: #697970; font-size: 14px; letter-spacing: .08em; }
+td { height: 59px; padding: 8px 15px; border-top: 1px solid #edf1ec; font-size: 14px; }
 .court-column { width: 31%; }
 .price-column { width: 12%; }
 .court-name-cell { display: flex; align-items: center; gap: 11px; min-width: 230px; }
 .court-thumb { width: 48px; height: 40px; flex: 0 0 48px; object-fit: cover; border-radius: 3px; background: #dce9df; }
-.court-name-cell strong { display: block; font-size: 12px; font-weight: 700; }
-.court-description { display: block; max-width: 220px; overflow: hidden; margin-top: 3px; color: var(--muted); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.court-name-cell strong { display: block; font-size: 14px; font-weight: 700; }
+.court-description { display: block; max-width: 220px; overflow: hidden; margin-top: 3px; color: var(--muted); font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
 .location-cell { max-width: 230px; color: #465b50; }
 .hours { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .hours span { padding: 0 3px; color: #93a197; }
 .price { white-space: nowrap; font-weight: 700; font-variant-numeric: tabular-nums; }
-.price small { margin-left: 3px; font-size: 10px; font-weight: 500; }
-.status { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; color: #36765b; font-size: 10px; }
+.price small { margin-left: 3px; font-size: 14px; font-weight: 500; }
+.status { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; color: #36765b; font-size: 14px; }
 .status span { width: 6px; height: 6px; background: #56a578; }
 .empty-state { padding: 36px 20px; border: 1px solid var(--line); background: var(--white); color: var(--muted); text-align: center; }
-.data-note { display: flex; align-items: center; gap: 8px; margin: 13px 0 0; color: var(--muted); font-size: 10px; }
+.data-note { display: flex; align-items: center; gap: 8px; margin: 13px 0 0; color: var(--muted); font-size: 14px; }
 .data-note span { width: 6px; height: 6px; background: #56a578; }
-.footer { display: flex; justify-content: space-between; padding: 16px 6.3%; border-top: 1px solid var(--line); color: #809086; font-size: 9px; letter-spacing: .06em; }
+.footer { display: flex; justify-content: space-between; padding: 16px 6.3%; border-top: 1px solid var(--line); color: #809086; font-size: 14px; letter-spacing: .06em; }
 .footer-dot { padding: 0 5px; color: var(--orange); }
 
 @media (max-width: 700px) {
   .topbar { height: 60px; padding: 0 5%; }
   .topbar-note { display: none; }
-  .live-indicator { font-size: 8px; }
+  .live-indicator { font-size: 13px; }
   .page-shell { padding: 0 5%; }
   .intro { min-height: 230px; padding: 38px 0 28px; }
   h1 { font-size: 44px; }
-  .intro-copy { max-width: 290px; font-size: 12px; line-height: 1.5; }
+  .intro-copy { max-width: 290px; font-size: 14px; line-height: 1.5; }
   .count-block { align-self: flex-start; gap: 6px; padding-top: 34px; }
   .count-number { font-size: 36px; }
-  .count-label { font-size: 8px; }
+  .count-label { font-size: 13px; }
   .directory { padding-top: 23px; }
-  .footer { padding-right: 5%; padding-left: 5%; font-size: 8px; }
+
+  /* Court list as cards: everything, including "Đặt sân", is visible without scrolling sideways. */
+  .table-wrap { overflow: visible; border: 0; background: none; }
+  table { min-width: 0; }
+  thead { display: none; }
+  table, tbody, .court-row, .court-row td { display: block; }
+  .court-row { margin-bottom: 12px; border: 1px solid var(--line); background: var(--white); }
+  .court-row td { height: auto; padding: 6px 14px; border: 0; font-size: 15px; }
+  .court-row td:first-child { padding-top: 14px; }
+  .court-row td[data-label] { display: flex; align-items: baseline; gap: 12px; }
+  .court-row td[data-label]::before { content: attr(data-label); flex: 0 0 auto; margin-right: auto; color: var(--muted); font-weight: 500; }
+  .court-row td.price { gap: 0; }
+  .location-cell { max-width: none; text-align: right; }
+  .court-name-cell { min-width: 0; }
+  .court-thumb { width: 64px; height: 52px; flex-basis: 64px; }
+  .court-name-cell strong { font-size: 17px; }
+  .court-description { max-width: none; white-space: normal; }
+  .court-actions { display: flex !important; align-items: center; justify-content: space-between; padding-bottom: 14px !important; }
+  .court-actions .court-book-link { margin: 0; padding: 10px 16px; border-radius: 3px; background: var(--green); color: var(--white); font-size: 15px; text-decoration: none; }
+  .footer { flex-direction: column; gap: 6px; padding-right: 5%; padding-left: 5%; font-size: 13px; }
 }
 
 @media (prefers-reduced-motion: no-preference) {

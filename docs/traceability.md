@@ -8,9 +8,9 @@ update this file should not be approved.
 | Route | Purpose | Access | Priority | Feature | Story issue | PR | Status |
 |-------|---------|--------|----------|---------|-------------|-----|--------|
 | `/` | Landing page | G | P0 | F1 | #3 | #14 | Done |
-| `/courts` | List active courts with location and date/time filters, Vietnamese-formatted prices, and links to details and prefilled booking (`GET /api/courts`) | G, U | P0 | F1 | US-01 (#95) | #103 | Done |
-| `/courts/{courtId}` | Show active court price in Vietnamese format, photos, address and condition; load date-based availability (`GET /api/courts/{id}`, `GET /api/courts/{id}/availability`) | G, U | P0 | F1 | US-02, US-03 (#95) | #103 | Done |
-| `/book` | Select an available court and start time from a date-based schedule, then hold the slot (`GET /api/courts/{id}/availability`, `POST /api/bookings`) | G, U | P0 | F2 | US-04, US-05 (#91) | — | In progress |
+| `/courts` | List active courts with a search by area (the address, ignoring accents and capitals), Vietnamese-formatted prices, and a link to booking for each court; cards on phones (`GET /api/courts`) | G, U | P0 | F1 | US-01 (#95), #128 | #103 | Done |
+| `/courts/{courtId}` | Old court detail link: redirects to `/book?courtId={courtId}`; 404 when the court is not active | G, U | P0 | F1 | US-02 (#95), #128 | #103 | Done |
+| `/book` | Show the selected court's photos, address, description, price and hours (US-02); select an available court and start time from a date-based schedule, then hold the slot (`GET /api/courts/{id}/availability`, `POST /api/bookings`) | G, U | P0 | F2 | US-04, US-05 (#91) | — | In progress |
 | `/book?bookingId=` | Payment in three steps with a 10-minute countdown: (1) account, saved account selected by default or a new one typed, (2) OTP, (3) confirm and pay (`/api/bank-accounts`, `POST /api/bookings/{id}/payment`) | U | P0 | F2 | US-04 (#92) | — | In progress |
 | `/my-bookings` | List own bookings with status (loading, empty, error, data); pay a pending one; cancel with BR4 refund (`GET /api/bookings/mine`, `DELETE /api/bookings/{id}`) | U | P0 (view); P1 (cancel) | F3 | US-06, US-08 (#93) | — | In progress |
 | `/admin/courts` | Review court requests and activate/deactivate courts; display court statuses in Vietnamese (`GET /api/admin/court-requests`, `POST /api/admin/court-requests/{id}/review`, `GET /api/admin/courts`, `PATCH /api/admin/courts/{id}/status`) | A | P0 | F4 | US-11, US-12 (#94) | #102 | Done |

@@ -57,10 +57,10 @@ use the required `works`, `partly works`, or `not started` labels.
 | Story                                   | Screen(s)                                            | Route                                                                                             | Status | Issue                                                   |
 | --------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------- |
 | US-01 — View available courts           | Court list and filters                               | `GET /courts` (`/` redirects here)                                                                | works  | #95 — court discovery and availability                  |
-| US-02 — View court details              | Court details                                        | `GET /courts/{courtId}`                                                                           | works  | #95 — court discovery and availability                  |
-| US-03 — View available time slots       | Court details and availability                       | `GET /courts/{courtId}`                                                                           | works  | #95 — court discovery and availability                  |
+| US-02 — View court details              | Booking (court information card)                     | `GET /book?courtId={courtId}`                                                                     | works  | #95 — court discovery and availability                  |
+| US-03 — View available time slots       | Booking (court schedule)                             | `GET /book`                                                                                       | works  | #95 — court discovery and availability                  |
 | US-04 — Book one available time slot    | Booking; login or registration; payment; my bookings | `GET /book`; `GET /login`; `GET /register`; `GET /book?bookingId={bookingId}`; `GET /my-bookings` | works  | #91 — booking hold; #92 — payment; #96 — authentication |
-| US-05 — Prevent double booking          | Court availability and booking                       | `GET /courts/{courtId}`; `GET /book`                                                              | works  | #91 — booking hold                                      |
+| US-05 — Prevent double booking          | Booking                                              | `GET /book`                                                                                       | works  | #91 — booking hold                                      |
 | US-11 — Activate or deactivate courts   | Admin court management                               | `GET /admin/courts`                                                                               | works  | #94 — Admin court management                            |
 | US-12 — Approve or reject court request | Admin court management                               | `GET /admin/courts`                                                                               | works  | #94 — Admin court management                            |
 
@@ -70,12 +70,11 @@ use the required `works`, `partly works`, or `not started` labels.
 
 ```text
 GET / or /courts
-  -> filter courts by location/date/time
-  -> GET /courts/{courtId}
-       -> GET /api/courts/{courtId}
-       -> GET /api/courts/{courtId}/availability?date=...
+  -> search courts by area (district or street; accents and capitals ignored)
+  -> "Đặt sân →" on a court: GET /book?courtId=...
+       -> court information card: photos, address, description, price, hours
+       -> GET /api/courts/{courtId}/availability?date=... for the schedule
   -> choose an available slot
-  -> GET /book?courtId=...&date=...&startTime=...&endTime=...
        -> if Guest: GET/POST /login or GET/POST /register, then return to /book
   -> POST /api/bookings
        -> create a 10-minute PENDING hold
@@ -93,8 +92,9 @@ GET / or /courts
 
 An authenticated User skips sign-in and registration. `/` is a redirect to
 `/courts`, not a separate screen. The M1 `/availability` screen is replaced by
-the filters on `/courts` and date-specific availability on
-`/courts/{courtId}`; `/availability` is not a current application route.
+the area search on `/courts` and the schedule on `/book`; `/availability` is
+not a current application route. The court detail page `/courts/{courtId}`
+was merged into `/book` (section 7); its old links redirect there.
 
 ### Admin flow
 
@@ -245,3 +245,26 @@ screens were also checked at a 375px viewport.
   `test_payment_step_page`.
 - **Effect on this document:** the US-04 flow in section 2 lists the three
   steps.
+
+## 7. Larger text, area search and the court detail page merged into booking
+
+- **What changed:**
+  - Text is larger across the site: no text is below 13px, and body text is
+    14–16px. On phones (375px) no page scrolls sideways: the court list and
+    the Admin court table become one card per court, and the menu wraps
+    onto its own line.
+  - The court list searches by area only; the date field was removed because
+    the date is chosen on `/book`. The search matches the court's address
+    (not its name), ignores accents and capitals ("cau giay" finds
+    "Cầu Giấy") and matches from the start of a word. The seed addresses now
+    include the district (for example "102 Trần Thái Tông, Cầu Giấy, Hà Nội").
+  - The court detail page is removed: its slot picker repeated the booking
+    page. Its information (photos, address, description, price, hours) is a
+    card on `/book` that follows the selected court. `/courts/{courtId}`
+    redirects to `/book?courtId={courtId}`.
+- **Evidence:** `court_service.py` (`normalize_place`, `location_matches`),
+  `data/courts.csv`, `init_db.py`, `routes/courts.py`, `routes/bookings.py`,
+  `templates/courts.html`, `templates/pages/book.html`, `static/book.js`,
+  the stylesheets in `static/`; `tests/test_courts.py`.
+- **Effect on this document:** US-02, US-03 and US-05 point to `/book` in
+  section 1, and the booking flow in section 2 starts from the area search.

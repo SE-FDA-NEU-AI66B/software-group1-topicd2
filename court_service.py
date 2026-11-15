@@ -1,3 +1,5 @@
+import re
+import unicodedata
 from contextlib import closing
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -6,6 +8,32 @@ from typing import Any
 import clock
 from booking_service import BookingError, OCCUPYING_STATUSES, parse_minutes
 from database import get_db_connection
+
+
+def normalize_place(text: str) -> str:
+    """Fold Vietnamese text for place matching: lower case, no accents or punctuation.
+
+    "Cầu Giấy", "CẦU GIẤY", "cau giay" and a decomposed (NFD) "Cầu Giấy" all
+    become "cau giay"; "102 Trần Thái Tông, Cầu Giấy" becomes
+    "102 tran thai tong cau giay".
+    """
+    decomposed = unicodedata.normalize("NFD", text.casefold().replace("đ", "d"))
+    without_marks = "".join(char for char in decomposed if not unicodedata.combining(char))
+    return " ".join(re.sub(r"[^\w]+", " ", without_marks).split())
+
+
+def location_matches(address: str, query: str) -> bool:
+    """True when the folded query appears in the folded address from the start of a word.
+
+    Only the address is searched, not the court name, so a court is found by
+    the area it is really in. Matching from a word start stops a fragment
+    such as "ầu" from matching inside a word.
+    """
+    if not query.strip():
+        return True
+    # A query of only punctuation (such as "%") folds to nothing and matches no court.
+    folded_query = normalize_place(query)
+    return bool(folded_query) and f" {folded_query}" in f" {normalize_place(address)}"
 
 
 # Task #95: Validate public search filters before using them in court queries.
@@ -48,17 +76,6 @@ def list_active_courts(
     )
     conditions = ["Court.Status = 'ACTIVE'"]
     parameters: list[Any] = []
-
-    clean_location = location.strip()
-    if clean_location:
-        escaped_location = (
-            clean_location.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
-        )
-        conditions.append(
-            "(Court.Location LIKE ? ESCAPE '\\' OR Court.CourtName LIKE ? ESCAPE '\\')"
-        )
-        location_pattern = f"%{escaped_location}%"
-        parameters.extend((location_pattern, location_pattern))
 
     if clean_date is not None:
         now = clock.now()
@@ -118,7 +135,7 @@ def list_active_courts(
         )
 
     with closing(get_db_connection(database_path)) as connection:
-        return connection.execute(
+        courts = connection.execute(
             f"""
             SELECT Court.CourtID, Court.CourtName, Court.Location,
                    Court.Description, Court.PricePerHour, Court.OpenTime,
@@ -136,6 +153,7 @@ def list_active_courts(
             """,
             parameters,
         ).fetchall()
+    return [court for court in courts if location_matches(court["Location"], location)]
 
 
 # Task #95: Fetch an active court and all its photos for the public detail screen.

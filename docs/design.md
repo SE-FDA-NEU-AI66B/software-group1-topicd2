@@ -114,7 +114,7 @@ SmashGo is a badminton court booking platform with four roles: **Guest** (not lo
 
 ---
 
-#### `Court_Image`: Stores the photos of a court shown on the court detail page.
+#### `Court_Image`: Stores the photos of a court shown on the booking page.
 
 | Column    | Type         | PK  | FK              | Constraint                              | Enforces (M1 rule) |
 | --------- | ------------ | --- | --------------- | --------------------------------------- | ------------------ |
@@ -419,11 +419,13 @@ overlapping unexpired `PENDING`/`CONFIRMED`/`CHECKED_IN` booking or
 `Court_Block`. Filter times must be in 30-minute increments and span at least
 one hour.
 
-The detail page shows the court's price, address, condition/description, opening
-hours and ordered photos. Its availability panel starts in a loading state,
-shows an empty message when no slots are available and displays API errors
-explicitly. Available one-hour slots start every 30 minutes and link to `/book`
-with the court, date, start time and end time prefilled. See
+The booking page `/book` shows the selected court's price, address,
+condition/description, opening hours and ordered photos (this replaced the
+court detail page; `/courts/{courtId}` redirects to `/book?courtId=...`). Its
+schedule starts in a loading state and displays API errors explicitly. The
+`/courts` page searches by area: the address is matched from the start of a
+word, ignoring accents and capitals; the date/time filters remain on
+`GET /api/courts`. See
 `docs/images/ui/courts-availability.svg` for the wireframe.
 
 The screen-to-story mapping, P0 wireframes, current navigation flows and

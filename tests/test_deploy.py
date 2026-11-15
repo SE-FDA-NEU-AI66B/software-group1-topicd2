@@ -59,4 +59,4 @@ def test_wsgi_entry_point_serves_the_first_screen(tmp_path):
     assert client.get("/").status_code == 302
     response = client.get("/courts")
     assert response.status_code == 200
-    assert "court-detail-link" in response.get_data(as_text=True)
+    assert "court-book-link" in response.get_data(as_text=True)
