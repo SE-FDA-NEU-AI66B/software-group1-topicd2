@@ -116,7 +116,11 @@ button.schedule-slot { cursor: pointer; }
 .schedule-slot.slot-booked { background: #fa6265; color: #fff; }
 .schedule-slot.slot-unavailable { background: #d1d1d1; color: #555; }
 .schedule-slot.slot-outside { background: #f5f7f5; }
-.schedule-slot.is-selected { box-shadow: inset 0 0 0 3px #398264; }
+.schedule-slot.is-selected {
+  background: #c7e6d0;
+  color: #174b3b;
+  box-shadow: inset 0 0 0 3px #398264;
+}
 
 .availability-legend {
   display: flex;

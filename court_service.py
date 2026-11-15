@@ -203,8 +203,14 @@ def get_court_images(
 
 # Task #95: Generate one-hour, half-hour-step availability slots for a court and requested date.
 def get_court_availability(
-    database_path: str | Path, court_id: int, booking_date: str
+    database_path: str | Path,
+    court_id: int,
+    booking_date: str,
+    slot_duration_minutes: int = 60,
 ) -> dict[str, Any]:
+    if slot_duration_minutes not in (30, 60):
+        raise BookingError("INVALID_AVAILABILITY_DURATION")
+
     try:
         clean_date = date.fromisoformat(booking_date)
     except (TypeError, ValueError):
@@ -258,14 +264,14 @@ def get_court_availability(
         for row in occupied_rows
     ]
     slots = []
-    for start in range(opening, closing_time - 60 + 1, 30):
-        end = start + 60
+    for start in range(opening, closing_time - slot_duration_minutes + 1, 30):
+        end = start + slot_duration_minutes
         overlapping = [
             interval
             for interval in occupied
             if start < interval[1] and interval[0] < end
         ]
-        too_short_gap = any(
+        too_short_gap = slot_duration_minutes == 60 and any(
             0 < (start - taken_end if taken_end <= start else taken_start - end) < 60
             for taken_start, taken_end, source in occupied
             if source == "BOOKING"

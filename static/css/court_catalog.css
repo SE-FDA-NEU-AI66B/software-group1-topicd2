@@ -10,7 +10,7 @@
 
 .court-search-form {
   display: grid;
-  grid-template-columns: 1.4fr repeat(3, 1fr) auto;
+  grid-template-columns: 1.4fr 1fr auto;
   align-items: end;
   gap: 12px;
 }

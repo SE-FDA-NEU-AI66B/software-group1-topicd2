@@ -13,6 +13,7 @@
   const submitButton = document.getElementById("book-submit");
   const errorBox = document.getElementById("book-error");
   let scheduleRequest = 0;
+  let scheduleSelection = null;
 
   const toMinutes = (value) => {
     const [hours, minutes] = value.split(":").map(Number);
@@ -50,46 +51,106 @@
     }
   }
 
-  function refreshStartTimes(preferred) {
+  function refreshStartTimes(preferred, minimumDuration = MIN_DURATION) {
     const court = selectedCourt();
-    fillOptions(startSelect, court.open, court.close - MIN_DURATION, preferred || startSelect.value);
+    fillOptions(startSelect, court.open, court.close - minimumDuration, preferred || startSelect.value);
   }
 
-  function refreshEndTimes(preferred) {
+  function refreshEndTimes(preferred, minimumDuration = MIN_DURATION) {
     const court = selectedCourt();
     const start = toMinutes(startSelect.value);
     const previous = preferred || endSelect.value;
-    fillOptions(endSelect, start + MIN_DURATION, court.close, previous);
+    fillOptions(endSelect, start + minimumDuration, court.close, previous);
   }
 
   function refreshSummary() {
     const court = selectedCourt();
-    const duration = toMinutes(endSelect.value) - toMinutes(startSelect.value);
+    const hasTimes = Boolean(startSelect.value && endSelect.value);
+    const duration = hasTimes
+      ? toMinutes(endSelect.value) - toMinutes(startSelect.value)
+      : 0;
     document.getElementById("summary-hours").textContent = `${court.openLabel} – ${court.closeLabel}`;
     document.getElementById("summary-duration").textContent =
       `${Math.floor(duration / 60)} giờ${duration % 60 ? ` ${duration % 60} phút` : ""}`;
     document.getElementById("summary-total").textContent = formatMoney(
       Math.round((court.price * duration) / 60),
     );
+    const meetsMinimumDuration = hasTimes && duration >= MIN_DURATION;
+    endSelect.setCustomValidity(
+      meetsMinimumDuration ? "" : "Mỗi lượt đặt sân cần tối thiểu 1 giờ.",
+    );
+    submitButton.disabled = !meetsMinimumDuration;
+  }
+
+  function syncScheduleSelectionFromControls() {
+    if (!startSelect.value || !endSelect.value) {
+      scheduleSelection = null;
+      return;
+    }
+    scheduleSelection = {
+      courtId: courtSelect.value,
+      start: toMinutes(startSelect.value),
+      end: toMinutes(endSelect.value),
+    };
   }
 
   function updateScheduleSelection() {
     if (!scheduleGrid) return;
+    if (!startSelect.value || !endSelect.value) {
+      for (const slot of scheduleGrid.querySelectorAll("[data-slot-start]")) {
+        slot.classList.remove("is-selected");
+      }
+      return;
+    }
+    const selectionStart = toMinutes(startSelect.value);
+    const selectionEnd = toMinutes(endSelect.value);
     for (const slot of scheduleGrid.querySelectorAll("[data-slot-start]")) {
+      const slotStart = toMinutes(slot.dataset.slotStart);
       slot.classList.toggle(
         "is-selected",
         slot.dataset.courtId === courtSelect.value
-          && slot.dataset.slotStart === startSelect.value
+          && slotStart >= selectionStart
+          && slotStart < selectionEnd
           && slot.classList.contains("slot-available"),
       );
     }
   }
 
   function chooseScheduleSlot(courtId, slot) {
+    const clickedStart = toMinutes(slot.startTime);
+    const clickedEnd = clickedStart + STEP_MINUTES;
+    let selection = { courtId, start: clickedStart, end: clickedEnd };
+
+    if (scheduleSelection && scheduleSelection.courtId === courtId) {
+      const { start, end } = scheduleSelection;
+      if (clickedStart >= start && clickedStart < end) {
+        if (end - start <= STEP_MINUTES) {
+          scheduleSelection = null;
+          startSelect.replaceChildren();
+          endSelect.replaceChildren();
+          refreshSummary();
+          updateScheduleSelection();
+          return;
+        }
+        if (clickedStart === start) {
+          selection = { courtId, start: start + STEP_MINUTES, end };
+        } else if (clickedEnd === end) {
+          selection = { courtId, start, end: end - STEP_MINUTES };
+        } else {
+          selection = { courtId, start, end: clickedStart };
+        }
+      } else if (clickedStart === end) {
+        selection = { courtId, start, end: clickedEnd };
+      } else if (clickedEnd === start) {
+        selection = { courtId, start: clickedStart, end };
+      }
+    }
+
+    scheduleSelection = selection;
     courtSelect.value = String(courtId);
-    refreshStartTimes();
-    startSelect.value = slot.startTime;
-    refreshEndTimes(slot.endTime);
+    refreshStartTimes(toTime(selection.start), STEP_MINUTES);
+    startSelect.value = toTime(selection.start);
+    refreshEndTimes(toTime(selection.end), STEP_MINUTES);
     refreshSummary();
     updateScheduleSelection();
   }
@@ -103,10 +164,10 @@
       header.append(element("span", "booking-schedule-time-label", startTime));
     }
 
-    const rows = courts.map(({ court, slots }) => {
+    const rows = courts.map(({ court, slots }, courtIndex) => {
       const row = element("div", "booking-schedule-row");
       row.style.gridTemplateColumns = columns;
-      row.append(element("span", "booking-schedule-court-label", court.name));
+      row.append(element("span", "booking-schedule-court-label", `Sân ${courtIndex + 1}`));
       const slotsByStart = new Map(slots.map((slot) => [slot.startTime, slot]));
 
       for (const [index, startTime] of startTimes.entries()) {
@@ -154,7 +215,10 @@
       id: option.value,
       name: option.dataset.name,
     }));
-    const query = new URLSearchParams({ date: dateInput.value });
+    const query = new URLSearchParams({
+      date: dateInput.value,
+      slotDuration: String(STEP_MINUTES),
+    });
 
     try {
       const availability = await Promise.all(courts.map(async (court) => {
@@ -216,14 +280,20 @@
     refreshStartTimes();
     refreshEndTimes();
     refreshSummary();
+    syncScheduleSelectionFromControls();
     updateScheduleSelection();
   });
   startSelect.addEventListener("change", () => {
     refreshEndTimes();
     refreshSummary();
+    syncScheduleSelectionFromControls();
     updateScheduleSelection();
   });
-  endSelect.addEventListener("change", refreshSummary);
+  endSelect.addEventListener("change", () => {
+    refreshSummary();
+    syncScheduleSelectionFromControls();
+    updateScheduleSelection();
+  });
   dateInput.addEventListener("change", loadSchedule);
 
   form.addEventListener("submit", async (event) => {
@@ -251,7 +321,8 @@
       }
       showError(error.message);
     } finally {
-      submitButton.disabled = false;
+      submitButton.disabled =
+        toMinutes(endSelect.value) - toMinutes(startSelect.value) < MIN_DURATION;
       submitButton.textContent = "Xác nhận đặt sân";
     }
   });
@@ -259,5 +330,6 @@
   refreshStartTimes(startSelect.dataset.initial);
   refreshEndTimes(endSelect.dataset.initial);
   refreshSummary();
+  syncScheduleSelectionFromControls();
   loadSchedule();
 })();
