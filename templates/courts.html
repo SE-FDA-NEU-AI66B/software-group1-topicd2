@@ -21,7 +21,7 @@
       </div>
     </section>
 
-    <!-- Task #95: Let guests filter courts by location and a requested date/time without a price filter. -->
+    <!-- Task #95: Let guests filter courts by location and date without a price filter. -->
     <section class="court-search" aria-labelledby="search-title">
       <div>
         <p class="section-index">TÌM KIẾM</p>
@@ -36,14 +36,6 @@
         <label>
           Ngày chơi
           <input type="date" name="date" min="{{ today }}" value="{{ filters.date }}">
-        </label>
-        <label>
-          Giờ bắt đầu
-          <input type="time" name="startTime" step="1800" value="{{ filters.start_time }}">
-        </label>
-        <label>
-          Giờ kết thúc
-          <input type="time" name="endTime" step="1800" value="{{ filters.end_time }}">
         </label>
         <button type="submit" id="court-search-submit">Tìm sân</button>
       </form>

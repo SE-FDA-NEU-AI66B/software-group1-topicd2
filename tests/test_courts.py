@@ -427,8 +427,8 @@ def test_court_listing_contains_filters_and_detail_links(client):
     assert response.status_code == 200
     assert 'name="location"' in page
     assert 'name="date"' in page
-    assert 'name="startTime"' in page
-    assert 'name="endTime"' in page
+    assert 'name="startTime"' not in page
+    assert 'name="endTime"' not in page
     assert "/courts/1" in page
     assert "Chi tiết sân" in page
 
