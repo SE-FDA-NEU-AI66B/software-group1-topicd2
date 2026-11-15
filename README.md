@@ -1,27 +1,55 @@
-# Sports Booking Platform
+**Live app: https://smashgo-zfdv.onrender.com** · health check: [https://smashgo-zfdv.onrender.com/health](https://smashgo-zfdv.onrender.com/health)
+
+# SmashGo - Sports Booking Platform
+
+[![CI](https://github.com/SE-FDA-NEU-AI66B/software-group1-topicd2/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/SE-FDA-NEU-AI66B/software-group1-topicd2/actions/workflows/ci.yml?query=branch%3Amain)
 
 Sports field booking platform for players, helping to find a field, choose a time slot and book quickly, while avoiding double bookings and sending reminders before the game schedule.
 
-**Group:** 1
+> **Free hosting.** The app sleeps after 15 minutes without visitors, so the first visit can take about a minute. The SQLite database is **reset to the sample data at every deploy and restart** (`init_db.py` runs before the app starts), so bookings made while testing do not stay forever.
 
-**Topic:** D2
+## Test accounts
 
-**Member:**
+Fake accounts from the sample data, for testing only. No real password is used anywhere.
 
-- Chu Vu Thao Hien - @dqchien
-- Phan Thi Anh Quynh - @quynhquynh-blip
-- Bui Phuong Thao - @Buithaoaineu
+| Role    | Email                                    | Password          |
+| ------- | ---------------------------------------- | ----------------- |
+| User    | `user@smashgo.local`                     | `UserTest123!`    |
+| User 2  | `user2@smashgo.local`                    | `User2Test123!`   |
+| Manager | `walking-skeleton-manager@smashgo.local` | `ManagerTest123!` |
+| Admin   | `admin@smashgo.local`                    | `AdminTest123!`   |
+
+The bank is simulated. The payment OTP is always `123456`. Any account number can be linked; one ending in `0000` makes the payment fail, to show the error case.
+
+## P0 stories and where each one starts
+
+Every story starts from the first page of the live app and needs only clicks.
+
+| Story | What you can do | Start here |
+| ----- | --------------- | ---------- |
+| US-01 | View available badminton courts | First page, **Danh sách sân** (`/courts`) |
+| US-02 | View court details: price, photos, location, condition | `/courts` → **Chi tiết sân** on a court card |
+| US-03 | View free time slots of a court | Court details page → pick a date |
+| US-04 | Book one free slot, link a bank account and pay | `/courts` → **Đặt sân →** (log in as User; OTP `123456`) |
+| US-05 | The system refuses a double booking | Book **SmashGo Cầu Giấy 1**, tomorrow, 20:00-22:00: the slot is already taken by User 2, so the booking is refused with an explanation |
+| US-11 | Admin activates or deactivates a court | Log in as Admin → **Quản lý sân** (`/admin/courts`) |
+| US-12 | Admin approves or rejects a request to add a court | Log in as Admin → **Quản lý sân** → pending requests |
+
+## Team
+
+**Group:** 1 · **Topic:** D2
+
+| Member | GitHub |
+| ------ | ------ |
+| Chu Vu Thao Hien | @dqchien |
+| Phan Thi Anh Quynh | @quynhquynh-blip |
+| Bui Phuong Thao | @Buithaoaineu |
 
 **Product Owner (fixed for the whole period):** @dqchien
 
-**Scrum Master (rotating every sprint):**
+**Scrum Master (rotating every sprint):** Sprint 1: @quynhquynh-blip · Sprint 2: @Buithaoaineu · Sprint 3: @dqchien · Sprint 4: @quynhquynh-blip · **Sprint 5: @Buithaoaineu**
 
-- Sprint 1: @quynhquynh-blip
-- Sprint 2: @Buithaoaineu
-- Sprint 3: @dqchien
-- Sprint 4: @quynhquynh-blip
-
-**Board:** https://github.com/orgs/SE-FDA-NEU-AI66B/projects/24
+**Board:** https://github.com/orgs/SE-FDA-NEU-AI66B/projects/24 · **Operations:** [docs/operations.md](docs/operations.md)
 
 ## First screen
 
