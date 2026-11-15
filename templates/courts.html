@@ -88,7 +88,7 @@
               </td>
               <td class="location-cell">{{ court['Location'] }}</td>
               <td><span class="hours">{{ court['OpenTime'] }} <span>—</span> {{ court['CloseTime'] }}</span></td>
-              <td class="price">{{ "{:,.0f}".format(court['PricePerHour']) }}<small>đ</small></td>
+              <td class="price">{{ "{:,.0f}".format(court['PricePerHour']).replace(",", ".") }}<small>đ</small></td>
               <td>
                 <span class="status"><span></span> Đang nhận đặt</span>
                 <a class="court-detail-link" href="{{ url_for('court_pages.court_detail', court_id=court['CourtID']) }}">Chi tiết sân</a>

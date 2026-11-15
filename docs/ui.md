@@ -188,3 +188,36 @@ automated tests:
   `tests/test_my_bookings.py` and `tests/test_admin_courts.py`.
 - **Effect on this document:** `/my-bookings` and `/admin/courts` are marked
   Implemented in the table above; `/manager/courts` remains Placeholder.
+
+## 5. M3 feedback addressed in Task #128
+
+### Price formatting
+
+Court list and detail prices now use the same Vietnamese thousands separator as
+the booking summary and payment screens. The court-list screenshots show the
+change from a comma to a period. The booking summary already used a period, so
+it is included only as a reference.
+
+| Before | After |
+| ------ | ----- |
+| <img src="images/m5/price-before.png" alt="Court list prices before formatting was unified" width="600"> | <img src="images/m5/price-after.png" alt="Court list prices after formatting was unified" width="600"> |
+
+<img src="images/m5/price-book-after.png" alt="Booking summary price using the existing Vietnamese thousands separator" width="600">
+
+### Admin court statuses
+
+The Admin screen now shows Vietnamese status labels while preserving the
+server's status values for API requests and CSS state styling.
+
+| Before | After |
+| ------ | ----- |
+| <img src="images/m5/admin-status-before.png" alt="Admin screen showing the raw ACTIVE status" width="600"> | <img src="images/m5/admin-status-after.png" alt="Admin screen showing the Vietnamese court status" width="600"> |
+
+### Double-booking rejection and mobile check
+
+For US-05, the server rejects an occupied slot with HTTP 409 and a message that
+names the court and occupied time, then recommends choosing another time or
+court. The booking screen displays that message in its alert region. The P0
+screens were also checked at a 375px viewport.
+
+<img src="images/m5/booking-conflict-error.png" alt="Booking form showing the server rejection and next steps for an occupied slot" width="600">

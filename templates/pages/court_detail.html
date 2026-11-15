@@ -23,7 +23,7 @@
       <p class="court-detail-location">{{ court.location }}</p>
       <p class="court-detail-description">{{ court.description or "Chưa có mô tả tình trạng sân." }}</p>
       <dl class="court-detail-facts">
-        <div><dt>Giá thuê</dt><dd>{{ "{:,.0f}".format(court.pricePerHour) }}đ / giờ</dd></div>
+        <div><dt>Giá thuê</dt><dd>{{ "{:,.0f}".format(court.pricePerHour).replace(",", ".") }}đ / giờ</dd></div>
         <div><dt>Giờ mở cửa</dt><dd>{{ court.openTime }} – {{ court.closeTime }}</dd></div>
         <div><dt>Trạng thái</dt><dd>Đang nhận đặt</dd></div>
       </dl>

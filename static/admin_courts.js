@@ -14,6 +14,11 @@
   const rejectError = document.getElementById("reject-error");
   const rejectConfirm = document.getElementById("reject-confirm");
   let rejectingRequest = null;
+  const courtStatusLabels = {
+    ACTIVE: "Đang hoạt động",
+    DISABLED: "Tạm ngưng",
+    MAINTENANCE: "Bảo trì",
+  };
 
   // Task #94: Create text-only DOM elements so court data is never interpreted as HTML.
   function element(tag, className, text) {
@@ -74,7 +79,13 @@
     const priceCell = element("td", "", `${formatMoney(court.pricePerHour)} / giờ`);
     const bookingsCell = element("td", "", String(court.upcomingBookings));
     const statusCell = element("td");
-    statusCell.append(element("span", `admin-status status-${court.status.toLowerCase()}`, court.status));
+    statusCell.append(
+      element(
+        "span",
+        `admin-status status-${court.status.toLowerCase()}`,
+        courtStatusLabels[court.status],
+      ),
+    );
     const actionCell = element("td");
 
     if (court.status === "ACTIVE") {
