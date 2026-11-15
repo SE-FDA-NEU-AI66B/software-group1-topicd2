@@ -102,19 +102,6 @@ def test_tc04_thirty_minute_window_is_rejected(client):
     assert response.get_json()["code"] == "INVALID_COURT_FILTER"
 
 
-# TC-01 (page): Task #95: Filter courts by an available date/time and exclude occupied time intervals.
-def test_court_listing_filters_by_date_and_availability(booked_client):
-    response = booked_client.get(f"/courts?date={TOMORROW}&startTime=19%3A00&endTime=20%3A30")
-    page = response.get_data(as_text=True)
-
-    assert response.status_code == 200
-    assert "Sân Cầu Giấy A" not in page
-    assert "Sân Đống Đa B" in page
-    assert f"date={TOMORROW}" in page
-    assert "startTime=19:00" in page
-    assert "endTime=20:30" in page
-
-
 # TC-01: Task #95: Expose the court-list filters through the public JSON endpoint as well as the HTML page.
 def test_court_list_api_filters_location_and_time(booked_client):
     response = booked_client.get(
@@ -129,17 +116,7 @@ def test_court_list_api_filters_location_and_time(booked_client):
     assert courts[0]["images"][0]["sortOrder"] == 0
 
 
-# TC-02 (page): Task #95: Show a clear validation error when date/time filter fields are incomplete.
-def test_court_listing_shows_error_for_incomplete_time_filter(client):
-    response = client.get(f"/courts?date={TOMORROW}&startTime=20%3A00")
-    page = response.get_data(as_text=True)
-
-    assert response.status_code == 200
-    assert "hợp lệ" in page
-    assert 'role="alert"' in page
-
-
-# Task #95: Filter by location or court area name, treating SQL wildcard characters literally.
+# The page searches the court address by area.
 def test_court_listing_filters_by_location(client):
     response = client.get("/courts", query_string={"location": "Cầu Giấy"})
     page = response.get_data(as_text=True)
@@ -149,7 +126,7 @@ def test_court_listing_filters_by_location(client):
     assert "Sân Đống Đa B" not in page
 
 
-# Task #95: Search the address fields as well as the area embedded in the court name.
+# A street name in the address also finds the court.
 def test_court_listing_filters_by_address(client):
     response = client.get("/courts", query_string={"location": "Trần Thái Tông"})
     page = response.get_data(as_text=True)
@@ -159,12 +136,56 @@ def test_court_listing_filters_by_address(client):
     assert "Sân Đống Đa B" not in page
 
 
-# Task #95: Treat a percent sign as a literal location character rather than a SQL wildcard.
+# A percent sign is not a wildcard: it matches nothing.
 def test_court_listing_escapes_location_wildcards(client):
     response = client.get("/courts", query_string={"location": "%"})
 
     assert response.status_code == 200
-    assert "Không tìm thấy sân phù hợp" in response.get_data(as_text=True)
+    assert "Không tìm thấy sân nào" in response.get_data(as_text=True)
+
+
+# The area search ignores accents, capitals and extra spaces.
+@pytest.mark.parametrize("query", ["cau giay", "CẦU GIẤY", "  Cầu   Giấy ", "tran thai tong"])
+def test_court_listing_location_ignores_accents_and_case(client, query):
+    page = client.get("/courts", query_string={"location": query}).get_data(as_text=True)
+
+    assert "Sân Cầu Giấy A" in page
+    assert "Sân Đống Đa B" not in page
+
+
+# Only the address is searched: a court named after an area it is not in is
+# not found under that area, and a fragment inside a word does not match.
+def test_court_listing_location_matches_the_address_only(client, database_path):
+    add_court(database_path, "Sân Cầu Giấy Mới", "ACTIVE", location="9 Kim Mã, Ba Đình, Hà Nội")
+
+    cau_giay = client.get("/courts", query_string={"location": "Cầu Giấy"}).get_data(as_text=True)
+    ba_dinh = client.get("/courts", query_string={"location": "ba dinh"}).get_data(as_text=True)
+    fragment = client.get("/courts", query_string={"location": "ầu"}).get_data(as_text=True)
+
+    assert "Sân Cầu Giấy A" in cau_giay
+    assert "Sân Cầu Giấy Mới" not in cau_giay
+    assert "Sân Cầu Giấy Mới" in ba_dinh
+    assert "Sân Cầu Giấy A" not in ba_dinh
+    assert "Không tìm thấy sân nào" in fragment
+
+
+# Every seeded court is found by the district in its name, and by no other district.
+def test_seeded_courts_are_found_by_their_district(tmp_path):
+    from app import create_app
+    from init_db import initialize_database
+
+    database_path = tmp_path / "seed.sqlite3"
+    initialize_database(database_path)
+    seeded = create_app({"DATABASE_PATH": str(database_path), "TESTING": True}).test_client()
+    courts = seeded.get("/api/courts").get_json()
+    districts = {court["courtName"].removeprefix("SmashGo ").rsplit(" ", 1)[0] for court in courts}
+
+    assert len(districts) == 6
+    for district in districts:
+        found = seeded.get("/api/courts", query_string={"location": district}).get_json()
+        assert sorted(court["courtName"] for court in found) == sorted(
+            court["courtName"] for court in courts if district in court["courtName"]
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -209,17 +230,20 @@ def test_tc07_inactive_court_is_not_found(client, database_path, status):
     assert response.get_json()["code"] == "COURT_NOT_FOUND"
 
 
-# TC-05 (page): Task #95: Render the active court details required before a user selects a time slot.
-def test_court_detail_displays_price_location_condition_and_images(client):
-    response = client.get(f"/courts/{COURT_A}")
+# TC-05 (page): the booking page shows the selected court's price, address,
+# description and photos (it replaced the court detail page).
+def test_booking_page_shows_court_information(client):
+    response = client.get(f"/book?courtId={COURT_A}")
     page = response.get_data(as_text=True)
 
     assert response.status_code == 200
+    assert 'id="court-info"' in page
     assert "Sân Cầu Giấy A" in page
-    assert "12 Trần Thái Tông, Cầu Giấy, Hà Nội" in page
-    assert "100.000đ / giờ" in page
-    assert "Thảm xanh, đèn LED" in page
+    assert 'data-location="12 Trần Thái Tông, Cầu Giấy, Hà Nội"' in page
+    assert 'data-price="100000' in page
+    assert 'data-description="Thảm xanh, đèn LED"' in page
     assert "https://example.com/court-a-1.jpg" in page
+    assert page.index("court-a-1.jpg") < page.index("court-a-2.jpg")
 
 
 def test_court_listing_formats_prices_in_vietnamese(client):
@@ -231,7 +255,7 @@ def test_court_listing_formats_prices_in_vietnamese(client):
     assert "100,000đ" not in page
 
 
-# TC-07 (page): Task #95: Do not expose disabled courts on public detail pages.
+# TC-07 (page): an old detail link to a court that is not ACTIVE says it is not found.
 def test_disabled_court_detail_returns_not_found(client, database_path):
     execute(database_path, "UPDATE Court SET Status = 'DISABLED' WHERE CourtID = ?", (COURT_A,))
 
@@ -406,9 +430,12 @@ def test_route_courts_page_returns_ok(client):
     assert client.get("/courts").status_code == 200
 
 
-# TC-05 (route): the court detail page opens for an active court.
-def test_route_court_detail_page_returns_ok(client):
-    assert client.get(f"/courts/{COURT_A}").status_code == 200
+# TC-05 (route): an old court detail link opens the booking page for that court.
+def test_route_court_detail_redirects_to_booking(client):
+    response = client.get(f"/courts/{COURT_A}")
+
+    assert response.status_code == 302
+    assert response.location == f"/book?courtId={COURT_A}"
 
 
 # Task #95: Keep the existing root redirect and use /courts as the canonical listing route.
@@ -419,37 +446,15 @@ def test_root_redirects_to_canonical_courts_route(client):
     assert response.location == "/courts"
 
 
-# Task #95: Render search filters and links to court details from the canonical listing page.
-def test_court_listing_contains_filters_and_detail_links(client):
+# The list searches by area only and links each court to the booking page.
+def test_court_listing_contains_area_search_and_booking_links(client):
     response = client.get("/courts")
     page = response.get_data(as_text=True)
 
     assert response.status_code == 200
     assert 'name="location"' in page
-    assert 'name="date"' in page
+    assert 'name="date"' not in page
     assert 'name="startTime"' not in page
-    assert 'name="endTime"' not in page
-    assert "/courts/1" in page
-    assert "Chi tiết sân" in page
-
-
-# Task #95: Render loading, empty and error UI hooks for asynchronous availability results.
-def test_detail_page_exposes_availability_state_hooks(client):
-    response = client.get(f"/courts/{COURT_A}")
-    page = response.get_data(as_text=True)
-
-    assert response.status_code == 200
-    assert 'id="availability-state"' in page
-    assert 'id="availability-slots"' in page
-    assert "Đang tải lịch trống..." in page
-
-
-# Task #95: Ensure free slots navigate to /book with court, date and time prefilled.
-def test_detail_page_slot_links_include_booking_selection(client):
-    response = client.get(f"/courts/{COURT_A}")
-    page = response.get_data(as_text=True)
-
-    assert response.status_code == 200
-    assert 'data-book-url="/book"' in page
-    assert f'data-court-id="{COURT_A}"' in page
-    assert 'court_detail.js' in page
+    assert f"/book?courtId={COURT_A}" in page
+    assert "Chi tiết sân" not in page
+    assert "/courts/1" not in page

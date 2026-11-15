@@ -34,12 +34,29 @@
                   data-open="{{ court['OpenTime'] }}"
                   data-close="{{ court['CloseTime'] }}"
                   data-price="{{ court['PricePerHour'] }}"
+                  data-location="{{ court['Location'] }}"
+                  data-description="{{ court['Description'] or '' }}"
+                  data-images='{{ court_images[court['CourtID']] | map(attribute="url") | list | tojson }}'
                   {% if selection.court_id == court['CourtID']|string %}selected{% endif %}>
             {{ court['CourtName'] }} · {{ court['Location'] }}
           </option>
           {% endfor %}
         </select>
       </label>
+
+      <!-- Information about the selected court (this replaced the court detail page). -->
+      <section class="court-info" id="court-info" aria-labelledby="court-info-name">
+        <div class="court-info-photos" id="court-info-photos"></div>
+        <div class="court-info-body">
+          <h2 id="court-info-name"></h2>
+          <p class="court-info-location" id="court-info-location"></p>
+          <p class="court-info-description" id="court-info-description"></p>
+          <dl class="court-info-facts">
+            <div><dt>Giá thuê</dt><dd id="court-info-price"></dd></div>
+            <div><dt>Giờ mở cửa</dt><dd id="court-info-hours"></dd></div>
+          </dl>
+        </div>
+      </section>
 
       <label for="booking-date">
         Ngày chơi

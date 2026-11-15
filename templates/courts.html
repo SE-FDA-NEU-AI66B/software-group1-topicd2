@@ -1,110 +1,142 @@
-{% extends "base.html" %}
-
-{% block title %}Sân cầu lông | SmashGo{% endblock %}
-
+{% extends "base.html" %} {% block title %}Sân cầu lông | SmashGo{% endblock %}
 {% block head %}
 <!-- Task #95: Load responsive styles for court search and court-detail links. -->
-<link rel="stylesheet" href="{{ url_for('static', filename='css/court_catalog.css') }}">
-{% endblock %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/court_catalog.css') }}"
+/>
+{% endblock %} {% block content %}
+<main class="page-shell">
+  <section class="intro" aria-labelledby="page-title">
+    <div>
+      <p class="eyebrow">
+        <span class="eyebrow-line"></span> DANH SÁCH ĐỊA ĐIỂM
+      </p>
+      <h1 id="page-title">Tìm sân.<br /><span>Ra sân thôi.</span></h1>
+      <p class="intro-copy">
+        Khám phá các sân cầu lông tại Hà Nội, xem giá thuê và giờ hoạt động.
+      </p>
+    </div>
+    <div class="count-block">
+      <span class="count-number">{{ "%02d"|format(courts|length) }}</span>
+      <span class="count-label">SÂN ĐANG<br />HOẠT ĐỘNG</span>
+    </div>
+  </section>
 
-{% block content %}
-  <main class="page-shell">
-    <section class="intro" aria-labelledby="page-title">
+  <!-- Search by area only: the date and time are chosen on the booking page. -->
+  <section class="court-search" aria-labelledby="search-title">
+    <div>
+      <p class="section-index">TÌM KIẾM</p>
+      <h2 id="search-title">Tìm sân phù hợp</h2>
+    </div>
+    <form
+      class="court-search-form"
+      method="get"
+      action="{{ url_for('courts') }}"
+      id="court-search-form"
+    >
+      <label>
+        Khu vực / địa chỉ
+        <input
+          type="search"
+          name="location"
+          value="{{ location }}"
+          maxlength="100"
+          placeholder="Ví dụ: Cầu Giấy"
+          aria-describedby="court-search-hint"
+        />
+      </label>
+      <button type="submit" id="court-search-submit">Tìm sân</button>
+    </form>
+    <p
+      class="court-search-loading"
+      id="court-search-loading"
+      role="status"
+      hidden
+    >
+      Đang tìm sân...
+    </p>
+  </section>
+
+  <section class="directory" aria-labelledby="directory-title">
+    <div class="directory-heading">
       <div>
-        <p class="eyebrow"><span class="eyebrow-line"></span> DANH SÁCH ĐỊA ĐIỂM</p>
-        <h1 id="page-title">Tìm sân.<br><span>Ra sân thôi.</span></h1>
-        <p class="intro-copy">Khám phá các sân cầu lông tại Hà Nội, xem giá thuê và giờ hoạt động.</p>
+        <p class="section-index">01 / COURTS</p>
+        <h2 id="directory-title">Sân quanh bạn</h2>
       </div>
-      <div class="count-block">
-        <span class="count-number">{{ "%02d"|format(courts|length) }}</span>
-        <span class="count-label">SÂN ĐANG<br>HOẠT ĐỘNG</span>
-      </div>
-    </section>
+      <span class="result-count">{{ courts|length }} kết quả</span>
+    </div>
 
-    <!-- Task #95: Let guests filter courts by location and date without a price filter. -->
-    <section class="court-search" aria-labelledby="search-title">
-      <div>
-        <p class="section-index">TÌM KIẾM</p>
-        <h2 id="search-title">Tìm sân phù hợp</h2>
-      </div>
-      <form class="court-search-form" method="get" action="{{ url_for('courts') }}" id="court-search-form">
-        <label>
-          Khu vực / địa chỉ
-          <input type="search" name="location" value="{{ filters.location }}" maxlength="100"
-                 placeholder="Ví dụ: Cầu Giấy">
-        </label>
-        <label>
-          Ngày chơi
-          <input type="date" name="date" min="{{ today }}" value="{{ filters.date }}">
-        </label>
-        <button type="submit" id="court-search-submit">Tìm sân</button>
-      </form>
-      <p class="court-search-loading" id="court-search-loading" role="status" hidden>Đang tìm sân...</p>
-      {% if filter_error %}
-      <p class="court-filter-error" role="alert">{{ filter_error }}</p>
-      {% endif %}
-    </section>
-
-    <section class="directory" aria-labelledby="directory-title">
-      <div class="directory-heading">
-        <div>
-          <p class="section-index">01 / COURTS</p>
-          <h2 id="directory-title">Sân quanh bạn</h2>
-        </div>
-        <span class="result-count">{{ courts|length }} kết quả</span>
-      </div>
-
-      {% if courts %}
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th class="court-column">SÂN CẦU LÔNG</th>
-              <th>ĐỊA CHỈ</th>
-              <th>GIỜ HOẠT ĐỘNG</th>
-              <th class="price-column">GIÁ / GIỜ</th>
-              <th>TRẠNG THÁI</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for court in courts %}
-            <tr class="court-row" data-court-id="{{ court['CourtID'] }}">
-              <td>
-                <div class="court-name-cell">
-                  <img class="court-thumb" src="{{ court['ImageUrl'] }}" alt="Ảnh sân {{ court['CourtName'] }}" loading="lazy">
-                  <div>
-                    <strong>{{ court['CourtName'] }}</strong>
-                    <span class="court-description">{{ court['Description'] }}</span>
-                  </div>
+    {% if courts %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="court-column">SÂN CẦU LÔNG</th>
+            <th>ĐỊA CHỈ</th>
+            <th>GIỜ HOẠT ĐỘNG</th>
+            <th class="price-column">GIÁ / GIỜ</th>
+            <th>TRẠNG THÁI</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for court in courts %}
+          <tr class="court-row" data-court-id="{{ court['CourtID'] }}">
+            <td>
+              <div class="court-name-cell">
+                <img
+                  class="court-thumb"
+                  src="{{ court['ImageUrl'] }}"
+                  alt="Ảnh sân {{ court['CourtName'] }}"
+                  loading="lazy"
+                />
+                <div>
+                  <strong>{{ court['CourtName'] }}</strong>
+                  <span class="court-description"
+                    >{{ court['Description'] }}</span
+                  >
                 </div>
-              </td>
-              <td class="location-cell">{{ court['Location'] }}</td>
-              <td><span class="hours">{{ court['OpenTime'] }} <span>—</span> {{ court['CloseTime'] }}</span></td>
-              <td class="price">{{ "{:,.0f}".format(court['PricePerHour']).replace(",", ".") }}<small>đ</small></td>
-              <td>
-                <span class="status"><span></span> Đang nhận đặt</span>
-                <a class="court-detail-link" href="{{ url_for('court_pages.court_detail', court_id=court['CourtID']) }}">Chi tiết sân</a>
-                {% if filters.date and filters.start_time and filters.end_time %}
-                <a class="court-book-link" href="{{ url_for('bookings.book', courtId=court['CourtID'], date=filters.date, startTime=filters.start_time, endTime=filters.end_time) }}">Đặt sân →</a>
-                {% else %}
-                <a class="court-book-link" href="{{ url_for('bookings.book', courtId=court['CourtID']) }}">Đặt sân →</a>
-                {% endif %}
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      {% else %}
-      {% if filters.location or filters.date or filters.start_time or filters.end_time %}
-      <p class="empty-state" role="status">Không tìm thấy sân phù hợp với bộ lọc. Hãy thử vị trí hoặc khung giờ khác.</p>
-      {% else %}
-      <p class="empty-state" role="status">Chưa có sân nào đang hoạt động.</p>
-      {% endif %}
-      {% endif %}
-      <p class="data-note"><span></span> Danh sách được tải trực tiếp từ cơ sở dữ liệu SmashGo.</p>
-    </section>
-  </main>
-  <!-- Task #95: Announce the server-rendered filter submission loading state accessibly. -->
-  <script src="{{ url_for('static', filename='court_catalog.js') }}"></script>
+              </div>
+            </td>
+            <td class="location-cell" data-label="Địa chỉ">
+              {{ court['Location'] }}
+            </td>
+            <td data-label="Giờ mở cửa">
+              <span class="hours"
+                >{{ court['OpenTime'] }} <span>—</span> {{ court['CloseTime']
+                }}</span
+              >
+            </td>
+            <td class="price" data-label="Giá / giờ">
+              {{ "{:,.0f}".format(court['PricePerHour']).replace(",", ".")
+              }}<small>đ</small>
+            </td>
+            <td class="court-actions">
+              <span class="status"><span></span> Đang nhận đặt</span>
+              <a
+                class="court-book-link"
+                href="{{ url_for('bookings.book', courtId=court['CourtID']) }}"
+                >Đặt sân →</a
+              >
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %} {% if location %}
+    <p class="empty-state" role="status">
+      Không tìm thấy sân nào ở “{{ location }}”. Hãy thử tên quận hoặc tên đường
+      khác.
+    </p>
+    {% else %}
+    <p class="empty-state" role="status">Chưa có sân nào đang hoạt động.</p>
+    {% endif %} {% endif %}
+    <p class="data-note">
+      <span></span> Danh sách được tải trực tiếp từ cơ sở dữ liệu SmashGo.
+    </p>
+  </section>
+</main>
+<!-- Task #95: Announce the server-rendered filter submission loading state accessibly. -->
+<script src="{{ url_for('static', filename='court_catalog.js') }}"></script>
 {% endblock %}

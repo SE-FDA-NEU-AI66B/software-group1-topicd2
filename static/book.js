@@ -63,7 +63,44 @@
     fillOptions(endSelect, start + minimumDuration, court.close, previous);
   }
 
+  // Show the photos, address, description, price and hours of the selected court.
+  // Re-render only when the court changes, so photos are not rebuilt on every time change.
+  let shownCourtId = null;
+  function renderCourtInfo() {
+    const option = courtSelect.selectedOptions[0];
+    if (option.value === shownCourtId) return;
+    shownCourtId = option.value;
+    const name = option.dataset.name;
+    document.getElementById("court-info-name").textContent = name;
+    document.getElementById("court-info-location").textContent = option.dataset.location;
+    document.getElementById("court-info-description").textContent =
+      option.dataset.description || "Chưa có mô tả tình trạng sân.";
+    document.getElementById("court-info-price").textContent = `${formatMoney(option.dataset.price)} / giờ`;
+    document.getElementById("court-info-hours").textContent =
+      `${option.dataset.open} – ${option.dataset.close}`;
+    const photos = document.getElementById("court-info-photos");
+    let images = [];
+    try {
+      images = JSON.parse(option.dataset.images || "[]");
+    } catch {
+      images = [];
+    }
+    photos.replaceChildren(
+      ...(images.length
+        ? images.slice(0, 3).map((url) => {
+            const image = document.createElement("img");
+            image.src = url;
+            image.alt = `Ảnh sân ${name}`;
+            image.loading = "lazy";
+            return image;
+          })
+        : [element("p", "court-info-no-photo", "Chưa có ảnh sân.")]),
+    );
+    photos.dataset.count = String(Math.min(images.length, 3));
+  }
+
   function refreshSummary() {
+    renderCourtInfo();
     const court = selectedCourt();
     const hasTimes = Boolean(startSelect.value && endSelect.value);
     const duration = hasTimes

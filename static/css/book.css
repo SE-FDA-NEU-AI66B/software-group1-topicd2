@@ -18,14 +18,14 @@
 }
 
 .book-lead,
-.book-hint { color: var(--muted); font-size: 14px; line-height: 1.6; }
-.book-hint { margin: 0; font-size: 12px; }
+.book-hint { color: var(--muted); font-size: 16px; line-height: 1.6; }
+.book-hint { margin: 0; font-size: 14px; }
 
 .book-notice,
 .book-error {
   margin: 18px 0;
   padding: 12px 14px;
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.5;
 }
 
@@ -33,7 +33,7 @@
 .book-error { border: 1px solid #edc5b8; background: #fff5f1; color: #8d3e27; }
 
 .book-form { display: grid; gap: 16px; margin-top: 22px; }
-.book-form label { display: grid; gap: 6px; color: var(--ink); font-size: 12px; font-weight: 700; }
+.book-form label { display: grid; gap: 6px; color: var(--ink); font-size: 14px; font-weight: 700; }
 .book-times { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
 .booking-schedule-panel {
@@ -50,9 +50,9 @@
 }
 
 .booking-schedule-heading .eyebrow { margin: 0 0 6px; }
-.booking-schedule-heading h2 { margin: 0; font-family: "Manrope", sans-serif; font-size: 22px; }
+.booking-schedule-heading h2 { margin: 0; font-family: "Manrope", sans-serif; font-size: 24px; }
 .booking-schedule-hint,
-.booking-schedule-state { margin: 0; color: var(--muted); font-size: 13px; }
+.booking-schedule-state { margin: 0; color: var(--muted); font-size: 15px; }
 .booking-schedule-state.is-error { color: #8d3e27; }
 
 .booking-schedule-scroll {
@@ -74,7 +74,7 @@
   padding: 8px 10px;
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  font-size: 13px;
+  font-size: 15px;
   white-space: nowrap;
 }
 
@@ -101,7 +101,7 @@
   border-bottom: 1px solid var(--line);
   border-radius: 0;
   font: inherit;
-  font-size: 12px;
+  font-size: 14px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -128,7 +128,7 @@ button.schedule-slot { cursor: pointer; }
   gap: 18px;
   margin: 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .availability-legend span { display: inline-flex; align-items: center; gap: 7px; }
@@ -162,8 +162,8 @@ button.schedule-slot { cursor: pointer; }
 }
 
 .book-summary div { padding: 12px; background: var(--paper); }
-.book-summary dt { color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; }
-.book-summary dd { margin: 4px 0 0; font-family: "Manrope", sans-serif; font-size: 16px; font-weight: 700; }
+.book-summary dt { color: var(--muted); font-size: 13px; font-weight: 700; text-transform: uppercase; }
+.book-summary dd { margin: 4px 0 0; font-family: "Manrope", sans-serif; font-size: 17px; font-weight: 700; }
 
 .book-form button {
   min-height: 44px;
@@ -174,7 +174,7 @@ button.schedule-slot { cursor: pointer; }
   color: var(--white);
   cursor: pointer;
   font: inherit;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
 }
 
@@ -189,13 +189,13 @@ button.schedule-slot { cursor: pointer; }
   padding: 14px 16px;
   background: var(--green);
   color: var(--white);
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .hold-timer strong { color: var(--lime); font-family: "Manrope", sans-serif; font-size: 26px; font-variant-numeric: tabular-nums; }
-.payment-summary dd { font-size: 14px; }
+.payment-summary dd { font-size: 16px; }
 .payment-section { margin-top: 24px; }
-.payment-section h2 { margin: 0 0 12px; font-family: "Manrope", sans-serif; font-size: 17px; }
+.payment-section h2 { margin: 0 0 12px; font-family: "Manrope", sans-serif; font-size: 19px; }
 .account-list { display: grid; gap: 8px; }
 
 .account-option {
@@ -207,16 +207,16 @@ button.schedule-slot { cursor: pointer; }
   border: 1px solid var(--line);
   border-radius: 3px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
 }
 
 .account-option:has(input:checked) { border-color: #398264; background: #f5fbea; }
 .account-option:has(input:disabled) { cursor: not-allowed; opacity: .6; }
-.account-option small { color: var(--muted); font-size: 11px; font-weight: 600; }
+.account-option small { color: var(--muted); font-size: 13px; font-weight: 600; }
 
 .book-form .link-button,
-.book-form .link-button:hover { min-height: 0; padding: 0; background: none; color: #276849; font-size: 13px; justify-self: start; }
+.book-form .link-button:hover { min-height: 0; padding: 0; background: none; color: #276849; font-size: 15px; justify-self: start; }
 .section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .section-heading .link-button { margin-top: 0; }
 .account-option .primary-badge { color: #276849; }
@@ -229,9 +229,33 @@ button.schedule-slot { cursor: pointer; }
   color: #276849;
   cursor: pointer;
   font: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
 }
+
+/* Booking: information about the selected court. */
+.court-info {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 20px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.court-info-photos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; align-content: start; }
+.court-info-photos img { width: 100%; height: 100%; min-height: 90px; max-height: 220px; object-fit: cover; background: #e6f4ea; }
+.court-info-photos img:first-child,
+.court-info-photos[data-count="2"] img { grid-column: 1 / -1; }
+.court-info-photos[data-count="1"] img { min-height: 180px; }
+.court-info-no-photo { margin: 0; color: var(--muted); font-size: 15px; }
+.court-info-body h2 { margin: 0 0 6px; font-family: "Manrope", sans-serif; font-size: 22px; }
+.court-info-location { margin: 0 0 8px; color: var(--muted); font-size: 16px; }
+.court-info-description { margin: 0; font-size: 16px; line-height: 1.6; }
+.court-info-facts { display: grid; gap: 8px; margin: 14px 0 0; }
+.court-info-facts div { display: flex; justify-content: space-between; gap: 12px; padding-top: 8px; border-top: 1px solid var(--line); }
+.court-info-facts dt { color: var(--muted); font-size: 15px; }
+.court-info-facts dd { margin: 0; font-size: 16px; font-weight: 700; text-align: right; }
 
 /* Payment: one step at a time (account → OTP → confirm). */
 .payment-steps {
@@ -250,7 +274,7 @@ button.schedule-slot { cursor: pointer; }
   padding-bottom: 10px;
   border-bottom: 3px solid var(--line);
   color: var(--muted);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
 }
 
@@ -262,7 +286,7 @@ button.schedule-slot { cursor: pointer; }
   border-radius: 50%;
   background: var(--line);
   color: var(--ink);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .payment-steps li[aria-current="step"] { border-color: var(--green); color: var(--ink); }
@@ -270,9 +294,9 @@ button.schedule-slot { cursor: pointer; }
 .payment-steps li.is-done { border-color: #9cc5b0; color: #276849; }
 .payment-steps li.is-done span { background: #d7eadf; color: #276849; }
 
-.payment-step h2 { margin: 0; font-family: "Manrope", sans-serif; font-size: 17px; }
+.payment-step h2 { margin: 0; font-family: "Manrope", sans-serif; font-size: 19px; }
 .new-account { display: grid; gap: 16px; }
-.new-account h3 { margin: 0; font-family: "Manrope", sans-serif; font-size: 15px; }
+.new-account h3 { margin: 0; font-family: "Manrope", sans-serif; font-size: 17px; }
 #saved-accounts { display: grid; gap: 10px; }
 .payment-step[hidden],
 #saved-accounts[hidden],
@@ -287,17 +311,19 @@ button.schedule-slot { cursor: pointer; }
   gap: 16px;
   padding: 12px 14px;
   border-bottom: 1px solid var(--line);
-  font-size: 14px;
+  font-size: 16px;
 }
 .payment-review div:last-child { border-bottom: 0; }
 .payment-review dt { color: var(--muted); }
 .payment-review dd { margin: 0; font-weight: 700; text-align: right; }
 .payment-review-total { background: var(--paper); }
-.payment-review-total dd { color: var(--green); font-family: "Manrope", sans-serif; font-size: 20px; }
+.payment-review-total dd { color: var(--green); font-family: "Manrope", sans-serif; font-size: 22px; }
 
 @media (max-width: 700px) {
   .book-shell { margin: 32px auto; }
-  .payment-steps li { flex-direction: column; align-items: flex-start; gap: 4px; font-size: 12px; }
+  .court-info { grid-template-columns: 1fr; }
+  .booking-schedule-heading { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .payment-steps li { flex-direction: column; align-items: flex-start; gap: 4px; font-size: 14px; }
   .book-card { padding: 22px; }
   .book-times,
   .book-summary { grid-template-columns: 1fr; }

@@ -1,7 +1,6 @@
 
-from flask import Blueprint, current_app, jsonify, render_template, request, url_for
+from flask import Blueprint, current_app, jsonify, redirect, render_template, request, url_for
 
-import clock
 from booking_service import BookingError
 from court_service import (
     get_active_court,
@@ -66,19 +65,13 @@ def api_list_courts():
     )
 
 
-# Task #95: Render details for a publicly bookable court with its location, condition, price and photos.
+# The court detail page was merged into /book, which shows the court's photos,
+# address, description, price and hours next to its schedule. Old links still work.
 @court_pages_bp.get("/courts/<int:court_id>")
 def court_detail(court_id: int):
-    court = get_active_court(current_app.config["DATABASE_PATH"], court_id)
-    if court is None:
+    if get_active_court(current_app.config["DATABASE_PATH"], court_id) is None:
         return render_template("pages/court_not_found.html"), 404
-    return render_template(
-        "pages/court_detail.html",
-        court=court,
-        today=clock.today().isoformat(),
-        availability_url=url_for("court_pages.api_court_availability", court_id=court_id),
-        book_url=url_for("bookings.book"),
-    )
+    return redirect(url_for("bookings.book", courtId=court_id))
 
 
 # Task #95: Expose a public availability API with explicit loading/error-friendly JSON responses.

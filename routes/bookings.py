@@ -21,6 +21,7 @@ from booking_service import (
     create_booking,
     list_my_bookings,
 )
+from court_service import get_court_images
 from database import get_db_connection
 from errors import user_message
 from payment_service import pay_booking, request_payment_otp
@@ -132,10 +133,13 @@ def book():
     with closing(get_db_connection(current_app.config["DATABASE_PATH"])) as connection:
         courts = connection.execute(
             """
-            SELECT CourtID, CourtName, Location, PricePerHour, OpenTime, CloseTime
+            SELECT CourtID, CourtName, Location, Description, PricePerHour, OpenTime, CloseTime
             FROM Court WHERE Status = 'ACTIVE' ORDER BY CourtID
             """
         ).fetchall()
+    court_images = get_court_images(
+        current_app.config["DATABASE_PATH"], [court["CourtID"] for court in courts]
+    )
 
     selection = {
         "court_id": request.args.get("courtId", ""),
@@ -146,6 +150,7 @@ def book():
     return render_template(
         "pages/book.html",
         courts=courts,
+        court_images=court_images,
         selection=selection,
         today=clock.today().isoformat(),
         restored=request.args.get("restored") == "1" and current_user is not None,

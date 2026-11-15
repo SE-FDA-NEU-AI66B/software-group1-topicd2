@@ -131,6 +131,12 @@ def initialize_database(database_path: Path | None = None) -> int:
                     court["CourtName"],
                 ),
             )
+            # A database seeded before the addresses named the district gets the
+            # full address too, so searching by area finds these courts.
+            connection.execute(
+                "UPDATE Court SET Location = ? WHERE ManagerID = ? AND CourtName = ?",
+                (court["Location"], manager_id, court["CourtName"]),
+            )
             court_id = connection.execute(
                 "SELECT CourtID FROM Court WHERE ManagerID = ? AND CourtName = ?",
                 (manager_id, court["CourtName"]),

@@ -100,6 +100,11 @@
       actionCell.append(activate);
     }
     row.append(courtCell, managerCell, priceCell, bookingsCell, statusCell, actionCell);
+    // Label each cell with its column header for the stacked layout on phones.
+    const headers = [...document.querySelectorAll(".admin-court-table thead th")];
+    [...row.cells].forEach((cell, index) => {
+      if (index > 0 && headers[index]) cell.dataset.label = headers[index].textContent.trim();
+    });
     return row;
   }
 

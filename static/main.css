@@ -12,7 +12,7 @@
 .site-nav a,
 .user-name {
   color: #fff;
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
@@ -39,7 +39,7 @@
   font-size: 28px;
 }
 
-.auth-card > p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+.auth-card > p { color: var(--muted); font-size: 16px; line-height: 1.6; }
 
 .auth-error {
   margin: 18px 0;
@@ -47,12 +47,12 @@
   border: 1px solid #edc5b8;
   background: #fff5f1;
   color: #8d3e27;
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.5;
 }
 
 .auth-form { display: grid; gap: 15px; margin-top: 22px; }
-.auth-form label { display: grid; gap: 6px; color: var(--ink); font-size: 12px; font-weight: 700; }
+.auth-form label { display: grid; gap: 6px; color: var(--ink); font-size: 14px; font-weight: 700; }
 .auth-form input {
   width: 100%;
   padding: 11px 12px;
@@ -76,13 +76,13 @@
   color: var(--white);
   cursor: pointer;
   font: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   text-decoration: none;
 }
 
 .auth-form button:hover { background: #185742; }
-.auth-switch { margin: 18px 0 0; color: var(--muted); font-size: 13px; }
+.auth-switch { margin: 18px 0 0; color: var(--muted); font-size: 15px; }
 .auth-switch a { color: #276849; font-weight: 700; }
 
 @media (max-width: 700px) {
@@ -97,13 +97,28 @@
   .site-nav {
     order: 3;
     flex: 1 0 100%;
+    flex-wrap: wrap;
     justify-content: center;
-    gap: 8px;
+    gap: 4px 14px;
     margin-left: 0;
     padding: 0;
   }
-  .site-nav a,
-  .user-name { font-size: 9px; }
+  /* Header text on phones: small enough that the menu fits on one line with room at the edges. */
+  .site-nav a { padding: 4px 0; font-size: 14px; }
+  .user-name { flex-basis: 100%; font-size: 13px; text-align: center; }
+  .brand { font-size: 20px; }
+  .live-indicator { font-size: 12px; }
   .auth-shell { margin: 32px auto; }
   .auth-card { padding: 22px; }
+}
+
+/* Very narrow phones (320–380px). */
+@media (max-width: 380px) {
+  .topbar { padding-right: 14px; padding-left: 14px; }
+  .site-nav { gap: 4px 12px; }
+  .site-nav a { font-size: 13px; }
+  .user-name { font-size: 12px; }
+  .brand { gap: 8px; font-size: 18px; }
+  .brand-mark { width: 24px; height: 24px; }
+  .live-indicator { gap: 6px; font-size: 11px; }
 }
